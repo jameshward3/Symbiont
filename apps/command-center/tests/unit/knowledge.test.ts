@@ -55,4 +55,8 @@ test("legacy intake status never implies the restricted corpus is deployed", () 
   assert.equal(LEGACY_INTAKE.classification, "Restricted");
   assert.equal(LEGACY_INTAKE.connectedToD1, false);
   assert.match(demonstrationKnowledgeData.activation, /not connected to D1/i);
+  const overview = demonstrationKnowledgeData.assets.find((item) => item.id === "SYM-ARC-RPT-001-SUMMARY");
+  assert.equal(overview?.businessArea, "Archive");
+  assert.equal(overview?.classification, "Internal");
+  assert.equal(overview?.isAuthoritative, false);
 });
