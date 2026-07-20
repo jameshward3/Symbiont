@@ -2,21 +2,25 @@
 
 import { FormEvent, useEffect, useMemo, useState } from "react";
 
-type View = "Overview" | "Agent Network" | "Shared Goals" | "Sales Operations" | "Projects" | "Decisions" | "Systems";
+type View = "Overview" | "Agent Network" | "Shared Goals" | "Sales Operations" | "Opportunity Scout" | "Projects" | "Decisions" | "Systems";
 type Connection = "checking" | "unavailable" | "authorization_required" | "connected" | "error";
 type Agent = { stable_id: string; name: string; mission: string; authority_level: string; status: string; updated_at?: string };
 type Goal = { stable_id: string; objective: string; status: string; priority: string; due_date?: string; success_metrics?: string[]; completion_evidence?: unknown };
 type Opportunity = { stable_id: string; name: string; stage: string; qualification_score?: number; recommendation?: string; amount?: number; currency?: string; probability?: number; expected_close?: string; next_action?: string; next_action_date?: string; proposal_status?: string; recurring_potential?: string; required_approvals?: string[] };
 type Dashboard = { source: "live"; asOf: string; agents: Agent[]; goals: Goal[]; opportunities: Opportunity[]; decisions: Array<Record<string, string>>; runs: Array<Record<string, unknown>>; handoffs: Array<Record<string, unknown>> };
+type ScoutOpportunity = { id:string; issuer:string; issuerWebsite?:string|null; title:string; solicitationNumber?:string|null; canonicalUrl:string; publicationDate?:string|null; deadlineAt?:string|null; deadlineTimezone?:string|null; location?:string|null; statedValue?:number|null; procurementType:string; scope:string; accessRequirements?:string|null; fitRationale:string; totalScore:number; confidence:number; freshness:string; risks:string[]; missingInformation:string[]; nextAction:string; route:"sales_operations"|"watchlist"|"archive"; handoffStatus:string; observedAt:string; sourceKind:string; isDemonstration:boolean };
+type MonitoringQuery = { id:string; name:string; queryText:string; sourceCategory:string; geography?:string|null; cadence:string; status:string; lastCheckedAt?:string|null; nextCheckAt?:string|null; robotsPolicy:string; requiresAuthentication:boolean };
+type ScoutData = { source:"d1"|"demonstration"; database:"connected"|"connected_empty"|"unavailable"; asOf:string; activation:string; opportunities:ScoutOpportunity[]; monitoringQueries:MonitoringQuery[] };
 
 const navItems: { label: View; code: string }[] = [
   { label: "Overview", code: "01" }, { label: "Agent Network", code: "02" }, { label: "Shared Goals", code: "03" },
-  { label: "Sales Operations", code: "04" }, { label: "Projects", code: "05" }, { label: "Decisions", code: "06" }, { label: "Systems", code: "07" },
+  { label: "Sales Operations", code: "04" }, { label: "Opportunity Scout", code: "09" }, { label: "Projects", code: "05" }, { label: "Decisions", code: "06" }, { label: "Systems", code: "07" },
 ];
 
 const demoAgents: Agent[] = [
   { stable_id: "AGT-001", name: "Symbiont COO", mission: "Coordinate company operations, priorities, standards, and agent work.", authority_level: "L2", status: "Ready" },
   { stable_id: "AGT-002", name: "Sales Operations", mission: "Convert qualified client needs into profitable, repeatable work.", authority_level: "L1", status: "Draft mode" },
+  { stable_id: "AGT-009", name: "Opportunity Scout", mission: "Discover and verify public buying signals, then route evidence-backed leads.", authority_level: "L1", status: "Activation required" },
 ];
 const demoGoals: Goal[] = [{ stable_id: "GOAL-2026-001", objective: "Prove governed multi-agent sales-to-delivery coordination", status: "Approved", priority: "P1", success_metrics: ["One claim owner", "Human proposal approval", "Auditable handoff"] }];
 const demoOpps: Opportunity[] = [
@@ -34,8 +38,10 @@ export default function Home() {
   const [command, setCommand] = useState("");
   const [runState, setRunState] = useState<"idle" | "running" | "complete" | "error">("idle");
   const [answer, setAnswer] = useState("");
+  const [scoutData, setScoutData] = useState<ScoutData | null>(null);
 
   useEffect(() => { fetch("/api/status", { cache: "no-store" }).then(r => r.json()).then(s => setConnection(s.dataPlane)).catch(() => setConnection("error")); }, []);
+  useEffect(() => { fetch("/api/opportunities", { cache: "no-store" }).then(r => r.json()).then(setScoutData).catch(() => setScoutData(null)); }, []);
 
   async function connect(event: FormEvent) {
     event.preventDefault(); setConnection("checking");
@@ -68,7 +74,7 @@ export default function Home() {
         <nav aria-label="Primary navigation"><p className="eyebrow nav-label">Command views</p>{navItems.map(item => <button className={`nav-item ${view === item.label ? "active" : ""}`} key={item.label} onClick={() => setView(item.label)} type="button"><span className="nav-code">{item.code}</span><span>{item.label}</span></button>)}</nav>
         <div className="side-divider" />
         <div className="system-state"><p className="eyebrow">Runtime state</p><StateRow label="Shared data" state={connection === "connected" ? "Live" : connection === "checking" ? "Checking" : "Restricted"} tone={connection === "connected" ? "green" : "amber"} /><StateRow label="Agent authority" state="Governed" tone="green" /><StateRow label="External actions" state="Approval" tone="amber" /></div>
-        <div className="agent-card"><div className="agent-orbit"><span>002</span></div><div><p>SALES OPERATIONS</p><strong>L1 · Draft + Recommend</strong></div><i className="pulse" /></div>
+        <div className="agent-card"><div className="agent-orbit"><span>009</span></div><div><p>OPPORTUNITY SCOUT</p><strong>L1 · Activation required</strong></div><i className="pulse amber-pulse" /></div>
       </aside>
       <main>
         <header className="topbar"><div><p className="eyebrow">Executive command center</p><h1>{view}</h1></div><div className="top-actions"><span className={`demo-pill ${connection === "connected" ? "live-pill" : ""}`}>{sourceLabel}</span><div className="avatar">JW</div></div></header>
@@ -78,6 +84,7 @@ export default function Home() {
           {view === "Agent Network" && <AgentNetwork agents={agents} source={sourceLabel} />}
           {view === "Shared Goals" && <SharedGoals goals={goals} agents={agents} source={sourceLabel} />}
           {view === "Sales Operations" && <SalesOperations opportunities={opportunities} source={sourceLabel} />}
+          {view === "Opportunity Scout" && <OpportunityScout data={scoutData} />}
           {view === "Projects" && <UnavailableView title="Delivery projects" body="Project delivery remains under AGT-001. Connect an authorized project system before operational records are shown here." />}
           {view === "Decisions" && <DecisionsView decisions={dashboard?.decisions ?? []} source={sourceLabel} />}
           {view === "Systems" && <SystemsView connection={connection} runs={dashboard?.runs ?? []} handoffs={dashboard?.handoffs ?? []} />}
@@ -105,6 +112,40 @@ function SharedGoals({ goals, agents, source }: { goals: Goal[]; agents: Agent[]
 
 function SalesOperations({ opportunities, source }: { opportunities: Opportunity[]; source: string }) { return <section><SectionLead kicker="AGT-002 · Sales operations" title="Qualified work, clean handoffs." body={`${source}. Values shown below are ${source.startsWith("Live") ? "authorized operational records" : "harmless demonstration records"}.`} /><div className="sales-table"><div className="sales-head"><span>Opportunity</span><span>Qualification</span><span>Commercial</span><span>Next action</span><span>Governance</span></div>{opportunities.map(o => { const weighted = Number(o.amount||0)*Number(o.probability||0)/100; const stale = Boolean(o.next_action_date && new Date(o.next_action_date)<new Date("2026-07-20")); return <article className="sales-row" key={o.stable_id}><div><p>{o.stable_id} · {o.stage}</p><strong>{o.name}</strong><small>{o.recommendation || "Not scored"}</small></div><div><b className="score-badge">{o.qualification_score ?? "—"}</b><small>/100</small></div><div><strong>{money(Number(o.amount||0))}</strong><p>{o.probability || 0}% · {money(weighted)} weighted</p><small>Close {o.expected_close || "Unknown"}</small></div><div><strong>{o.next_action || "Missing"}</strong><p className={stale ? "danger-text" : ""}>{o.next_action_date || "No date"}{stale ? " · STALE" : ""}</p></div><div><span className="status-chip">{o.proposal_status}</span><p>Recurring: {o.recurring_potential}</p><small>{o.required_approvals?.length ? `${o.required_approvals.length} approval(s)` : "No open approval"}</small></div></article>})}</div></section>; }
 
+function OpportunityScout({ data }: { data: ScoutData | null }) {
+  if (!data) return <section><SectionLead kicker="AGT-009 · Opportunity Scout" title="Evidence before pipeline." body="Loading the read-only opportunity surface. No scan, source connection, database write, or handoff is being simulated." /><div className="scout-loading">READ-ONLY DATA ADAPTER · CHECKING</div></section>;
+  const isLive = data.source === "d1";
+  const visible = data.opportunities;
+  const verified = isLive ? visible.length : 0;
+  const qualified = isLive ? visible.filter(item => item.route === "sales_operations").length : 0;
+  const leadTimes = visible.filter(item => item.deadlineAt).map(item => Math.ceil((new Date(item.deadlineAt!).getTime() - new Date("2026-07-20T00:00:00Z").getTime()) / 86400000)).filter(days => days >= 0);
+  const medianLead = leadTimes.length ? [...leadTimes].sort((a,b)=>a-b)[Math.floor(leadTimes.length/2)] : null;
+  const averageScore = visible.length ? Math.round(visible.reduce((sum,item)=>sum+item.totalScore,0)/visible.length) : 0;
+  const averageConfidence = visible.length ? Math.round(visible.reduce((sum,item)=>sum+item.confidence,0)/visible.length) : 0;
+  const sourceCategories = new Set(data.monitoringQueries.map(query => query.sourceCategory)).size;
+
+  return <section className="scout-view">
+    <div className="scout-hero"><div><p className="eyebrow">AGT-009 · Opportunity Scout</p><h2>Evidence before<br/><em>pipeline.</em></h2><p>Canonical-source verification, reproducible fit scoring, amendment-aware deduplication, and governed routing to AGT-002.</p></div><div className="scout-activation"><span className={`dot ${isLive ? "green" : "amber"}`} /><div><strong>{isLive ? "D1 records" : "Demonstration mode"}</strong><p>{data.activation}</p></div></div></div>
+    {!isLive && <div className="demo-disclosure"><b>DEMONSTRATION DATA</b><span>These records and monitoring queries are illustrative. No live scan, source connection, database write, or AGT-002 handoff occurred.</span></div>}
+    <div className="scout-metrics">
+      <Metric label="Source coverage" value={isLive ? String(sourceCategories).padStart(2,"0") : "00"} note={`${sourceCategories} ${isLive ? "active" : "planned demo"} categories`} />
+      <Metric label="Verified opportunities" value={String(verified).padStart(2,"0")} note={isLive ? "Canonical evidence in D1" : `${visible.length} demonstration records`} />
+      <Metric label="Qualified handoffs" value={String(qualified).padStart(2,"0")} note={isLive ? "Score 70+ routed" : "None sent"} />
+      <Metric label="Deadline lead time" value={medianLead === null ? "—" : `${medianLead}d`} note={isLive ? "Median verified lead" : "Demonstration median"} />
+      <Metric label="Average fit" value={String(averageScore)} note="Weighted /100" />
+      <Metric label="Evidence confidence" value={`${averageConfidence}%`} note={isLive ? "Verified records" : "Demonstration scoring"} />
+    </div>
+    <div className="scout-layout">
+      <div className="scout-opportunities"><PanelTitle kicker="Opportunity register" title="Verified, watch, archive" />{visible.map(item => <article className="scout-opportunity" key={item.id}>
+        <div className="scout-score"><strong>{item.totalScore}</strong><span>/100</span><i className={`route-dot ${item.route}`} /></div>
+        <div className="scout-main"><div className="scout-titleline"><div><p>{item.id} · {item.procurementType}{item.isDemonstration ? " · DEMO" : ""}</p><h3>{item.title}</h3><span>{item.issuer} · {item.location || "Location unknown"}</span></div><b className={`route-chip ${item.route}`}>{routeLabel(item.route)}</b></div><p className="scout-fit">{item.fitRationale}</p><div className="scout-facts"><span>DEADLINE <b>{formatDeadline(item.deadlineAt, item.deadlineTimezone)}</b></span><span>VALUE <b>{item.statedValue ? money(item.statedValue) : "Not stated"}</b></span><span>CONFIDENCE <b>{item.confidence}%</b></span><span>FRESHNESS <b>{item.freshness}</b></span></div><div className="scout-risk"><div><span>RISKS</span><p>{item.risks.length ? item.risks.join(" · ") : "None recorded"}</p></div><div><span>MISSING</span><p>{item.missingInformation.length ? item.missingInformation.join(" · ") : "None recorded"}</p></div></div><div className="scout-next"><span>{item.handoffStatus}</span><p>{item.nextAction}</p><a href={item.canonicalUrl} target="_blank" rel="noreferrer">Canonical source ↗</a></div></div>
+      </article>)}</div>
+      <aside className="monitoring-panel"><PanelTitle kicker="Monitoring queries" title="Coverage plan" /><p className="monitoring-note">Queries remain inactive until their sources, terms, cadence, and authenticated runtime are approved.</p>{data.monitoringQueries.map(query => <article className="query-row" key={query.id}><div><span>{query.id}</span><b>{query.status}</b></div><h3>{query.name}</h3><p>{query.queryText}</p><dl><div><dt>Sources</dt><dd>{query.sourceCategory}</dd></div><div><dt>Cadence</dt><dd>{query.cadence}</dd></div><div><dt>Access</dt><dd>{query.requiresAuthentication ? "Authentication boundary" : "Public-source review"}</dd></div></dl></article>)}</aside>
+    </div>
+    <div className="handoff-strip"><div><p className="eyebrow">Governed route</p><strong>AGT-009</strong><span>Discovery + evidence</span></div><i>→</i><div><p className="eyebrow">Acceptance gate</p><strong>AGT-002</strong><span>Qualification + pursuit</span></div><i>↗</i><div><p className="eyebrow">Escalation</p><strong>AGT-001</strong><span>Priority + authority conflicts</span></div><b>{isLive ? `${qualified} routed` : "No live handoff"}</b></div>
+  </section>;
+}
+
 function DecisionsView({ decisions, source }: { decisions: Array<Record<string,string>>; source: string }) { return <section><SectionLead kicker="Decision architecture" title="Agents recommend. Humans approve." body={`${source}. Material decisions cannot reach Approved without an authorized human and timestamp.`} />{decisions.length ? decisions.map(d => <article className="decision-row-wide" key={d.stable_id}><span>{d.stable_id}</span><strong>{d.statement}</strong><b>{d.status}</b><small>{d.required_by || "No deadline"}</small></article>) : <UnavailableView title="No live decisions available" body="The system will show decision requests here after the governed database is connected. No approval has been simulated." />}</section>; }
 function SystemsView({ connection, runs, handoffs }: { connection: Connection; runs: Array<Record<string,unknown>>; handoffs: Array<Record<string,unknown>> }) { return <section><SectionLead kicker="System controls" title="Authority enforced below the prompt." body="Application checks, database policies, atomic claims, leases, idempotency, audit events, and human approval gates govern execution." /><div className="control-grid"><Control name="Organization-scoped RLS" status="Implemented" /><Control name="Atomic claim + lease recovery" status="Implemented" /><Control name="Append-only goal events" status="Implemented" /><Control name="Human material-decision approval" status="Implemented" /><Control name="Shared Supabase runtime" status={connection === "connected" ? "Connected" : "Not configured"} /><Control name="OpenAI Responses runtime" status={connection === "connected" ? "Connection-dependent" : "Unavailable"} /><Control name="Recorded agent runs" status={String(runs.length)} /><Control name="Inter-agent handoffs" status={String(handoffs.length)} /></div></section>; }
 function UnavailableView({ title, body }: { title: string; body: string }) { return <section className="empty-state"><span>UNAVAILABLE</span><h2>{title}</h2><p>{body}</p></section>; }
@@ -118,3 +159,5 @@ function Focus({n,text}:{n:string;text:string}) { return <div className="focus-r
 function SectionLead({kicker,title,body}:{kicker:string;title:string;body:string}) { return <div className="section-lead"><p className="eyebrow">{kicker}</p><h2>{title}</h2><p>{body}</p></div>; }
 function Control({name,status}:{name:string;status:string}) { return <article><span>{name}</span><strong>{status}</strong></article>; }
 function money(value:number) { return new Intl.NumberFormat("en-US",{style:"currency",currency:"USD",maximumFractionDigits:0,notation:value>=1_000_000?"compact":"standard"}).format(value); }
+function routeLabel(route:ScoutOpportunity["route"]) { return route === "sales_operations" ? "Route to AGT-002" : route === "watchlist" ? "Watchlist" : "Archive"; }
+function formatDeadline(value?:string|null, timezone?:string|null) { if (!value) return "Not stated"; try { return new Intl.DateTimeFormat("en-US",{month:"short",day:"numeric",year:"numeric",hour:"numeric",minute:"2-digit",timeZoneName:"short",timeZone:timezone || "UTC"}).format(new Date(value)); } catch { return value; } }

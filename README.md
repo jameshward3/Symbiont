@@ -50,3 +50,7 @@ The interface now includes the Agent Network, Shared Goals, Sales Operations, go
 ## Sales Operations Agent
 
 Invoke AGT-002 with `$symbiont-sales-ops`. The repository skill is located at `.agents/skills/symbiont-sales-ops`, and the matching project custom-agent definition is `.codex/agents/symbiont-sales-ops.toml`. AGT-002 operates at L1 — Draft and Recommend and requires human approval for external communications, pricing, proposals, contractual statements, and material commitments.
+
+## Opportunity Scout Agent
+
+Invoke AGT-009 with `$symbiont-opportunity-scout`. The repository skill is located at `.agents/skills/symbiont-opportunity-scout`. It verifies official sources, scores and deduplicates opportunities, and prepares governed handoffs to AGT-002 at L1 authority. The Command Center includes a dedicated Opportunity Scout view and read-only D1 adapter. Demonstration records are explicitly labeled; live scanning, source schedules, agent registration, and handoff writes remain inactive until approved runtime activation.

@@ -1,6 +1,8 @@
 # Symbiont Executive Command Center
 
-The Command Center exposes AGT-001 and AGT-002 through one governed operating surface. It supports the existing Vercel application and existing Sites project without replacing either configuration.
+The Command Center exposes AGT-001, AGT-002, and the AGT-009 Opportunity Scout surface through one governed operating system. It supports the existing Vercel application and existing Sites project without replacing either configuration.
+
+The Sites deployment uses one logical Cloudflare D1 binding named `DB`. Drizzle owns the shared relational schema for agents, goals, assignments, messages, opportunities, evidence, Scout runs, and monitoring queries. `/api/opportunities` is read-only and returns clearly labeled demonstration records when D1 is unavailable or has no verified Scout records. No unauthenticated mutation route is provided.
 
 ## Runtime
 
