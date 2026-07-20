@@ -321,6 +321,15 @@ export const qualityReviews = sqliteTable("quality_reviews", {
   disposition: text("disposition"),
   reviewedAt: text("reviewed_at"),
   status: text("status").notNull().default("Planned"),
+  deliverableVersionId: text("deliverable_version_id"),
+  checklistVersionId: text("checklist_version_id"),
+  reviewObjective: text("review_objective"),
+  reviewScope: text("review_scope"),
+  candidateHash: text("candidate_hash"),
+  author: text("author"),
+  approver: text("approver"),
+  releaseRecommendation: text("release_recommendation"),
+  correlationIdQuality: text("quality_correlation_id"),
 }, (table) => [index("quality_reviews_project_status_idx").on(table.projectId, table.status)]);
 
 export const statusReports = sqliteTable("status_reports", {
@@ -376,3 +385,220 @@ export const closeoutRecords = sqliteTable("closeout_records", {
   completionEvidence: text("completion_evidence"),
   status: text("status").notNull().default("Open"),
 }, (table) => [index("closeout_records_project_status_idx").on(table.projectId, table.status)]);
+
+export const deliverableVersions = sqliteTable("deliverable_versions", {
+  id: text("id").primaryKey(),
+  deliverableId: text("deliverable_id").notNull().references(() => deliverables.id),
+  version: text("version").notNull(),
+  contentHash: text("content_hash").notNull(),
+  sourceInputsJson: text("source_inputs_json").notNull().default("[]"),
+  author: text("author").notNull(),
+  immutable: integer("immutable", { mode: "boolean" }).notNull().default(true),
+  issuedAt: text("issued_at"),
+  ...timestamps,
+}, (table) => [
+  uniqueIndex("deliverable_versions_version_idx").on(table.deliverableId, table.version),
+  uniqueIndex("deliverable_versions_hash_idx").on(table.deliverableId, table.contentHash),
+]);
+
+export const acceptanceCriteria = sqliteTable("acceptance_criteria", {
+  id: text("id").primaryKey(),
+  projectId: text("project_id").notNull(),
+  deliverableId: text("deliverable_id").notNull().references(() => deliverables.id),
+  requirementReference: text("requirement_reference").notNull(),
+  criterion: text("criterion").notNull(),
+  sourceAuthority: text("source_authority").notNull(),
+  status: text("status").notNull().default("Approved"),
+  ...timestamps,
+}, (table) => [index("acceptance_criteria_deliverable_idx").on(table.deliverableId, table.status)]);
+
+export const qualityPlans = sqliteTable("quality_plans", {
+  id: text("id").primaryKey(),
+  projectId: text("project_id").notNull(),
+  deliverableId: text("deliverable_id").notNull().references(() => deliverables.id),
+  sharedGoalId: text("shared_goal_id").notNull().references(() => sharedGoals.id),
+  correlationId: text("correlation_id").notNull(),
+  objective: text("objective").notNull(),
+  scope: text("scope").notNull(),
+  samplingMethod: text("sampling_method").notNull(),
+  criticalInterfacesJson: text("critical_interfaces_json").notNull().default("[]"),
+  evidenceRequirementsJson: text("evidence_requirements_json").notNull().default("[]"),
+  releaseCriteriaJson: text("release_criteria_json").notNull().default("[]"),
+  reviewer: text("reviewer").notNull(),
+  approver: text("approver").notNull(),
+  status: text("status").notNull().default("Draft"),
+  ...timestamps,
+}, (table) => [index("quality_plans_goal_corr_idx").on(table.sharedGoalId, table.correlationId)]);
+
+export const qualityChecklists = sqliteTable("quality_checklists", {
+  id: text("id").primaryKey(),
+  name: text("name").notNull(),
+  deliverableType: text("deliverable_type").notNull(),
+  ownerAgentId: text("owner_agent_id").notNull().references(() => agents.id),
+  status: text("status").notNull().default("Draft"),
+  ...timestamps,
+}, (table) => [index("quality_checklists_type_status_idx").on(table.deliverableType, table.status)]);
+
+export const checklistVersions = sqliteTable("checklist_versions", {
+  id: text("id").primaryKey(),
+  checklistId: text("checklist_id").notNull().references(() => qualityChecklists.id),
+  version: text("version").notNull(),
+  requirementsJson: text("requirements_json").notNull(),
+  approvedBy: text("approved_by"),
+  approvedAt: text("approved_at"),
+  supersededAt: text("superseded_at"),
+  contentHash: text("content_hash").notNull(),
+  ...timestamps,
+}, (table) => [uniqueIndex("checklist_versions_version_idx").on(table.checklistId, table.version)]);
+
+export const reviewFindings = sqliteTable("review_findings", {
+  id: text("id").primaryKey(),
+  projectId: text("project_id").notNull(),
+  deliverableId: text("deliverable_id").notNull().references(() => deliverables.id),
+  deliverableVersionId: text("deliverable_version_id").notNull().references(() => deliverableVersions.id),
+  qualityReviewId: text("quality_review_id").notNull().references(() => qualityReviews.id),
+  sharedGoalId: text("shared_goal_id").notNull().references(() => sharedGoals.id),
+  correlationId: text("correlation_id").notNull(),
+  requirementReference: text("requirement_reference").notNull(),
+  location: text("location").notNull(),
+  description: text("description").notNull(),
+  severity: text("severity").notNull(),
+  impact: text("impact").notNull(),
+  recommendedCorrection: text("recommended_correction").notNull(),
+  responsibleOwner: text("responsible_owner").notNull(),
+  dueDate: text("due_date"),
+  status: text("status").notNull().default("Open"),
+  reviewer: text("reviewer").notNull(),
+  verificationEvidence: text("verification_evidence"),
+  ...timestamps,
+}, (table) => [
+  index("review_findings_release_idx").on(table.projectId, table.severity, table.status),
+  check("review_findings_severity_check", sql`${table.severity} in ('Critical','Major','Minor','Suggestion')`),
+]);
+
+export const findingEvidence = sqliteTable("finding_evidence", {
+  id: text("id").primaryKey(),
+  findingId: text("finding_id").notNull().references(() => reviewFindings.id),
+  evidenceType: text("evidence_type").notNull(),
+  uri: text("uri"),
+  contentHash: text("content_hash"),
+  description: text("description").notNull(),
+  classification: text("classification").notNull().default("Internal"),
+  capturedBy: text("captured_by").notNull(),
+  capturedAt: text("captured_at").notNull(),
+}, (table) => [index("finding_evidence_finding_idx").on(table.findingId)]);
+
+export const correctiveActions = sqliteTable("corrective_actions", {
+  id: text("id").primaryKey(),
+  findingId: text("finding_id").notNull().references(() => reviewFindings.id),
+  owner: text("owner").notNull(),
+  correction: text("correction").notNull(),
+  dueDate: text("due_date"),
+  status: text("status").notNull().default("Assigned"),
+  submittedEvidence: text("submitted_evidence"),
+  ...timestamps,
+}, (table) => [index("corrective_actions_owner_status_idx").on(table.owner, table.status)]);
+
+export const verificationEvents = sqliteTable("verification_events", {
+  id: text("id").primaryKey(),
+  findingId: text("finding_id").notNull().references(() => reviewFindings.id),
+  deliverableVersionId: text("deliverable_version_id").notNull().references(() => deliverableVersions.id),
+  verifier: text("verifier").notNull(),
+  result: text("result").notNull(),
+  evidence: text("evidence").notNull(),
+  regressionChecked: integer("regression_checked", { mode: "boolean" }).notNull().default(false),
+  occurredAt: text("occurred_at").notNull(),
+}, (table) => [index("verification_events_finding_idx").on(table.findingId, table.occurredAt)]);
+
+export const approvalRecords = sqliteTable("approval_records", {
+  id: text("id").primaryKey(),
+  projectId: text("project_id").notNull(),
+  deliverableId: text("deliverable_id").notNull().references(() => deliverables.id),
+  deliverableVersionId: text("deliverable_version_id").notNull().references(() => deliverableVersions.id),
+  approvalType: text("approval_type").notNull(),
+  approver: text("approver").notNull(),
+  authorityReference: text("authority_reference").notNull(),
+  decision: text("decision").notNull(),
+  rationale: text("rationale"),
+  approvedAt: text("approved_at"),
+}, (table) => [index("approval_records_deliverable_idx").on(table.deliverableId, table.decision)]);
+
+export const releaseGates = sqliteTable("release_gates", {
+  id: text("id").primaryKey(),
+  projectId: text("project_id").notNull(),
+  deliverableId: text("deliverable_id").notNull().references(() => deliverables.id),
+  deliverableVersionId: text("deliverable_version_id").notNull().references(() => deliverableVersions.id),
+  qualityReviewId: text("quality_review_id").notNull().references(() => qualityReviews.id),
+  recommendation: text("recommendation").notNull(),
+  checklistComplete: integer("checklist_complete", { mode: "boolean" }).notNull().default(false),
+  approvalsRecorded: integer("approvals_recorded", { mode: "boolean" }).notNull().default(false),
+  blockingFindingCount: integer("blocking_finding_count").notNull().default(0),
+  residualRisk: text("residual_risk"),
+  evaluatedBy: text("evaluated_by").notNull(),
+  evaluatedAt: text("evaluated_at").notNull(),
+}, (table) => [index("release_gates_recommendation_idx").on(table.recommendation, table.evaluatedAt)]);
+
+export const transmittals = sqliteTable("transmittals", {
+  id: text("id").primaryKey(),
+  projectId: text("project_id").notNull(),
+  deliverableVersionId: text("deliverable_version_id").notNull().references(() => deliverableVersions.id),
+  recipientsJson: text("recipients_json").notNull(),
+  fileSetHash: text("file_set_hash").notNull(),
+  issuedBy: text("issued_by").notNull(),
+  issuedAt: text("issued_at").notNull(),
+  receiptStatus: text("receipt_status").notNull().default("Pending"),
+}, (table) => [index("transmittals_project_issue_idx").on(table.projectId, table.issuedAt)]);
+
+export const escapedDefects = sqliteTable("escaped_defects", {
+  id: text("id").primaryKey(),
+  projectId: text("project_id").notNull(),
+  deliverableVersionId: text("deliverable_version_id").notNull().references(() => deliverableVersions.id),
+  severity: text("severity").notNull(),
+  description: text("description").notNull(),
+  reportedBy: text("reported_by").notNull(),
+  rootCause: text("root_cause"),
+  status: text("status").notNull().default("Open"),
+  reportedAt: text("reported_at").notNull(),
+}, (table) => [index("escaped_defects_project_severity_idx").on(table.projectId, table.severity)]);
+
+export const qualityIncidents = sqliteTable("quality_incidents", {
+  id: text("id").primaryKey(),
+  projectId: text("project_id").notNull(),
+  escapedDefectId: text("escaped_defect_id").references(() => escapedDefects.id),
+  summary: text("summary").notNull(),
+  impact: text("impact").notNull(),
+  owner: text("owner").notNull(),
+  status: text("status").notNull().default("Open"),
+  lessonsStatus: text("lessons_status").notNull().default("Not routed"),
+  ...timestamps,
+}, (table) => [index("quality_incidents_project_status_idx").on(table.projectId, table.status)]);
+
+export const qualityMetrics = sqliteTable("quality_metrics", {
+  id: text("id").primaryKey(),
+  projectId: text("project_id"),
+  deliverableType: text("deliverable_type"),
+  periodStart: text("period_start").notNull(),
+  periodEnd: text("period_end").notNull(),
+  metricName: text("metric_name").notNull(),
+  value: real("value").notNull(),
+  unit: text("unit").notNull(),
+  baselineReference: text("baseline_reference"),
+  sourceEvidence: text("source_evidence").notNull(),
+  calculatedAt: text("calculated_at").notNull(),
+}, (table) => [index("quality_metrics_name_period_idx").on(table.metricName, table.periodEnd)]);
+
+export const qualityEvents = sqliteTable("quality_events", {
+  id: text("id").primaryKey(),
+  projectId: text("project_id").notNull(),
+  deliverableId: text("deliverable_id").notNull(),
+  entityType: text("entity_type").notNull(),
+  entityId: text("entity_id").notNull(),
+  actor: text("actor").notNull(),
+  action: text("action").notNull(),
+  previousState: text("previous_state"),
+  newState: text("new_state").notNull(),
+  reason: text("reason").notNull(),
+  supportingEvidence: text("supporting_evidence").notNull(),
+  correlationId: text("correlation_id").notNull(),
+  occurredAt: text("occurred_at").notNull(),
+}, (table) => [index("quality_events_entity_time_idx").on(table.entityType, table.entityId, table.occurredAt)]);

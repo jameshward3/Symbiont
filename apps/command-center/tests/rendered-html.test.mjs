@@ -18,7 +18,9 @@ test("renders the Symbiont agent command center", async () => {
   assert.match(html, /Sales Operations/i);
   assert.match(html, /Opportunity Scout/i);
   assert.match(html, /Delivery Control/i);
+  assert.match(html, /Quality/i);
   assert.match(html, /AGT-003/i);
+  assert.match(html, /AGT-004/i);
   assert.match(html, /AGT-009/i);
   assert.match(html, /Demonstration data/i);
   assert.match(html, /Runtime unavailable/i);

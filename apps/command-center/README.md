@@ -13,3 +13,7 @@ The shared PostgreSQL migration and idempotent demonstration seed are under `sup
 ## Verification
 
 Run `npm test`, `npm run typecheck`, and `npm run build:vercel`. The Vercel project root remains `apps/command-center` and its production domain remains unchanged.
+
+## AGT-004 QA/QC
+
+The Quality view adds a read-only shared-D1 adapter for version-locked reviews, findings, correction verification, and release gates. Demonstration records are explicitly labeled. The repository skill lives at `.agents/skills/symbiont-qaqc`; live reviews, validation tools, mutations, approvals, and handoffs remain inactive until their authenticated workflows, agent registration, and human authority are approved.

@@ -2,6 +2,7 @@ export const AGENTS = {
   "AGT-001": { id: "AGT-001", name: "Symbiont COO", authority: "L2", parent: null },
   "AGT-002": { id: "AGT-002", name: "Sales Operations", authority: "L1", parent: "AGT-001" },
   "AGT-003": { id: "AGT-003", name: "Delivery Control", authority: "L1", parent: "AGT-001" },
+  "AGT-004": { id: "AGT-004", name: "QA/QC", authority: "L1", parent: "AGT-001" },
 } as const;
 
 export type AgentId = keyof typeof AGENTS;
@@ -25,5 +26,7 @@ export function mayPerform(agentId: AgentId, action: string) {
   if (agentId === "AGT-002" && gatedForSales.includes(action)) return { allowed: false, requiresApproval: true, reason: "AGT-002 has L1 Draft and Recommend authority" };
   const gatedForDelivery = ["approve_change_order", "commit_scope", "commit_schedule", "accept_deliverable", "accept_material_risk", "approve_financial_forecast", "write_production_record"];
   if (agentId === "AGT-003" && gatedForDelivery.includes(action)) return { allowed: false, requiresApproval: true, reason: "AGT-003 has L1 Draft authority" };
+  const gatedForQuality = ["approve_own_work", "issue_deliverable", "waive_requirement", "self_close_critical", "self_close_major", "downgrade_for_schedule", "overwrite_issued_file", "delete_review_evidence", "accept_material_risk", "write_production_record"];
+  if (agentId === "AGT-004" && gatedForQuality.includes(action)) return { allowed: false, requiresApproval: true, reason: "AGT-004 has L1 Draft authority and must preserve reviewer independence" };
   return { allowed: true, requiresApproval: false };
 }

@@ -15,6 +15,13 @@
       "when": 1784579548115,
       "tag": "0001_bitter_nebula",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "6",
+      "when": 1784581457958,
+      "tag": "0002_faulty_warhawk",
+      "breakpoints": true
     }
   ]
 }
