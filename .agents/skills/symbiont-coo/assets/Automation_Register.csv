@@ -1,0 +1,2 @@
+Automation ID,Name,Owner,Process ID,Status,Authority Level,Data Classification,Trigger,Inputs,Outputs,Human Approval,Success Target,Failure Alert,Rollback,Monthly Runs,Success Rate,Hours Saved,Last Review
+AUT-001,Inquiry form to CRM intake,Sales Operations,SYM-SAL-SOP-001,Backlog,L2,Confidential,Form submitted,Approved intake form,CRM opportunity,Qualification remains human,98 percent successful records,Sales Lead,Disable workflow and retain submission,0,0,0,YYYY-MM-DD

@@ -1,0 +1,4 @@
+interface:
+  display_name: "Symbiont COO"
+  short_description: "Run Symbiont as a scalable AI-native company"
+  default_prompt: "Use $symbiont-coo to review the company and produce today’s executive operating brief."

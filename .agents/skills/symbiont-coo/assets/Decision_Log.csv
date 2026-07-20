@@ -1,0 +1,2 @@
+Decision ID,Title,Date,Status,Owner,Approver,Business Area,Project ID,Decision,Options Considered,Rationale,Assumptions,Risks,Impact,Actions,Validation Date,Outcome,Supersedes,Links
+DEC-2026-001,Adopt operating system baseline,2026-07-18,Approved,COO,Founder,Operations,,Adopt version 1.0 package,Adopt;Pilot;Defer,Creates one scalable operating baseline,Tools will remain interoperable,Change adoption,Standardization across the company,Assign owners and load registers,2026-08-18,,,README.md
