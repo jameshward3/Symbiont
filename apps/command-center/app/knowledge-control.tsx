@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { BUSINESS_AREAS, CLASSIFICATIONS, LIFECYCLE, type KnowledgeData } from "@/lib/knowledge";
+import { BUSINESS_AREAS, CLASSIFICATIONS, LEGACY_INTAKE, LIFECYCLE, type KnowledgeData } from "@/lib/knowledge";
 
 const DEMO_NOW = new Date("2026-07-20T23:59:59Z");
 
@@ -47,7 +47,7 @@ export function KnowledgeControl({ data }: { data: KnowledgeData | null }) {
     <div className="knowledge-grid signal-grid">
       <div className="knowledge-panel"><PanelTitle kicker="Exceptions" title="Duplicates, conflicts, links, orphans" suffix={`${data.alerts.length} signals`} />{data.alerts.map((alert) => <article className="knowledge-alert" key={alert.id}><div><span>{alert.id}</span><b className={alert.severity === "Escalate" ? "danger-text" : ""}>{alert.kind} · {alert.severity}</b></div><h4>{alert.title}</h4><p>{alert.detail}</p><small>{alert.assetIds.join(" · ")}</small></article>)}{!data.alerts.length && <Empty text="No knowledge exceptions detected." />}</div>
       <div className="knowledge-panel"><PanelTitle kicker="Audit trail" title="Material knowledge events" suffix={`${data.auditEvents.length} recent`} />{data.auditEvents.map((event) => <article className="audit-row" key={event.id}><span>{event.id} · {event.assetId}</span><h4>{event.action}</h4><p>{event.reason}</p><small>{event.actorAgentId} · {dateTime(event.occurredAt)}</small><small>{event.correlationId}</small></article>)}</div>
-      <div className="knowledge-panel intake-panel"><PanelTitle kicker="Exchange intake" title="Historical archive readiness" suffix="Awaiting upload" /><div className="intake-state"><strong>00</strong><span>historical files connected</span></div><p>Uploaded files will be hashed, inventoried, classified, deduplicated, linked, and held in Draft or Review until authority and ownership are verified.</p><dl><div><dt>Original files</dt><dd>Preserved</dd></div><div><dt>Embedded instructions</dt><dd>Untrusted</dd></div><div><dt>Permanent deletion</dt><dd>Human approval</dd></div><div><dt>Exchange report</dt><dd>Pending evidence</dd></div></dl></div>
+      <div className="knowledge-panel intake-panel"><PanelTitle kicker="Exchange intake" title="Historical archive readiness" suffix="Local index complete" /><div className="intake-state"><strong>{LEGACY_INTAKE.physicalFiles.toLocaleString("en-US")}</strong><span>restricted historical files indexed locally</span></div><p>Originals are preserved and hashed. Metadata and bounded text extraction are held outside the deployment until access, authority, retention, and publication review are complete.</p><dl><div><dt>Unique hashes</dt><dd>{LEGACY_INTAKE.uniqueHashes.toLocaleString("en-US")}</dd></div><div><dt>Nested members</dt><dd>{LEGACY_INTAKE.nestedArchiveMembers.toLocaleString("en-US")}</dd></div><div><dt>D1 connection</dt><dd>Not connected</dd></div><div><dt>Deletion</dt><dd>Human approval</dd></div><div><dt>Exchange report</dt><dd>Draft v0.1</dd></div></dl></div>
     </div>
     <div className="authority-strip"><div><span>AGT-005</span><strong>L2 · REVERSIBLE INTERNAL ACTIONS</strong></div><p>May classify, link, schedule reviews, correct evidence-backed metadata, and reversibly archive approved superseded records. It cannot approve material content, publish, alter access, destroy records, or treat drafts as guidance.</p><b>HUMAN CONTROL PRESERVED</b></div>
   </section>;
