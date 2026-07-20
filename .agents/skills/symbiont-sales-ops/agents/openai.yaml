@@ -1,0 +1,4 @@
+interface:
+  display_name: "Symbiont Sales Operations"
+  short_description: "Govern qualified sales work from intake through handoff"
+  default_prompt: "Use $symbiont-sales-ops to qualify this opportunity and recommend the next governed action."

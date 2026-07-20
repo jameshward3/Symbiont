@@ -1,0 +1,2 @@
+opportunity_id,organization_id,account_id,name,owner_user_id,stage,qualification_score,recommendation,amount,currency,probability,weighted_value,expected_close,next_action,next_action_date,proposal_status,recurring_potential,required_approval,status,source_updated_at
+OPP-YYYY-NNN,ORG-UUID,CLI-NNN,Example opportunity,USER-UUID,Discovery,0,Nurture,0,USD,0,0,,Complete discovery,,Not started,Unknown,Human commercial approval,Open,
