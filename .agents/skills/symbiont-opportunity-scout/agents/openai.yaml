@@ -1,0 +1,4 @@
+interface:
+  display_name: "Symbiont Opportunity Scout"
+  short_description: "Verify and route high-fit buying signals"
+  default_prompt: "Use $symbiont-opportunity-scout to verify, score, and route these opportunity signals within AGT-009's L1 authority."

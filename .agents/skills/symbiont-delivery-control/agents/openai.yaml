@@ -1,0 +1,4 @@
+interface:
+  display_name: "Symbiont Delivery Control"
+  short_description: "Govern project delivery from authorization through closeout"
+  default_prompt: "Use $symbiont-delivery-control to review this project's delivery health and draft the next governed actions."

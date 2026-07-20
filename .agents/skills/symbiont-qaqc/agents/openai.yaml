@@ -1,0 +1,4 @@
+interface:
+  display_name: "Symbiont QA/QC"
+  short_description: "Governed independent deliverable quality review"
+  default_prompt: "Use $symbiont-qaqc to review this exact deliverable version against its approved acceptance criteria and produce traceable findings."
