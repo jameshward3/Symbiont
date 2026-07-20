@@ -32,3 +32,17 @@ The agent includes:
 
 The agent is located at `.agents/skills/symbiont-coo`. Codex discovers repository-scoped skills automatically when working in this repository.
 
+## Executive Command Center
+
+The responsive COO front end is located at `apps/command-center`. It provides navigable operating views for:
+
+- Executive priorities and performance indicators
+- Active project health and delivery gates
+- Sales pipeline and productization opportunities
+- Material decisions and approval status
+- Automation sequencing and system readiness
+- An interactive COO command-panel prototype
+
+The production application is available at [symbiont-three.vercel.app](https://symbiont-three.vercel.app).
+
+The interface currently uses clearly labeled demonstration data. Connect authoritative project, CRM, accounting, and knowledge sources before using it for live operating decisions.
