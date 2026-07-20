@@ -17,3 +17,7 @@ Run `npm test`, `npm run typecheck`, and `npm run build:vercel`. The Vercel proj
 ## AGT-004 QA/QC
 
 The Quality view adds a read-only shared-D1 adapter for version-locked reviews, findings, correction verification, and release gates. Demonstration records are explicitly labeled. The repository skill lives at `.agents/skills/symbiont-qaqc`; live reviews, validation tools, mutations, approvals, and handoffs remain inactive until their authenticated workflows, agent registration, and human authority are approved.
+
+## AGT-005 Knowledge Steward
+
+The Knowledge surface provides access-aware controlled-asset search, lifecycle and review visibility, quality exceptions, duplicate/conflict signals, source links, archive history, and material audit events. The repository skill is `.agents/skills/symbiont-knowledge-steward`, and the matching D1 migration adds the governed knowledge domain. Historical “Exchange” files and live indexing remain disconnected until authorized files are uploaded and the migration is applied.

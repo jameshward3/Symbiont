@@ -1,0 +1,4 @@
+interface:
+  display_name: "Symbiont Knowledge Steward"
+  short_description: "Govern, index, and retrieve controlled operating knowledge"
+  default_prompt: "Use $symbiont-knowledge-steward to inventory these sources, preserve evidence, identify duplicates and conflicts, and produce a governed knowledge index and review report."

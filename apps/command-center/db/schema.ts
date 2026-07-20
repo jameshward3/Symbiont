@@ -602,3 +602,110 @@ export const qualityEvents = sqliteTable("quality_events", {
   correlationId: text("correlation_id").notNull(),
   occurredAt: text("occurred_at").notNull(),
 }, (table) => [index("quality_events_entity_time_idx").on(table.entityType, table.entityId, table.occurredAt)]);
+
+export const knowledgeAssets = sqliteTable("knowledge_assets", {
+  id: text("id").primaryKey(),
+  title: text("title").notNull(),
+  description: text("description").notNull(),
+  businessArea: text("business_area").notNull(),
+  assetType: text("asset_type").notNull(),
+  owner: text("owner").notNull(),
+  author: text("author").notNull(),
+  reviewer: text("reviewer"),
+  approver: text("approver"),
+  lifecycleStatus: text("lifecycle_status").notNull().default("Draft"),
+  classification: text("classification").notNull().default("Internal"),
+  currentVersion: text("current_version").notNull().default("0.1"),
+  effectiveDate: text("effective_date"),
+  reviewDate: text("review_date"),
+  sourceSystem: text("source_system").notNull(),
+  canonicalLocation: text("canonical_location").notNull(),
+  sourceEvidence: text("source_evidence").notNull(),
+  contentHash: text("content_hash").notNull(),
+  relatedClientId: text("related_client_id"),
+  relatedProjectId: text("related_project_id"),
+  relatedOpportunityId: text("related_opportunity_id"),
+  relatedDecisionId: text("related_decision_id"),
+  relatedSharedGoalId: text("related_shared_goal_id"),
+  relatedAgentId: text("related_agent_id"),
+  supersedesAssetId: text("supersedes_asset_id"),
+  supersededByAssetId: text("superseded_by_asset_id"),
+  retentionRule: text("retention_rule"),
+  tagsJson: text("tags_json").notNull().default("[]"),
+  synonymsJson: text("synonyms_json").notNull().default("[]"),
+  isAuthoritative: integer("is_authoritative", { mode: "boolean" }).notNull().default(false),
+  isDemonstration: integer("is_demonstration", { mode: "boolean" }).notNull().default(false),
+  ...timestamps,
+}, (table) => [
+  uniqueIndex("knowledge_assets_hash_version_idx").on(table.contentHash, table.currentVersion),
+  index("knowledge_assets_search_idx").on(table.lifecycleStatus, table.businessArea, table.assetType),
+  index("knowledge_assets_review_idx").on(table.reviewDate, table.owner),
+  check("knowledge_assets_lifecycle_check", sql`${table.lifecycleStatus} in ('Draft','Review','Approved','Active','Superseded','Archived')`),
+  check("knowledge_assets_classification_check", sql`${table.classification} in ('Public','Internal','Confidential','Restricted')`),
+]);
+
+export const knowledgeVersions = sqliteTable("knowledge_versions", {
+  id: text("id").primaryKey(), assetId: text("asset_id").notNull().references(() => knowledgeAssets.id), version: text("version").notNull(),
+  contentHash: text("content_hash").notNull(), canonicalLocation: text("canonical_location").notNull(), changeSummary: text("change_summary").notNull(),
+  sourceEvidence: text("source_evidence").notNull(), immutable: integer("immutable", { mode: "boolean" }).notNull().default(false), issuedAt: text("issued_at"), ...timestamps,
+}, (table) => [uniqueIndex("knowledge_versions_asset_version_idx").on(table.assetId, table.version)]);
+
+export const knowledgeRelationships = sqliteTable("knowledge_relationships", {
+  id: text("id").primaryKey(), fromAssetId: text("from_asset_id").notNull().references(() => knowledgeAssets.id), toAssetId: text("to_asset_id").notNull().references(() => knowledgeAssets.id),
+  relationshipType: text("relationship_type").notNull(), reason: text("reason").notNull(), sourceEvidence: text("source_evidence").notNull(), ...timestamps,
+}, (table) => [uniqueIndex("knowledge_relationship_unique_idx").on(table.fromAssetId, table.toAssetId, table.relationshipType)]);
+
+export const knowledgeSources = sqliteTable("knowledge_sources", {
+  id: text("id").primaryKey(), assetId: text("asset_id").notNull().references(() => knowledgeAssets.id), sourceSystem: text("source_system").notNull(),
+  canonicalLocation: text("canonical_location").notNull(), contentHash: text("content_hash").notNull(), authorityStatus: text("authority_status").notNull(), observedAt: text("observed_at").notNull(), ...timestamps,
+}, (table) => [index("knowledge_sources_asset_idx").on(table.assetId, table.authorityStatus)]);
+
+export const knowledgeTags = sqliteTable("knowledge_tags", {
+  id: text("id").primaryKey(), assetId: text("asset_id").notNull().references(() => knowledgeAssets.id), tag: text("tag").notNull(), ...timestamps,
+}, (table) => [uniqueIndex("knowledge_tags_asset_tag_idx").on(table.assetId, table.tag)]);
+
+export const knowledgeSynonyms = sqliteTable("knowledge_synonyms", {
+  id: text("id").primaryKey(), assetId: text("asset_id").notNull().references(() => knowledgeAssets.id), synonym: text("synonym").notNull(), ...timestamps,
+}, (table) => [uniqueIndex("knowledge_synonyms_asset_idx").on(table.assetId, table.synonym)]);
+
+export const knowledgeReviews = sqliteTable("knowledge_reviews", {
+  id: text("id").primaryKey(), assetId: text("asset_id").notNull().references(() => knowledgeAssets.id), reviewer: text("reviewer").notNull(), dueDate: text("due_date").notNull(),
+  status: text("status").notNull().default("Planned"), completionEvidence: text("completion_evidence"), nextReviewDate: text("next_review_date"), ...timestamps,
+}, (table) => [index("knowledge_reviews_due_status_idx").on(table.dueDate, table.status)]);
+
+export const knowledgeQualityScores = sqliteTable("knowledge_quality_scores", {
+  id: text("id").primaryKey(), assetId: text("asset_id").notNull().references(() => knowledgeAssets.id), ownership: real("ownership"), freshness: real("freshness"), completeness: real("completeness"),
+  findability: real("findability"), usage: real("usage"), linkHealth: real("link_health"), score: real("score"), status: text("status").notNull(), sourceEvidence: text("source_evidence").notNull(), calculatedAt: text("calculated_at").notNull(),
+}, (table) => [index("knowledge_quality_asset_time_idx").on(table.assetId, table.calculatedAt)]);
+
+export const knowledgeAccessClassifications = sqliteTable("knowledge_access_classifications", {
+  id: text("id").primaryKey(),
+  name: text("name").notNull(),
+  rank: integer("rank").notNull(),
+  permittedUse: text("permitted_use").notNull(),
+  handlingRequirements: text("handling_requirements").notNull(),
+  approvedBy: text("approved_by").notNull(),
+  effectiveAt: text("effective_at").notNull(),
+  ...timestamps,
+}, (table) => [
+  uniqueIndex("knowledge_access_name_idx").on(table.name),
+  uniqueIndex("knowledge_access_rank_idx").on(table.rank),
+  check("knowledge_access_rank_check", sql`${table.rank} between 0 and 3`),
+]);
+
+export const knowledgeAuditEvents = sqliteTable("knowledge_audit_events", {
+  id: text("id").primaryKey(), assetId: text("asset_id").notNull().references(() => knowledgeAssets.id), actorAgentId: text("actor_agent_id").notNull().references(() => agents.id),
+  action: text("action").notNull(), reason: text("reason").notNull(), sourceEvidence: text("source_evidence").notNull(), correlationId: text("correlation_id").notNull(),
+  previousState: text("previous_state"), newState: text("new_state").notNull(), occurredAt: text("occurred_at").notNull(),
+}, (table) => [index("knowledge_audit_asset_time_idx").on(table.assetId, table.occurredAt)]);
+
+export const knowledgeConflicts = sqliteTable("knowledge_conflicts", {
+  id: text("id").primaryKey(), assetId: text("asset_id").notNull().references(() => knowledgeAssets.id), conflictingAssetId: text("conflicting_asset_id").notNull().references(() => knowledgeAssets.id),
+  conflictType: text("conflict_type").notNull(), evidence: text("evidence").notNull(), recommendation: text("recommendation"), status: text("status").notNull().default("Open"), escalatedToAgentId: text("escalated_to_agent_id"), ...timestamps,
+}, (table) => [uniqueIndex("knowledge_conflicts_pair_idx").on(table.assetId, table.conflictingAssetId, table.conflictType)]);
+
+export const archiveRecords = sqliteTable("archive_records", {
+  id: text("id").primaryKey(), assetId: text("asset_id").notNull().references(() => knowledgeAssets.id), archiveReason: text("archive_reason").notNull(),
+  replacementAssetId: text("replacement_asset_id").references(() => knowledgeAssets.id), approvalEvidence: text("approval_evidence").notNull(), reversible: integer("reversible", { mode: "boolean" }).notNull().default(true),
+  archivedBy: text("archived_by").notNull(), correlationId: text("correlation_id").notNull(), archivedAt: text("archived_at").notNull(),
+}, (table) => [uniqueIndex("archive_records_asset_idx").on(table.assetId)]);

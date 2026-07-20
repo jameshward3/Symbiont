@@ -32,6 +32,10 @@ The agent includes:
 
 The agent is located at `.agents/skills/symbiont-coo`. Codex discovers repository-scoped skills automatically when working in this repository.
 
+## Knowledge Steward Agent
+
+Invoke AGT-005 with `$symbiont-knowledge-steward`. It governs controlled knowledge metadata, lifecycle, versions, supersession, access-aware retrieval, quality, review schedules, archive history, and source-of-truth conflicts at narrowly bounded L2 authority. The Command Center includes a dedicated Knowledge view and read-only D1 adapter. Historical “Exchange” files are not connected until they are uploaded; demonstration metadata is labeled throughout.
+
 ## Executive Command Center
 
 The responsive COO front end is located at `apps/command-center`. It provides navigable operating views for:
