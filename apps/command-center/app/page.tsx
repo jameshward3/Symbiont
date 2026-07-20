@@ -1,8 +1,10 @@
 "use client";
 
 import { FormEvent, useEffect, useMemo, useState } from "react";
+import { DeliveryControl } from "./delivery-control";
+import type { DeliveryData } from "@/lib/delivery-control";
 
-type View = "Overview" | "Agent Network" | "Shared Goals" | "Sales Operations" | "Opportunity Scout" | "Projects" | "Decisions" | "Systems";
+type View = "Overview" | "Agent Network" | "Shared Goals" | "Sales Operations" | "Delivery Control" | "Opportunity Scout" | "Decisions" | "Systems";
 type Connection = "checking" | "unavailable" | "authorization_required" | "connected" | "error";
 type Agent = { stable_id: string; name: string; mission: string; authority_level: string; status: string; updated_at?: string };
 type Goal = { stable_id: string; objective: string; status: string; priority: string; due_date?: string; success_metrics?: string[]; completion_evidence?: unknown };
@@ -14,12 +16,13 @@ type ScoutData = { source:"d1"|"demonstration"; database:"connected"|"connected_
 
 const navItems: { label: View; code: string }[] = [
   { label: "Overview", code: "01" }, { label: "Agent Network", code: "02" }, { label: "Shared Goals", code: "03" },
-  { label: "Sales Operations", code: "04" }, { label: "Opportunity Scout", code: "09" }, { label: "Projects", code: "05" }, { label: "Decisions", code: "06" }, { label: "Systems", code: "07" },
+  { label: "Sales Operations", code: "04" }, { label: "Delivery Control", code: "03" }, { label: "Opportunity Scout", code: "09" }, { label: "Decisions", code: "06" }, { label: "Systems", code: "07" },
 ];
 
 const demoAgents: Agent[] = [
   { stable_id: "AGT-001", name: "Symbiont COO", mission: "Coordinate company operations, priorities, standards, and agent work.", authority_level: "L2", status: "Ready" },
   { stable_id: "AGT-002", name: "Sales Operations", mission: "Convert qualified client needs into profitable, repeatable work.", authority_level: "L1", status: "Draft mode" },
+  { stable_id: "AGT-003", name: "Delivery Control", mission: "Coordinate project authorization, delivery health, exceptions, changes, quality gates, and closeout.", authority_level: "L1", status: "Draft mode" },
   { stable_id: "AGT-009", name: "Opportunity Scout", mission: "Discover and verify public buying signals, then route evidence-backed leads.", authority_level: "L1", status: "Activation required" },
 ];
 const demoGoals: Goal[] = [{ stable_id: "GOAL-2026-001", objective: "Prove governed multi-agent sales-to-delivery coordination", status: "Approved", priority: "P1", success_metrics: ["One claim owner", "Human proposal approval", "Auditable handoff"] }];
@@ -39,9 +42,11 @@ export default function Home() {
   const [runState, setRunState] = useState<"idle" | "running" | "complete" | "error">("idle");
   const [answer, setAnswer] = useState("");
   const [scoutData, setScoutData] = useState<ScoutData | null>(null);
+  const [deliveryData, setDeliveryData] = useState<DeliveryData | null>(null);
 
   useEffect(() => { fetch("/api/status", { cache: "no-store" }).then(r => r.json()).then(s => setConnection(s.dataPlane)).catch(() => setConnection("error")); }, []);
   useEffect(() => { fetch("/api/opportunities/", { cache: "no-store" }).then(r => r.json()).then(setScoutData).catch(() => setScoutData(null)); }, []);
+  useEffect(() => { fetch("/api/delivery-control/", { headers: accessKey ? { "x-symbiont-access-key": accessKey } : {}, cache: "no-store" }).then(r => r.json()).then(setDeliveryData).catch(() => setDeliveryData(null)); }, [accessKey, connection]);
 
   async function connect(event: FormEvent) {
     event.preventDefault(); setConnection("checking");
@@ -85,7 +90,7 @@ export default function Home() {
           {view === "Shared Goals" && <SharedGoals goals={goals} agents={agents} source={sourceLabel} />}
           {view === "Sales Operations" && <SalesOperations opportunities={opportunities} source={sourceLabel} />}
           {view === "Opportunity Scout" && <OpportunityScout data={scoutData} />}
-          {view === "Projects" && <UnavailableView title="Delivery projects" body="Project delivery remains under AGT-001. Connect an authorized project system before operational records are shown here." />}
+          {view === "Delivery Control" && <DeliveryControl data={deliveryData} />}
           {view === "Decisions" && <DecisionsView decisions={dashboard?.decisions ?? []} source={sourceLabel} />}
           {view === "Systems" && <SystemsView connection={connection} runs={dashboard?.runs ?? []} handoffs={dashboard?.handoffs ?? []} />}
           <CommandPanel agentId={agentId} setAgentId={setAgentId} command={command} setCommand={setCommand} submit={runAgentCommand} connection={connection} runState={runState} answer={answer} />
@@ -150,7 +155,7 @@ function DecisionsView({ decisions, source }: { decisions: Array<Record<string,s
 function SystemsView({ connection, runs, handoffs }: { connection: Connection; runs: Array<Record<string,unknown>>; handoffs: Array<Record<string,unknown>> }) { return <section><SectionLead kicker="System controls" title="Authority enforced below the prompt." body="Application checks, database policies, atomic claims, leases, idempotency, audit events, and human approval gates govern execution." /><div className="control-grid"><Control name="Organization-scoped RLS" status="Implemented" /><Control name="Atomic claim + lease recovery" status="Implemented" /><Control name="Append-only goal events" status="Implemented" /><Control name="Human material-decision approval" status="Implemented" /><Control name="Shared Supabase runtime" status={connection === "connected" ? "Connected" : "Not configured"} /><Control name="OpenAI Responses runtime" status={connection === "connected" ? "Connection-dependent" : "Unavailable"} /><Control name="Recorded agent runs" status={String(runs.length)} /><Control name="Inter-agent handoffs" status={String(handoffs.length)} /></div></section>; }
 function UnavailableView({ title, body }: { title: string; body: string }) { return <section className="empty-state"><span>UNAVAILABLE</span><h2>{title}</h2><p>{body}</p></section>; }
 
-function CommandPanel({ agentId, setAgentId, command, setCommand, submit, connection, runState, answer }: { agentId:string; setAgentId:(v:string)=>void; command:string; setCommand:(v:string)=>void; submit:(e:FormEvent)=>void; connection:Connection; runState:string; answer:string }) { return <section className="command-panel"><div><p className="eyebrow">Agent command panel</p><h2>Ask the network.</h2><p>Commands run through the real server runtime. Unavailable services return an explicit error; the interface never fabricates an agent response.</p></div><form onSubmit={submit}><label htmlFor="agent-select">Agent</label><select id="agent-select" value={agentId} onChange={e=>setAgentId(e.target.value)}><option value="AGT-001">AGT-001 · COO</option><option value="AGT-002">AGT-002 · Sales Operations</option></select><label htmlFor="command">Command</label><textarea id="command" value={command} onChange={e=>setCommand(e.target.value)} placeholder="Request a discovery brief, qualification analysis, proposal draft, or shared-goal review…"/><button type="submit" disabled={connection!=="connected"||runState==="running"}>{runState==="running"?"Running…":connection==="connected"?"Run governed analysis":"Runtime unavailable"}</button></form>{answer && <div className={`runtime-answer ${runState}`}><b>{runState === "error" ? "SAFE FAILURE" : agentId}</b><p>{answer}</p></div>}</section>; }
+function CommandPanel({ agentId, setAgentId, command, setCommand, submit, connection, runState, answer }: { agentId:string; setAgentId:(v:string)=>void; command:string; setCommand:(v:string)=>void; submit:(e:FormEvent)=>void; connection:Connection; runState:string; answer:string }) { return <section className="command-panel"><div><p className="eyebrow">Agent command panel</p><h2>Ask the network.</h2><p>Commands run through the real server runtime. Unavailable services return an explicit error; the interface never fabricates an agent response.</p></div><form onSubmit={submit}><label htmlFor="agent-select">Agent</label><select id="agent-select" value={agentId} onChange={e=>setAgentId(e.target.value)}><option value="AGT-001">AGT-001 · COO</option><option value="AGT-002">AGT-002 · Sales Operations</option><option value="AGT-003">AGT-003 · Delivery Control</option></select><label htmlFor="command">Command</label><textarea id="command" value={command} onChange={e=>setCommand(e.target.value)} placeholder="Request a status brief, exception review, recovery plan, or governed handoff…"/><button type="submit" disabled={connection!=="connected"||runState==="running"}>{runState==="running"?"Running…":connection==="connected"?"Run governed analysis":"Runtime unavailable"}</button></form>{answer && <div className={`runtime-answer ${runState}`}><b>{runState === "error" ? "SAFE FAILURE" : agentId}</b><p>{answer}</p></div>}</section>; }
 
 function StateRow({label,state,tone}:{label:string;state:string;tone:string}) { return <div className="state-row"><span>{label}</span><b><i className={`dot ${tone}`}/>{state}</b></div>; }
 function Metric({label,value,note,tone="neutral"}:{label:string;value:string;note:string;tone?:string}) { return <article className="metric-card"><div className="metric-top"><span>{label}</span><i>↗</i></div><strong>{value}</strong><p className={tone}>{note}</p></article>; }

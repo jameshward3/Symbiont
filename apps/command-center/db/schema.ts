@@ -160,3 +160,219 @@ export const monitoringQueries = sqliteTable("monitoring_queries", {
   ownerAgentId: text("owner_agent_id").notNull().references(() => agents.id),
   ...timestamps,
 }, (table) => [index("monitoring_queries_owner_status_idx").on(table.ownerAgentId, table.status)]);
+
+const projectControlFields = {
+  projectId: text("project_id").notNull(),
+  sharedGoalId: text("shared_goal_id").notNull().references(() => sharedGoals.id),
+  correlationId: text("correlation_id").notNull(),
+  ownerAgentId: text("owner_agent_id").notNull().references(() => agents.id),
+  sourceEvidence: text("source_evidence").notNull(),
+  ...timestamps,
+};
+
+export const projects = sqliteTable("projects", {
+  id: text("id").primaryKey(),
+  name: text("name").notNull(),
+  clientName: text("client_name").notNull(),
+  authorizationStatus: text("authorization_status").notNull().default("Unverified"),
+  authorizationReference: text("authorization_reference"),
+  scopeSummary: text("scope_summary").notNull(),
+  exclusionsJson: text("exclusions_json").notNull().default("[]"),
+  acceptanceSummary: text("acceptance_summary"),
+  commercialModel: text("commercial_model"),
+  budgetAmount: real("budget_amount"),
+  currency: text("currency").notNull().default("USD"),
+  startDate: text("start_date"),
+  targetCompletionDate: text("target_completion_date"),
+  baselineDurationDays: integer("baseline_duration_days"),
+  forecastCompletionDate: text("forecast_completion_date"),
+  forecastMarginPointsVariance: real("forecast_margin_points_variance"),
+  projectManager: text("project_manager").notNull(),
+  accountableOwner: text("accountable_owner").notNull(),
+  communicationCadence: text("communication_cadence"),
+  dataClassification: text("data_classification").notNull().default("Internal"),
+  health: text("health").notNull().default("Green"),
+  status: text("status").notNull().default("Setup"),
+  sharedGoalId: text("shared_goal_id").notNull().references(() => sharedGoals.id),
+  correlationId: text("correlation_id").notNull(),
+  ownerAgentId: text("owner_agent_id").notNull().references(() => agents.id),
+  sourceEvidence: text("source_evidence").notNull(),
+  isDemonstration: integer("is_demonstration", { mode: "boolean" }).notNull().default(false),
+  ...timestamps,
+}, (table) => [
+  index("projects_health_status_idx").on(table.health, table.status),
+  index("projects_goal_corr_idx").on(table.sharedGoalId, table.correlationId),
+  check("projects_id_check", sql`${table.id} glob 'PRJ-[0-9][0-9][0-9][0-9]-[0-9][0-9][0-9]'`),
+  check("projects_health_check", sql`${table.health} in ('Green','Amber','Red')`),
+]);
+
+export const projectStakeholders = sqliteTable("project_stakeholders", {
+  id: text("id").primaryKey(),
+  ...projectControlFields,
+  name: text("name").notNull(),
+  organization: text("organization"),
+  role: text("role").notNull(),
+  responsibility: text("responsibility"),
+  communicationRole: text("communication_role"),
+  status: text("status").notNull().default("Active"),
+}, (table) => [index("project_stakeholders_project_idx").on(table.projectId)]);
+
+export const deliverables = sqliteTable("deliverables", {
+  id: text("id").primaryKey(),
+  ...projectControlFields,
+  name: text("name").notNull(),
+  description: text("description").notNull(),
+  acceptanceCriteria: text("acceptance_criteria").notNull(),
+  accountableOwner: text("accountable_owner").notNull(),
+  dueDate: text("due_date"),
+  progressPercent: integer("progress_percent").notNull().default(0),
+  qualityStatus: text("quality_status").notNull().default("Not started"),
+  clientApprovalStatus: text("client_approval_status").notNull().default("Not requested"),
+  status: text("status").notNull().default("Planned"),
+}, (table) => [index("deliverables_project_status_idx").on(table.projectId, table.status)]);
+
+export const milestones = sqliteTable("milestones", {
+  id: text("id").primaryKey(),
+  ...projectControlFields,
+  name: text("name").notNull(),
+  baselineDate: text("baseline_date").notNull(),
+  forecastDate: text("forecast_date"),
+  completedDate: text("completed_date"),
+  acceptanceCriteria: text("acceptance_criteria").notNull(),
+  accountableOwner: text("accountable_owner").notNull(),
+  critical: integer("critical", { mode: "boolean" }).notNull().default(false),
+  status: text("status").notNull().default("Planned"),
+}, (table) => [index("milestones_project_date_idx").on(table.projectId, table.baselineDate)]);
+
+export const actions = sqliteTable("actions", {
+  id: text("id").primaryKey(),
+  ...projectControlFields,
+  title: text("title").notNull(),
+  accountableOwner: text("accountable_owner").notNull(),
+  dueDate: text("due_date").notNull(),
+  priority: text("priority").notNull().default("P2"),
+  blocker: text("blocker"),
+  validationCriteria: text("validation_criteria").notNull(),
+  completedAt: text("completed_at"),
+  status: text("status").notNull().default("Open"),
+}, (table) => [index("actions_project_due_idx").on(table.projectId, table.dueDate, table.status)]);
+
+export const risksAndIssues = sqliteTable("risks_and_issues", {
+  id: text("id").primaryKey(),
+  ...projectControlFields,
+  recordType: text("record_type").notNull(),
+  category: text("category").notNull(),
+  statement: text("statement").notNull(),
+  evidence: text("evidence").notNull(),
+  probability: integer("probability"),
+  impact: integer("impact").notNull(),
+  severity: text("severity").notNull(),
+  accountableOwner: text("accountable_owner").notNull(),
+  responseAction: text("response_action").notNull(),
+  dueDate: text("due_date").notNull(),
+  escalationPath: text("escalation_path").notNull(),
+  validationCriteria: text("validation_criteria").notNull(),
+  status: text("status").notNull().default("Open"),
+}, (table) => [
+  index("risks_issues_project_severity_idx").on(table.projectId, table.severity, table.status),
+  check("risks_issues_type_check", sql`${table.recordType} in ('Risk','Issue','Exception')`),
+]);
+
+export const projectDecisions = sqliteTable("decisions", {
+  id: text("id").primaryKey(),
+  ...projectControlFields,
+  statement: text("statement").notNull(),
+  decisionOwner: text("decision_owner").notNull(),
+  requiredBy: text("required_by"),
+  recommendation: text("recommendation"),
+  rationale: text("rationale"),
+  approvalEvidence: text("approval_evidence"),
+  status: text("status").notNull().default("Requested"),
+}, (table) => [index("decisions_project_status_idx").on(table.projectId, table.status)]);
+
+export const changes = sqliteTable("changes", {
+  id: text("id").primaryKey(),
+  ...projectControlFields,
+  title: text("title").notNull(),
+  baselineReference: text("baseline_reference").notNull(),
+  reason: text("reason").notNull(),
+  classification: text("classification").notNull(),
+  scopeEffect: text("scope_effect"),
+  scheduleEffectDays: integer("schedule_effect_days"),
+  effortEffectHours: real("effort_effect_hours"),
+  costEffect: real("cost_effect"),
+  qualityEffect: text("quality_effect"),
+  deliveryEffect: text("delivery_effect"),
+  approvalRequired: integer("approval_required", { mode: "boolean" }).notNull().default(true),
+  approvalEvidence: text("approval_evidence"),
+  accountableOwner: text("accountable_owner").notNull(),
+  status: text("status").notNull().default("Draft"),
+}, (table) => [index("changes_project_status_idx").on(table.projectId, table.status)]);
+
+export const qualityReviews = sqliteTable("quality_reviews", {
+  id: text("id").primaryKey(),
+  ...projectControlFields,
+  deliverableId: text("deliverable_id").notNull().references(() => deliverables.id),
+  reviewer: text("reviewer").notNull(),
+  reviewType: text("review_type").notNull(),
+  acceptanceChecklist: text("acceptance_checklist").notNull(),
+  criticalDefects: integer("critical_defects").notNull().default(0),
+  majorDefects: integer("major_defects").notNull().default(0),
+  disposition: text("disposition"),
+  reviewedAt: text("reviewed_at"),
+  status: text("status").notNull().default("Planned"),
+}, (table) => [index("quality_reviews_project_status_idx").on(table.projectId, table.status)]);
+
+export const statusReports = sqliteTable("status_reports", {
+  id: text("id").primaryKey(),
+  ...projectControlFields,
+  periodEnding: text("period_ending").notNull(),
+  overallHealth: text("overall_health").notNull(),
+  verifiedFactsJson: text("verified_facts_json").notNull().default("[]"),
+  assumptionsJson: text("assumptions_json").notNull().default("[]"),
+  forecastJson: text("forecast_json").notNull().default("[]"),
+  recommendationsJson: text("recommendations_json").notNull().default("[]"),
+  clientCommunicationRequired: integer("client_communication_required", { mode: "boolean" }).notNull().default(false),
+  approvalStatus: text("approval_status").notNull().default("Draft"),
+}, (table) => [index("status_reports_project_period_idx").on(table.projectId, table.periodEnding)]);
+
+export const projectEvents = sqliteTable("project_events", {
+  id: text("id").primaryKey(),
+  ...projectControlFields,
+  eventType: text("event_type").notNull(),
+  entityType: text("entity_type").notNull(),
+  entityId: text("entity_id").notNull(),
+  actor: text("actor").notNull(),
+  payloadJson: text("payload_json").notNull(),
+  occurredAt: text("occurred_at").notNull(),
+}, (table) => [index("project_events_project_time_idx").on(table.projectId, table.occurredAt)]);
+
+export const evidenceLinks = sqliteTable("evidence_links", {
+  id: text("id").primaryKey(),
+  ...projectControlFields,
+  entityType: text("entity_type").notNull(),
+  entityId: text("entity_id").notNull(),
+  title: text("title").notNull(),
+  uri: text("uri").notNull(),
+  evidenceType: text("evidence_type").notNull(),
+  classification: text("classification").notNull().default("Internal"),
+  observedAt: text("observed_at").notNull(),
+}, (table) => [index("evidence_links_entity_idx").on(table.projectId, table.entityType, table.entityId)]);
+
+export const closeoutRecords = sqliteTable("closeout_records", {
+  id: text("id").primaryKey(),
+  ...projectControlFields,
+  deliverablesComplete: integer("deliverables_complete", { mode: "boolean" }).notNull().default(false),
+  acceptanceEvidenceLinked: integer("acceptance_evidence_linked", { mode: "boolean" }).notNull().default(false),
+  qualityComplete: integer("quality_complete", { mode: "boolean" }).notNull().default(false),
+  clientApprovalLinked: integer("client_approval_linked", { mode: "boolean" }).notNull().default(false),
+  finalDocumentationComplete: integer("final_documentation_complete", { mode: "boolean" }).notNull().default(false),
+  changesResolved: integer("changes_resolved", { mode: "boolean" }).notNull().default(false),
+  financialCloseoutReady: integer("financial_closeout_ready", { mode: "boolean" }).notNull().default(false),
+  accessHandoverComplete: integer("access_handover_complete", { mode: "boolean" }).notNull().default(false),
+  lessonsLinked: integer("lessons_linked", { mode: "boolean" }).notNull().default(false),
+  archiveStatus: text("archive_status").notNull().default("Not started"),
+  supportTransition: text("support_transition"),
+  completionEvidence: text("completion_evidence"),
+  status: text("status").notNull().default("Open"),
+}, (table) => [index("closeout_records_project_status_idx").on(table.projectId, table.status)]);
