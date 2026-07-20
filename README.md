@@ -43,6 +43,6 @@ The responsive COO front end is located at `apps/command-center`. It provides na
 - Automation sequencing and system readiness
 - An interactive COO command-panel prototype
 
-The published private application is available at [symbiont-command-center.jw4o-0562.chatgpt.site](https://symbiont-command-center.jw4o-0562.chatgpt.site).
+The production application is available at [symbiont-three.vercel.app](https://symbiont-three.vercel.app).
 
 The interface currently uses clearly labeled demonstration data. Connect authoritative project, CRM, accounting, and knowledge sources before using it for live operating decisions.
