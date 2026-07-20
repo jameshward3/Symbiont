@@ -41,7 +41,7 @@ export default function Home() {
   const [scoutData, setScoutData] = useState<ScoutData | null>(null);
 
   useEffect(() => { fetch("/api/status", { cache: "no-store" }).then(r => r.json()).then(s => setConnection(s.dataPlane)).catch(() => setConnection("error")); }, []);
-  useEffect(() => { fetch("/api/opportunities", { cache: "no-store" }).then(r => r.json()).then(setScoutData).catch(() => setScoutData(null)); }, []);
+  useEffect(() => { fetch("/api/opportunities/", { cache: "no-store" }).then(r => r.json()).then(setScoutData).catch(() => setScoutData(null)); }, []);
 
   async function connect(event: FormEvent) {
     event.preventDefault(); setConnection("checking");
