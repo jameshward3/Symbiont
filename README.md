@@ -45,4 +45,8 @@ The responsive COO front end is located at `apps/command-center`. It provides na
 
 The production application is available at [symbiont-three.vercel.app](https://symbiont-three.vercel.app).
 
-The interface currently uses clearly labeled demonstration data. Connect authoritative project, CRM, accounting, and knowledge sources before using it for live operating decisions.
+The interface now includes the Agent Network, Shared Goals, Sales Operations, governed command panel, and explicit live/disconnected states. It reads one organization-scoped Supabase/PostgreSQL data plane when securely configured and otherwise uses clearly labeled harmless demonstration records without simulating runtime success.
+
+## Sales Operations Agent
+
+Invoke AGT-002 with `$symbiont-sales-ops`. The repository skill is located at `.agents/skills/symbiont-sales-ops`, and the matching project custom-agent definition is `.codex/agents/symbiont-sales-ops.toml`. AGT-002 operates at L1 — Draft and Recommend and requires human approval for external communications, pricing, proposals, contractual statements, and material commitments.
