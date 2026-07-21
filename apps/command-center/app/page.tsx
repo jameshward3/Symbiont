@@ -172,7 +172,74 @@ function Overview({ agents, goals, opportunities, weighted, stale, source }: { a
   return <><section className="brief-intro"><div><p className="date-line">{date} · {source}</p><h2>Governed agents. One<br/><em>operating truth.</em></h2></div><div className="brief-score"><span>AGENT READINESS</span><strong>{agents.length >= 7 ? "82" : "—"}</strong><small>/100</small><div className="score-track"><i style={{width: agents.length >= 7 ? "82%" : "0"}} /></div><p>Production gate: shared data + model</p></div></section><section className="metric-grid"><Metric label="Registered agents" value={String(agents.length).padStart(2,"0")} note="Governed cooperative network" /><Metric label="Shared goals" value={String(goals.length).padStart(2,"0")} note="One accountable owner" /><Metric label="Weighted pipeline" value={money(weighted)} note={`${opportunities.length} opportunities`} /><Metric label="Stale actions" value={String(stale).padStart(2,"0")} note={stale ? "Requires sales review" : "Within date"} tone={stale ? "warning" : "positive"} /></section><section className="dashboard-grid"><div className="panel"><PanelTitle kicker="Agent network" title="Cooperative capacity" />{agents.map(a => <div className="network-row" key={a.stable_id}><span>{a.stable_id}</span><div><strong>{a.name}</strong><p>{a.mission}</p></div><b>{a.authority_level}</b><i>{a.status}</i></div>)}</div><div className="panel attention-panel"><PanelTitle kicker="Governance" title="Human approval remains the gate" /><div className="focus-list"><Focus n="01" text="External client communications" /><Focus n="02" text="Pricing, proposals, scope + terms" /><Focus n="03" text="Material decisions + commitments" /></div></div><div className="panel"><PanelTitle kicker="Shared goal" title={goals[0]?.stable_id || "No active goal"} /><h3 className="feature-title">{goals[0]?.objective || "Create an approved governed goal."}</h3><div className="goal-meta"><span>OWNER <b>AGT-001</b></span><span>CONTRIBUTOR <b>AGT-002</b></span><span>STATUS <b>{goals[0]?.status || "Unavailable"}</b></span></div></div><div className="panel acid-panel"><p className="eyebrow">Sales operations signal</p><h3>{stale ? `${stale} opportunity needs a dated next action.` : "Pipeline actions are current."}</h3><p>AGT-002 can qualify, draft, and hand off. A human approves every external or commercial commitment.</p></div></section></>;
 }
 
-function AgentNetwork({ agents, source }: { agents: Agent[]; source: string }) { return <section><SectionLead kicker="Cooperative intelligence" title="Agents with explicit authority." body={`${source}. Live records are reconciled with the deployed agent catalog so every implemented agent remains visible.`} /><div className="agent-grid">{agents.map((a,i) => <article className="agent-profile" key={a.stable_id}><span className="large-code">{String(i+1).padStart(2,"0")}</span><p className="eyebrow">{a.stable_id}</p><h3>{a.name}</h3><p>{a.mission}</p><dl><div><dt>Authority</dt><dd>{a.authority_level}</dd></div><div><dt>Parent</dt><dd>{a.stable_id === "AGT-001" ? "Founder" : "AGT-001"}</dd></div><div><dt>Status</dt><dd>{a.status}</dd></div><div><dt>Human owner</dt><dd>Authorized executive</dd></div><div><dt>Current goal</dt><dd>GOAL-2026-001</dd></div><div><dt>Open blockers</dt><dd>{source.startsWith("Live") ? "From live data" : "Unavailable"}</dd></div></dl></article>)}</div></section>; }
+function AgentNetwork({ agents, source }: { agents: Agent[]; source: string }) {
+  const [activeId, setActiveId] = useState(agents[0]?.stable_id ?? "AGT-001");
+  const active = agents.find(agent => agent.stable_id === activeId) ?? agents[0];
+  const count = Math.max(agents.length, 1);
+  const relationships = agents.flatMap((agent, index) => {
+    if (agent.stable_id === "AGT-001") return [];
+    const cooIndex = Math.max(0, agents.findIndex(item => item.stable_id === "AGT-001"));
+    const links = [[cooIndex, index]];
+    const partner = ({ "AGT-002":"AGT-009", "AGT-003":"AGT-004", "AGT-005":"AGT-011", "AGT-006":"AGT-013", "AGT-008":"AGT-012", "AGT-010":"AGT-013", "AGT-014":"AGT-008" } as Record<string,string>)[agent.stable_id];
+    const partnerIndex = partner ? agents.findIndex(item => item.stable_id === partner) : -1;
+    if (partnerIndex > index) links.push([index, partnerIndex]);
+    return links;
+  });
+  const point = (index: number, radius = 42) => {
+    const angle = (index / count) * Math.PI * 2 - Math.PI / 2;
+    return { x: 50 + Math.cos(angle) * radius, y: 50 + Math.sin(angle) * radius };
+  };
+  const statusCounts = agents.reduce((totals, agent) => { totals[agentTone(agent.status)] += 1; return totals; }, { green:0, amber:0, red:0, gray:0 } as Record<AgentTone,number>);
+
+  return <section className="network-view">
+    <SectionLead kicker="Cooperative intelligence" title="One network. Explicit authority." body={`${source}. Explore each agent and the governed relationships that connect discovery, sales, delivery, quality, knowledge, and operations.`} />
+    <div className="network-summary" aria-label="Agent status summary">
+      <span><i className="network-status green" />{statusCounts.green} active / ready</span>
+      <span><i className="network-status amber" />{statusCounts.amber} review / pilot</span>
+      <span><i className="network-status red" />{statusCounts.red} blocked / attention</span>
+      <span><i className="network-status gray" />{statusCounts.gray} draft / unavailable</span>
+    </div>
+    <div className="network-stage">
+      <div className="network-orbit" role="group" aria-label="Interactive agent relationship map">
+        <svg className="network-links" viewBox="0 0 100 100" aria-hidden="true">
+          <circle cx="50" cy="50" r="42" className="orbit-ring" />
+          {relationships.map(([from,to], index) => { const a=point(from), b=point(to); const highlighted=agents[from]?.stable_id===activeId||agents[to]?.stable_id===activeId; return <path key={`${from}-${to}-${index}`} d={`M ${a.x} ${a.y} Q 50 50 ${b.x} ${b.y}`} className={highlighted ? "active-link" : ""} />; })}
+        </svg>
+        {agents.map((agent,index) => { const p=point(index); const tone=agentTone(agent.status); return <button key={agent.stable_id} type="button" className={`network-node ${tone} ${agent.stable_id===activeId?"selected":""}`} style={{left:`${p.x}%`,top:`${p.y}%`}} onMouseEnter={()=>setActiveId(agent.stable_id)} onFocus={()=>setActiveId(agent.stable_id)} onClick={()=>setActiveId(agent.stable_id)} aria-pressed={agent.stable_id===activeId} aria-label={`${agent.stable_id}, ${agent.name}, ${agent.status}`}><i /><strong>{agent.stable_id.replace("AGT-","")}</strong><span>{shortAgentName(agent.name)}</span></button>; })}
+        {active && <article className="network-core" aria-live="polite">
+          <p>{active.stable_id} · {active.authority_level}</p>
+          <h3>{active.name}</h3>
+          <span>{active.mission}</span>
+          <div><b className={agentTone(active.status)}>{active.status}</b><small>{active.stable_id === "AGT-001" ? "Reports to Founder" : "Reports to AGT-001"}</small></div>
+        </article>}
+      </div>
+      <aside className="network-inspector">
+        <p className="eyebrow">Selected agent</p>
+        <span className={`inspector-state ${active ? agentTone(active.status) : "gray"}`}><i />{active?.status ?? "Unavailable"}</span>
+        <h3>{active?.name ?? "No agent selected"}</h3>
+        <p>{active?.mission}</p>
+        <dl>
+          <div><dt>Agent ID</dt><dd>{active?.stable_id}</dd></div>
+          <div><dt>Authority</dt><dd>{active?.authority_level}</dd></div>
+          <div><dt>Parent</dt><dd>{active?.stable_id === "AGT-001" ? "Founder" : "AGT-001 · COO"}</dd></div>
+          <div><dt>Human owner</dt><dd>Authorized executive</dd></div>
+          <div><dt>Shared goal</dt><dd>GOAL-2026-001</dd></div>
+          <div><dt>External action</dt><dd>{active?.authority_level === "L1" ? "Human approval required" : "Governed boundary"}</dd></div>
+        </dl>
+        <p className="network-help">Hover, focus, or tap any node to inspect its operating contract.</p>
+      </aside>
+    </div>
+  </section>;
+}
+
+type AgentTone = "green" | "amber" | "red" | "gray";
+function agentTone(status: string): AgentTone {
+  if (/blocked|failed|error|attention/i.test(status)) return "red";
+  if (/active|ready|live|approved/i.test(status)) return "green";
+  if (/pilot|review|activation|required|pending/i.test(status)) return "amber";
+  return "gray";
+}
+function shortAgentName(name: string) { return name.replace("Symbiont ","").replace(" Operations","").replace(" & Service Architecture"," Product").replace(" & Data Governance"," Security").replace("Marketing & Content","Marketing"); }
 
 function SharedGoals({ goals, agents, source }: { goals: Goal[]; agents: Agent[]; source: string }) { return <section><SectionLead kicker="Shared outcomes" title="One owner. Many contributors." body={`${source}. Goals preserve success measures, dependencies, decisions, work evidence, and append-only events.`} />{goals.map(g => <article className="goal-card" key={g.stable_id}><div><p className="eyebrow">{g.stable_id} · {g.priority}</p><h3>{g.objective}</h3><span className="status-chip">{g.status}</span></div><div className="goal-members"><p>ACCOUNTABLE OWNER</p><strong>{agents[0]?.stable_id} · {agents[0]?.name}</strong><p>CONTRIBUTOR</p><strong>{agents[1]?.stable_id} · {agents[1]?.name}</strong></div><div><p className="eyebrow">Success evidence</p><ul>{(g.success_metrics || []).map(m => <li key={m}>{m}</li>)}</ul><p className="empty-note">Recent events and work-item evidence appear when the live data plane is connected.</p></div></article>)}</section>; }
 
