@@ -8,6 +8,24 @@ with org as (select id from organizations where stable_id='ORG-SYMBIONT'), coo a
 insert into agents(organization_id,stable_id,name,mission,parent_agent_id,authority_level,status,metadata)
 select org.id,'AGT-002','Sales Operations','Convert qualified client needs into clearly defined, profitable, repeatable work.',coo.id,'L1','Active','{"seed":"demonstration"}'::jsonb from org,coo
 on conflict(organization_id,stable_id) do update set parent_agent_id=excluded.parent_agent_id,mission=excluded.mission;
+with org as (select id from organizations where stable_id='ORG-SYMBIONT'), coo as (select id from agents where stable_id='AGT-001')
+insert into agents(organization_id,stable_id,name,mission,parent_agent_id,authority_level,status,metadata)
+select org.id,v.stable_id,v.name,v.mission,coo.id,v.authority_level,'Active',jsonb_build_object('seed','fourteen-agent-registry','authority','draft-or-governed-internal')
+from org,coo cross join (values
+  ('AGT-003','Delivery Control','Coordinate project authorization, delivery health, exceptions, changes, quality gates, and closeout.','L1'),
+  ('AGT-004','QA/QC','Validate exact deliverable versions against approved requirements and release gates.','L1'),
+  ('AGT-005','Knowledge Steward','Maintain an evidence-backed, searchable, governed source of operating truth.','L2'),
+  ('AGT-006','Finance Operations','Prepare reconciled visibility, forecasts, and draft financial controls.','L1'),
+  ('AGT-007','Research','Turn primary sources, historical evidence, and market signals into decision-ready findings.','L1'),
+  ('AGT-008','Automation Reliability','Detect automation failures, contain impact, preserve evidence, and coordinate recovery.','L2'),
+  ('AGT-009','Opportunity Scout','Discover and verify priority opportunities and match them to governed knowledge.','L1'),
+  ('AGT-010','Product & Service Architecture','Convert recurring delivery knowledge into repeatable building-intelligence products.','L1'),
+  ('AGT-011','Marketing & Content Operations','Turn approved knowledge into evidence-backed content and qualified demand.','L1'),
+  ('AGT-012','Technical Architecture','Define interoperable, secure, scalable, and supportable building-intelligence architectures.','L1'),
+  ('AGT-013','Client Success','Protect client outcomes from onboarding through value realization and renewal.','L1'),
+  ('AGT-014','Security & Data Governance','Protect Symbiont and client data through governed controls.','L1')
+) as v(stable_id,name,mission,authority_level)
+on conflict(organization_id,stable_id) do update set name=excluded.name,mission=excluded.mission,parent_agent_id=excluded.parent_agent_id,authority_level=excluded.authority_level;
 with sales as (select id from agents where stable_id='AGT-002')
 insert into agent_capabilities(agent_id,capability,description)
 select sales.id,v.capability,v.description from sales cross join (values

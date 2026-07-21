@@ -14,3 +14,9 @@ test("AGT-008 cannot deploy, retry unsafe effects, disable permanently, or accep
   for (const action of ["deploy_production", "irreversible_rollback", "retry_payment", "retry_contractual", "retry_client_facing", "permanently_disable", "change_permissions", "destructive_action", "accept_material_risk"]) assert.deepEqual(mayPerform("AGT-008", action), { allowed: false, requiresApproval: true, reason: "AGT-008 has L2 authority for reversible internal reliability actions only" });
 });
 test("API accepts only registered agent IDs", () => { assert.equal(validateCommand({ agentId: "AGT-002", command: "Draft a discovery brief" }).agentId, "AGT-002"); assert.equal(validateCommand({ agentId: "AGT-003", command: "Draft a recovery plan" }).agentId, "AGT-003"); assert.equal(validateCommand({ agentId: "AGT-005", command: "Index uploaded knowledge" }).agentId, "AGT-005"); assert.equal(validateCommand({ agentId: "AGT-008", command: "Assess retry eligibility" }).agentId, "AGT-008"); assert.throws(() => validateCommand({ agentId: "AGT-999", command: "Do work" })); });
+test("all fourteen governed agents are accepted by the runtime contract", () => {
+  for (let sequence = 1; sequence <= 14; sequence++) {
+    const agentId = `AGT-${String(sequence).padStart(3, "0")}`;
+    assert.equal(validateCommand({ agentId, command: "Prepare a governed draft" }).agentId, agentId);
+  }
+});

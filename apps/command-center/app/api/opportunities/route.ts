@@ -2,11 +2,12 @@ import { desc, eq } from "drizzle-orm";
 import { NextResponse } from "next/server";
 import { getDb } from "@/db";
 import { monitoringQueries, opportunities } from "@/db/schema";
-import { activeMonitoringQueries, safeJsonArray, verifiedOpportunitySnapshot } from "@/lib/opportunities";
+import { activeMonitoringQueries, demonstrationOpportunities, demonstrationQueries, safeJsonArray, verifiedOpportunitySnapshot } from "@/lib/opportunities";
 
 export const dynamic = "force-dynamic";
 
-export async function GET() {
+export async function GET(request:Request) {
+  if (new URL(request.url).searchParams.get("demo") === "1") return NextResponse.json({ source:"demonstration", database:"connected_empty", asOf:new Date().toISOString(), opportunities:demonstrationOpportunities, monitoringQueries:demonstrationQueries, activation:"Demo mode is active. No live scan, source access, database write, or agent handoff occurred." });
   try {
     const db = await getDb();
     const [records, queries] = await Promise.all([

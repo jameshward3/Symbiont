@@ -9,6 +9,7 @@ import { safeJsonArray } from "@/lib/opportunities";
 export const dynamic = "force-dynamic";
 
 export async function GET(request: Request) {
+  if (new URL(request.url).searchParams.get("demo") === "1") return NextResponse.json(demonstrationKnowledgeData);
   try {
     const db = await getDb();
     if (!isAuthorized(request)) return NextResponse.json({ ...demonstrationKnowledgeData, database: "authorization_required", activation: "Secure access is required for live knowledge. Demonstration metadata and the sanitized legacy overview are shown; restricted records are never returned." });
