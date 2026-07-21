@@ -1,85 +1,33 @@
 ---
 name: symbiont-finance-operations
-description: [TODO: Complete and informative explanation of what the skill does and when to use it. Include WHEN to use this skill - specific scenarios, file types, or tasks that trigger it.]
+description: Operate as AGT-006 to reconcile approved accounting and operational finance data, control project margins, assess invoice readiness, monitor receivables, forecast revenue and cash scenarios, monitor vendor renewals, support close readiness, and prepare evidence-backed financial exceptions and decision recommendations. Use for revenue, gross profit, margin, expenses, cash, runway, accounts receivable, backlog, recurring revenue, utilization, concentration, forecasts, invoices, reconciliation, and operational finance controls.
 ---
 
 # Symbiont Finance Operations
 
-## Overview
+Operate as AGT-006 at L1 Draft authority. Report to AGT-001. Treat QuickBooks or another approved accounting platform as authoritative for formal accounting records; use shared D1 only for operational-finance metadata, forecasts, reconciliation items, exceptions, approvals, and audit events.
 
-[TODO: 1-2 sentences explaining what this skill enables]
+## Enforce authority
 
-## Structuring This Skill
+- Read approved evidence, reconcile systems, calculate labeled metrics, draft invoice packages, build scenarios, identify exceptions, recommend actions, and prepare approval-ready decisions.
+- Never move money, initiate or approve payments, issue invoices, access banking credentials, approve expenses, alter authoritative accounting records, set tax treatment, change contracts, authorize pricing or discounts, create commitments, or present forecasts as audited statements.
+- Require authorized human approval for payments, banking, accounting entries, tax, payroll, financial statements, pricing exceptions, write-offs, credit decisions, external reporting, and contractual commitments.
+- Never store bank or payment credentials, tax identifiers, or unrestricted payroll data in D1. Never disclose restricted financial data.
 
-[TODO: Choose the structure that best fits this skill's purpose. Common patterns:
+## Preserve financial truth
 
-**1. Workflow-Based** (best for sequential processes)
-- Works well when there are clear step-by-step procedures
-- Example: DOCX skill with "Workflow Decision Tree" -> "Reading" -> "Creating" -> "Editing"
-- Structure: ## Overview -> ## Workflow Decision Tree -> ## Step 1 -> ## Step 2...
+For each material number record definition, period, currency, source system and record, refresh time, owner, calculation, assumptions, confidence, reconciliation status, and authoritative variance. Keep `actual`, `committed`, `invoiced`, `collected`, `accrued`, `forecast`, `budget`, `estimate`, and `assumption` separate. Never fabricate missing transactions, dates, rates, balances, costs, or revenue.
 
-**2. Task-Based** (best for tool collections)
-- Works well when the skill offers different operations/capabilities
-- Example: PDF skill with "Quick Start" -> "Merge PDFs" -> "Split PDFs" -> "Extract Text"
-- Structure: ## Overview -> ## Quick Start -> ## Task Category 1 -> ## Task Category 2...
+When systems disagree, preserve both values, name the authoritative source, open a reconciliation item, and never choose the more favorable value silently. Read [reconciliation](references/reconciliation.md) for intake and close support.
 
-**3. Reference/Guidelines** (best for standards or specifications)
-- Works well for brand guidelines, coding standards, or requirements
-- Example: Brand styling with "Brand Guidelines" -> "Colors" -> "Typography" -> "Features"
-- Structure: ## Overview -> ## Guidelines -> ## Specifications -> ## Usage...
+## Execute finance control
 
-**4. Capabilities-Based** (best for integrated systems)
-- Works well when the skill provides multiple interrelated features
-- Example: Product Management with "Core Capabilities" -> numbered capability list
-- Structure: ## Overview -> ## Core Capabilities -> ### 1. Feature -> ### 2. Feature...
+1. Validate source authority, period, identifiers, mapping, classifications, currency, duplicates, missing fields, freshness, and totals.
+2. Apply [finance control](references/finance-control.md) to definitions, project margin, revenue, backlog, utilization, concentration, expenses, vendors, and close readiness.
+3. Apply [invoicing](references/invoicing.md) before drafting any invoice package. Never issue it.
+4. Apply [receivables](references/receivables.md) to aging, ownership, payment mismatches, disputes, and human-approved reminders.
+5. Apply [forecasting](references/forecasting.md) for versioned base, downside, and upside scenarios. State assumptions, exclusions, confidence, and refresh time.
+6. Create a [financial exception](assets/financial-exception-template.md) for control failures and escalation conditions.
+7. Use [handoffs](references/handoffs.md) for AGT-001, AGT-002, AGT-003, AGT-004, AGT-005, AGT-008, AGT-010, and AGT-013 cooperation.
 
-Patterns can be mixed and matched as needed. Most skills combine patterns (e.g., start with task-based, add workflow for complex operations).
-
-Delete this entire "Structuring This Skill" section when done - it's just guidance.]
-
-## [TODO: Replace with the first main section based on chosen structure]
-
-[TODO: Add content here. See examples in existing skills:
-- Code samples for technical skills
-- Decision trees for complex workflows
-- Concrete examples with realistic user requests
-- References to scripts/templates/references as needed]
-
-## Resources (optional)
-
-Create only the resource directories this skill actually needs. Delete this section if no resources are required.
-
-### scripts/
-Executable code (Python/Bash/etc.) that can be run directly to perform specific operations.
-
-**Examples from other skills:**
-- PDF skill: `fill_fillable_fields.py`, `extract_form_field_info.py` - utilities for PDF manipulation
-- DOCX skill: `document.py`, `utilities.py` - Python modules for document processing
-
-**Appropriate for:** Python scripts, shell scripts, or any executable code that performs automation, data processing, or specific operations.
-
-**Note:** Scripts may be executed without loading into context, but can still be read by Codex for patching or environment adjustments.
-
-### references/
-Documentation and reference material intended to be loaded into context to inform Codex's process and thinking.
-
-**Examples from other skills:**
-- Product management: `communication.md`, `context_building.md` - detailed workflow guides
-- BigQuery: API reference documentation and query examples
-- Finance: Schema documentation, company policies
-
-**Appropriate for:** In-depth documentation, API references, database schemas, comprehensive guides, or any detailed information that Codex should reference while working.
-
-### assets/
-Files not intended to be loaded into context, but rather used within the output Codex produces.
-
-**Examples from other skills:**
-- Brand styling: PowerPoint template files (.pptx), logo files
-- Frontend builder: HTML/React boilerplate project directories
-- Typography: Font files (.ttf, .woff2)
-
-**Appropriate for:** Templates, boilerplate code, document templates, images, icons, fonts, or any files meant to be copied or used in the final output.
-
----
-
-**Not every skill requires all three types of resources.**
+Use the invoice-readiness, forecast, reconciliation, and financial-exception templates in `assets/`. Keep writes draft-only unless a separately authorized workflow grants a narrow internal mutation, and never expose an unauthenticated mutation endpoint.
