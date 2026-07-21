@@ -4,11 +4,13 @@ import { FormEvent, useEffect, useMemo, useState } from "react";
 import { DeliveryControl } from "./delivery-control";
 import { QualityControl } from "./quality-control";
 import { KnowledgeControl } from "./knowledge-control";
+import { ResearchControl } from "./research-control";
 import type { DeliveryData } from "@/lib/delivery-control";
 import type { QualityData } from "@/lib/qaqc";
 import type { KnowledgeData } from "@/lib/knowledge";
+import type { ResearchData } from "@/lib/research";
 
-type View = "Overview" | "Agent Network" | "Shared Goals" | "Sales Operations" | "Delivery Control" | "Quality" | "Knowledge" | "Opportunity Scout" | "Decisions" | "Systems";
+type View = "Overview" | "Agent Network" | "Shared Goals" | "Sales Operations" | "Delivery Control" | "Quality" | "Knowledge" | "Research" | "Opportunity Scout" | "Decisions" | "Systems";
 type Connection = "checking" | "unavailable" | "authorization_required" | "connected" | "error";
 type Agent = { stable_id: string; name: string; mission: string; authority_level: string; status: string; updated_at?: string };
 type Goal = { stable_id: string; objective: string; status: string; priority: string; due_date?: string; success_metrics?: string[]; completion_evidence?: unknown };
@@ -20,7 +22,7 @@ type ScoutData = { source:"d1"|"demonstration"; database:"connected"|"connected_
 
 const navItems: { label: View; code: string }[] = [
   { label: "Overview", code: "01" }, { label: "Agent Network", code: "02" }, { label: "Shared Goals", code: "03" },
-  { label: "Sales Operations", code: "04" }, { label: "Delivery Control", code: "03" }, { label: "Quality", code: "QA" }, { label: "Knowledge", code: "K5" }, { label: "Opportunity Scout", code: "09" }, { label: "Decisions", code: "06" }, { label: "Systems", code: "07" },
+  { label: "Sales Operations", code: "04" }, { label: "Delivery Control", code: "03" }, { label: "Quality", code: "QA" }, { label: "Knowledge", code: "K5" }, { label: "Research", code: "07" }, { label: "Opportunity Scout", code: "09" }, { label: "Decisions", code: "06" }, { label: "Systems", code: "08" },
 ];
 
 const demoAgents: Agent[] = [
@@ -29,6 +31,7 @@ const demoAgents: Agent[] = [
   { stable_id: "AGT-003", name: "Delivery Control", mission: "Coordinate project authorization, delivery health, exceptions, changes, quality gates, and closeout.", authority_level: "L1", status: "Draft mode" },
   { stable_id: "AGT-004", name: "QA/QC", mission: "Independently validate exact deliverable versions against approved requirements and release gates.", authority_level: "L1", status: "Draft mode" },
   { stable_id: "AGT-005", name: "Knowledge Steward", mission: "Maintain an evidence-backed, searchable, governed source of operating truth.", authority_level: "L2", status: "Review" },
+  { stable_id: "AGT-007", name: "Research", mission: "Produce decision-ready, source-backed market, competitor, standards, and technology intelligence.", authority_level: "L1", status: "Draft mode" },
   { stable_id: "AGT-009", name: "Opportunity Scout", mission: "Discover and verify public buying signals, then route evidence-backed leads.", authority_level: "L1", status: "Activation required" },
 ];
 const demoGoals: Goal[] = [{ stable_id: "GOAL-2026-001", objective: "Prove governed multi-agent sales-to-delivery coordination", status: "Approved", priority: "P1", success_metrics: ["One claim owner", "Human proposal approval", "Auditable handoff"] }];
@@ -45,6 +48,7 @@ export default function Home() {
   const [accessKey, setAccessKey] = useState("");
   const [agentId, setAgentId] = useState("AGT-002");
   const [command, setCommand] = useState("");
+  const [researchData, setResearchData] = useState<ResearchData | null>(null);
   const [runState, setRunState] = useState<"idle" | "running" | "complete" | "error">("idle");
   const [answer, setAnswer] = useState("");
   const [scoutData, setScoutData] = useState<ScoutData | null>(null);
@@ -57,6 +61,7 @@ export default function Home() {
   useEffect(() => { fetch("/api/delivery-control/", { headers: accessKey ? { "x-symbiont-access-key": accessKey } : {}, cache: "no-store" }).then(r => r.json()).then(setDeliveryData).catch(() => setDeliveryData(null)); }, [accessKey, connection]);
   useEffect(() => { fetch("/api/quality/", { headers: accessKey ? { "x-symbiont-access-key": accessKey } : {}, cache: "no-store" }).then(r => r.json()).then(setQualityData).catch(() => setQualityData(null)); }, [accessKey, connection]);
   useEffect(() => { fetch("/api/knowledge/", { headers: accessKey ? { "x-symbiont-access-key": accessKey } : {}, cache: "no-store" }).then(r => r.json()).then(setKnowledgeData).catch(() => setKnowledgeData(null)); }, [accessKey, connection]);
+  useEffect(() => { fetch("/api/research/", { headers: accessKey ? { "x-symbiont-access-key": accessKey } : {}, cache: "no-store" }).then(r => r.json()).then(setResearchData).catch(() => setResearchData(null)); }, [accessKey, connection]);
 
   async function connect(event: FormEvent) {
     event.preventDefault(); setConnection("checking");
@@ -108,6 +113,7 @@ export default function Home() {
           {view === "Delivery Control" && <DeliveryControl data={deliveryData} />}
           {view === "Quality" && <QualityControl data={qualityData} />}
           {view === "Knowledge" && <KnowledgeControl data={knowledgeData} />}
+          {view === "Research" && <ResearchControl data={researchData} />}
           {view === "Decisions" && <DecisionsView decisions={dashboard?.decisions ?? []} source={sourceLabel} />}
           {view === "Systems" && <SystemsView connection={connection} runs={dashboard?.runs ?? []} handoffs={dashboard?.handoffs ?? []} />}
           <CommandPanel agentId={agentId} setAgentId={setAgentId} command={command} setCommand={setCommand} submit={runAgentCommand} connection={connection} runState={runState} answer={answer} />

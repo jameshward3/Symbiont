@@ -1,0 +1,2 @@
+# Source evaluation
+Record publisher, author, canonical URL, type, publication date (including unknown), observation date, geography, applicable period, access restrictions, content hash when useful, relevance, and limitations. Score authority, directness, recency, methodology, independence, completeness, bias, and corroboration. Search results and aggregators are discovery aids, never final evidence. Respect robots.txt, terms, copyright, privacy, authentication, and rate limits.
