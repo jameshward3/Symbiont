@@ -4,6 +4,7 @@ export const AGENTS = {
   "AGT-003": { id: "AGT-003", name: "Delivery Control", authority: "L1", parent: "AGT-001" },
   "AGT-004": { id: "AGT-004", name: "QA/QC", authority: "L1", parent: "AGT-001" },
   "AGT-005": { id: "AGT-005", name: "Knowledge Steward", authority: "L2", parent: "AGT-001" },
+  "AGT-008": { id: "AGT-008", name: "Automation Reliability", authority: "L2", parent: "AGT-001" },
 } as const;
 
 export type AgentId = keyof typeof AGENTS;
@@ -31,5 +32,7 @@ export function mayPerform(agentId: AgentId, action: string) {
   if (agentId === "AGT-004" && gatedForQuality.includes(action)) return { allowed: false, requiresApproval: true, reason: "AGT-004 has L1 Draft authority and must preserve reviewer independence" };
   const gatedForKnowledge = ["approve_controlled_content", "publish_knowledge", "permanent_delete", "change_access", "external_disclosure", "change_retention_rule", "overwrite_issued_version", "expand_permissions"];
   if (agentId === "AGT-005" && gatedForKnowledge.includes(action)) return { allowed: false, requiresApproval: true, reason: "AGT-005 has L2 authority for reversible internal knowledge actions only" };
+  const gatedForReliability = ["deploy_production", "irreversible_rollback", "send_external_communication", "spend", "change_permissions", "destructive_action", "accept_material_risk", "increase_budget", "increase_rate_limit", "permanently_disable", "retry_payment", "retry_contractual", "retry_client_facing"];
+  if (agentId === "AGT-008" && gatedForReliability.includes(action)) return { allowed: false, requiresApproval: true, reason: "AGT-008 has L2 authority for reversible internal reliability actions only" };
   return { allowed: true, requiresApproval: false };
 }

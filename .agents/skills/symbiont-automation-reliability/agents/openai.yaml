@@ -1,0 +1,4 @@
+interface:
+  display_name: "Symbiont Automation Reliability"
+  short_description: "Detect, contain, and recover automation failures safely"
+  default_prompt: "Use $symbiont-automation-reliability to assess this automation, preserve evidence, classify any incident, enforce retry and idempotency controls, and produce an approval-aware recovery plan."
