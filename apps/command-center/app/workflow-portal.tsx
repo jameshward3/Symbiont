@@ -1,9 +1,9 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useMemo, useState, type Dispatch, type SetStateAction } from "react";
 import {
-  demonstrationPortalProjects,
   stageActionLabel,
+  visiblePortalProjects,
   WORKFLOW_STAGES,
   type PortalProject,
   type ResponseDraft,
@@ -26,35 +26,36 @@ const filters: Array<{ id: QueueFilter; label: string }> = [
   { id: "closed", label: "Closed" },
 ];
 
-export function WorkflowPortal({ accessKey }: { accessKey: string }) {
-  const [projects, setProjects] = useState<PortalProject[]>(demonstrationPortalProjects);
-  const [selectedId, setSelectedId] = useState(projects[0].id);
+export function WorkflowPortal({ accessKey, demoMode, projects, setProjects, focusProjectId }: { accessKey: string; demoMode:boolean; projects:PortalProject[]; setProjects:Dispatch<SetStateAction<PortalProject[]>>; focusProjectId:string|null }) {
+  const modeProjects = useMemo(() => visiblePortalProjects(projects, demoMode), [demoMode, projects]);
+  const [selectedId, setSelectedId] = useState(focusProjectId || modeProjects[0]?.id || "");
   const [draft, setDraft] = useState<ResponseDraft>(blank);
   const [gate, setGate] = useState(false);
   const [notice, setNotice] = useState("");
   const [tab, setTab] = useState<"actions" | "response">("actions");
   const [filter, setFilter] = useState<QueueFilter>("attention");
 
-  const selected = useMemo(() => projects.find(project => project.id === selectedId) ?? projects[0], [projects, selectedId]);
-  const stageIndex = WORKFLOW_STAGES.findIndex(stage => stage.id === selected.stage);
-  const currentStage = WORKFLOW_STAGES[stageIndex];
-  const nextStage = WORKFLOW_STAGES[stageIndex + 1];
-  const incompleteApprovals = selected.approvals.filter(item => !selected.completedApprovals.includes(item));
+  const selected = useMemo(() => modeProjects.find(project => project.id === selectedId) ?? modeProjects[0] ?? null, [modeProjects, selectedId]);
+  const stageIndex = selected ? WORKFLOW_STAGES.findIndex(stage => stage.id === selected.stage) : -1;
+  const currentStage = stageIndex >= 0 ? WORKFLOW_STAGES[stageIndex] : null;
+  const nextStage = stageIndex >= 0 ? WORKFLOW_STAGES[stageIndex + 1] : null;
+  const incompleteApprovals = selected ? selected.approvals.filter(item => !selected.completedApprovals.includes(item)) : [];
 
-  const queue = useMemo(() => projects.filter(project => {
+  const queue = useMemo(() => modeProjects.filter(project => {
     if (filter === "closed") return project.status === "Closed";
     if (project.status === "Closed") return false;
     if (filter === "approval") return project.attention === "Approval" || project.approvals.some(item => !project.completedApprovals.includes(item));
     if (filter === "risk") return project.attention === "At risk";
     if (filter === "attention") return ["Approval", "Input needed", "At risk"].includes(project.attention);
     return true;
-  }), [filter, projects]);
+  }), [filter, modeProjects]);
 
   function updateProject(patch: Partial<PortalProject>) {
     setProjects(items => items.map(item => item.id === selectedId ? { ...item, ...patch } : item));
   }
 
   function appendActivity(activity: Omit<WorkflowActivity, "id" | "occurredAt">) {
+    if (!selected) return;
     const event: WorkflowActivity = {
       ...activity,
       id: `EVT-${selected.id}-${Date.now()}`,
@@ -64,6 +65,7 @@ export function WorkflowPortal({ accessKey }: { accessKey: string }) {
   }
 
   function toggleApproval(approval: string) {
+    if (!selected) return;
     const approved = selected.completedApprovals.includes(approval);
     const completedApprovals = approved
       ? selected.completedApprovals.filter(item => item !== approval)
@@ -72,7 +74,7 @@ export function WorkflowPortal({ accessKey }: { accessKey: string }) {
   }
 
   function addNewProject() {
-    const id = `OPP-${new Date().getFullYear()}-${String(projects.length + 22).padStart(3, "0")}`;
+    const id = `OPP-${new Date().getFullYear()}-${String(modeProjects.length + 22).padStart(3, "0")}`;
     const now = new Date().toISOString();
     const project: PortalProject = {
       id, title: "New opportunity", client: "", solicitation: "", stage: "intake", owner: "AGT-009",
@@ -80,7 +82,7 @@ export function WorkflowPortal({ accessKey }: { accessKey: string }) {
       approvals: ["Source acceptance"], completedApprovals: [], attention: "Input needed", status: "Active",
       recommendation: "Complete the required intake evidence before routing this opportunity.",
       rationale: "The workflow cannot safely score or hand off an opportunity until the source, buyer, scope, and deadline are verified.",
-      confidence: 35, source: "Manual intake", sourceUpdatedAt: now, activities: [{
+      confidence: 35, source: "Manual intake", sourceUpdatedAt: now, isDemonstration:demoMode, activities: [{
         id: `EVT-${id}-001`, occurredAt: now, actor: "James", kind: "Edit",
         summary: "Opportunity record created", detail: "Required intake fields are awaiting review.",
       }],
@@ -94,6 +96,7 @@ export function WorkflowPortal({ accessKey }: { accessKey: string }) {
 
   function advance() {
     setNotice("");
+    if (!selected || !currentStage) return setNotice("Select an Action queue record before advancing.");
     if (selected.status === "Paused") return setNotice("Resume this work item before advancing it.");
     if (incompleteApprovals.length) return setNotice(`Complete required approval: ${incompleteApprovals.join(", ")}.`);
     if (!gate) return setNotice("Confirm the current release gate before advancing.");
@@ -137,6 +140,7 @@ export function WorkflowPortal({ accessKey }: { accessKey: string }) {
   }
 
   function returnForRevision() {
+    if (!selected) return;
     appendActivity({ actor: "James", kind: "Exception", summary: "Returned for revision", detail: "The current recommendation requires additional evidence or correction before approval." });
     updateProject({ attention: "Input needed" });
     setGate(false);
@@ -144,12 +148,14 @@ export function WorkflowPortal({ accessKey }: { accessKey: string }) {
   }
 
   function togglePause() {
+    if (!selected) return;
     const paused = selected.status === "Paused";
     updateProject({ status: paused ? "Active" : "Paused", attention: paused ? "Working" : selected.attention });
     setNotice(paused ? "Work item resumed." : "Work item paused. No workflow handoff occurred.");
   }
 
   async function syncNotion() {
+    if (!selected) return setNotice("Select an Action queue record before linking Notion.");
     setNotice("Syncing…");
     const response = await fetch("/api/workflow/notion", {
       method: "POST",
@@ -185,14 +191,14 @@ export function WorkflowPortal({ accessKey }: { accessKey: string }) {
   return <section className="workflow-view">
     <div className="workflow-hero"><div><p className="eyebrow">Symbiont actions</p><h2>Lead to <em>closeout.</em></h2></div><p>One approval queue moves opportunities and projects through governed agent handoffs. Background agents surface only recommendations, exceptions, and decisions that need attention.</p></div>
     <div className="workflow-tabs"><button className={tab === "actions" ? "active" : ""} onClick={() => setTab("actions")}>Action queue</button><button className={tab === "response" ? "active" : ""} onClick={() => setTab("response")}>RFP / RFQ response studio</button><span>L1 draft · material actions require human approval</span></div>
-    <div className="workflow-boundary" role="note"><b>Interaction preview</b><span>Action queue records are controlled demonstrations. Stage changes remain browser-local until governed workflow persistence is enabled.</span></div>
+    <div className="workflow-boundary" role="note"><b>{demoMode ? "Demonstration queue" : "Session queue"}</b><span>{demoMode ? "Action queue records are controlled demonstrations. Stage changes remain browser-local." : "Only live or verified Pipeline handoffs appear here. Stage changes remain browser-local until governed workflow persistence is enabled."}</span></div>
     {notice && <div className="workflow-notice" role="status">{notice}</div>}
     {tab === "actions" ? <>
-      <div className="queue-filters" aria-label="Action queue filters">{filters.map(item => <button key={item.id} className={filter === item.id ? "active" : ""} onClick={() => setFilter(item.id)}><span>{item.label}</span><b>{countFilter(projects, item.id)}</b></button>)}</div>
-      <div className="stage-rail">{WORKFLOW_STAGES.map((stage, index) => <button key={stage.id} className={index < stageIndex ? "done" : index === stageIndex ? "current" : ""} title={stage.gate}><b>{String(index + 1).padStart(2, "0")}</b><span>{stage.label}</span><small>{stage.agent}</small></button>)}</div>
+      <div className="queue-filters" aria-label="Action queue filters">{filters.map(item => <button key={item.id} className={filter === item.id ? "active" : ""} onClick={() => setFilter(item.id)}><span>{item.label}</span><b>{countFilter(modeProjects, item.id)}</b></button>)}</div>
+      <div className="stage-rail">{WORKFLOW_STAGES.map((stage, index) => <button key={stage.id} className={stageIndex >= 0 && index < stageIndex ? "done" : index === stageIndex ? "current" : ""} title={stage.gate}><b>{String(index + 1).padStart(2, "0")}</b><span>{stage.label}</span><small>{stage.agent}</small></button>)}</div>
       <div className="workflow-grid">
-        <aside className="work-list"><header><div><p className="eyebrow">Action queue</p><small>{queue.length} visible</small></div><button onClick={addNewProject}>+ New</button></header>{queue.length ? queue.map(project => <button key={project.id} className={project.id === selectedId ? "selected" : ""} onClick={() => { setSelectedId(project.id); setGate(false); setNotice(""); }}><div className="queue-row-meta"><small>{project.id} · {WORKFLOW_STAGES.find(stage => stage.id === project.stage)?.label}</small><b className={attentionTone(project.attention)}>{project.attention}</b></div><strong>{project.title}</strong><span>{project.client || "Client required"}</span><em>{project.nextAction}</em><i style={{ width: `${project.progress}%` }} /></button>) : <div className="empty-queue"><strong>No records in this view</strong><span>Choose another filter or create an opportunity.</span></div>}</aside>
-        <div className="action-workspace">
+        <aside className="work-list"><header><div><p className="eyebrow">Action queue</p><small>{queue.length} visible</small></div><button onClick={addNewProject}>+ New</button></header>{queue.length ? queue.map(project => <button key={project.id} className={project.id === selectedId ? "selected" : ""} onClick={() => { setSelectedId(project.id); setGate(false); setNotice(""); }}><div className="queue-row-meta"><small>{project.id} · {WORKFLOW_STAGES.find(stage => stage.id === project.stage)?.label}</small><b className={attentionTone(project.attention)}>{project.attention}</b></div><strong>{project.title}</strong><span>{project.client || "Client required"}</span><em>{project.nextAction}</em><i style={{ width: `${project.progress}%` }} /></button>) : <div className="empty-queue"><strong>No records in this view</strong><span>{modeProjects.length ? "Choose another filter." : demoMode ? "No demonstration records are available." : "Open Pipeline, select an opportunity, and choose Start governed response."}</span></div>}</aside>
+        {selected && currentStage ? <div className="action-workspace">
           <div className="work-editor">
             <header><div><p className="eyebrow">{selected.id} · {selected.owner}</p><h3>{selected.title}</h3></div><div className="work-state"><b className={attentionTone(selected.attention)}>{selected.attention}</b><span>{selected.progress}% complete</span></div></header>
             <div className="recommendation-card"><div><p className="eyebrow">Agent recommendation</p><strong>{selected.recommendation}</strong><p>{selected.rationale}</p></div><div className="confidence-score"><span>Confidence</span><b>{selected.confidence}%</b><small>{selected.owner}</small></div></div>
@@ -213,7 +219,7 @@ export function WorkflowPortal({ accessKey }: { accessKey: string }) {
             <div className="editor-actions"><button className="quiet" onClick={togglePause}>{selected.status === "Paused" ? "Resume" : "Pause"}</button><button className="secondary" onClick={returnForRevision}>Return for revision</button><button className="secondary" onClick={syncNotion}>↗ Sync / link Notion</button>{selected.notionUrl && <a href={selected.notionUrl} target="_blank" rel="noreferrer">Open Notion</a>}<button className="primary" disabled={selected.status === "Closed"} onClick={advance}>{selected.status === "Closed" ? "Closeout complete" : stageActionLabel(selected.stage)} →</button></div>
           </div>
           <ActivityTimeline activities={selected.activities} />
-        </div>
+        </div> : <div className="workflow-empty"><p className="eyebrow">Governed handoff queue</p><h3>No live work has been handed over.</h3><p>Select an opportunity in Pipeline and choose <b>Start governed response</b>. The selected record will arrive here with its source, confidence, approvals, and next action preserved.</p></div>}
       </div>
     </> : <ResponseStudio draft={draft} setDraft={setDraft} exportFile={exportFile} />}
   </section>;

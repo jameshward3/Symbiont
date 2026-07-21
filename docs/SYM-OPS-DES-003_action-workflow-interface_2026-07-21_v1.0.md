@@ -43,13 +43,21 @@ The Actions workspace contains:
 - Expandable raw event log for diagnosis and audit review.
 - Pause, return-for-revision, Notion linking, and controlled closeout actions.
 
+## Pipeline-to-Actions handoff
+
+Selecting a Pipeline opportunity opens its handoff review. **Start governed response** creates or focuses exactly one Action queue record using the opportunity's controlled identifier. The handoff preserves the client or issuer, solicitation type, qualification score, recommendation, next action, due date, source, timestamp, and canonical evidence reference.
+
+The handoff does not skip qualification or bid/no-bid gates and does not send, submit, price, or commit externally. Repeating the handoff is idempotent and does not create a duplicate Action record.
+
+Action records are mode-separated. Demonstration records appear only while Demo mode is enabled. Live or verified Pipeline handoffs appear only while Demo mode is disabled.
+
 ## Authority boundaries
 
 Agents default to draft and recommendation authority. Pricing, external response issue, agreements, client commitments, material risk acceptance, and closeout acceptance require authorized human approval. UI confirmation is not a substitute for an authoritative approval record.
 
 ## Current release boundary
 
-This release establishes the production interface and governed interaction contract. Demonstration records are labeled and operate in client state. The next release must persist stage transitions, approvals, field provenance, and events to the governed data plane before they are treated as authoritative operating records.
+This release establishes the production interface and governed interaction contract. Pipeline handoffs and stage changes operate in session client state. Demonstration records are labeled and excluded from the live queue. The next release must persist Action records, stage transitions, approvals, field provenance, and events to the governed data plane before they are treated as authoritative operating records.
 
 ## Priorities
 
@@ -62,7 +70,7 @@ This release establishes the production interface and governed interaction contr
 
 ### P1 — Unified operating records
 
-- Map Opportunity Scout records into intake automatically.
+- Persist the now-connected Pipeline-to-Actions handoff across sessions.
 - Convert approved opportunities into governed project records without re-entry.
 - Link delivery, QA/QC, closeout, and Client Success evidence to the same record.
 - Add role-based “My actions” ownership and notification counts.
