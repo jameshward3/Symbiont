@@ -1,3 +1,5 @@
+import { capabilityProfiles } from "./capability-matching.ts";
+
 export const BUSINESS_AREAS = ["Executive", "Sales", "Marketing", "Delivery", "Technical", "Operations", "Research", "AI", "Archive"] as const;
 export const ASSET_TYPES = ["POL", "SOP", "STD", "TPL", "CHK", "FRM", "RPT", "DEC", "MTG", "DEL", "DAT", "AUT", "AGT", "RES"] as const;
 export const LIFECYCLE = ["Draft", "Review", "Approved", "Active", "Superseded", "Archived"] as const;
@@ -20,7 +22,7 @@ export type QualityDimension = number | "unknown";
 export type QualityScore = { ownership: QualityDimension; freshness: QualityDimension; completeness: QualityDimension; findability: QualityDimension; usage: QualityDimension; linkHealth: QualityDimension; score: number | null; status: "Healthy" | "Remediation" | "Restricted from guidance" | "Unknown" };
 export type KnowledgeAlert = { id: string; kind: "Duplicate" | "Conflict" | "Broken link" | "Orphan" | "Stale"; severity: "Review" | "Escalate"; title: string; detail: string; assetIds: string[] };
 export type KnowledgeAuditEvent = { id: string; assetId: string; actorAgentId: string; action: string; reason: string; sourceEvidence: string; correlationId: string; previousState?: string | null; occurredAt: string; isDemonstration: boolean };
-export type KnowledgeData = { source: "d1" | "demonstration"; database: "connected" | "connected_empty" | "unavailable" | "authorization_required"; asOf: string; activation: string; assets: KnowledgeAsset[]; alerts: KnowledgeAlert[]; auditEvents: KnowledgeAuditEvent[] };
+export type KnowledgeData = { source: "d1" | "verified_snapshot" | "demonstration"; database: "connected" | "connected_empty" | "published_snapshot" | "unavailable" | "authorization_required"; asOf: string; activation: string; assets: KnowledgeAsset[]; alerts: KnowledgeAlert[]; auditEvents: KnowledgeAuditEvent[] };
 export const LEGACY_INTAKE = { physicalFiles: 10648, uniqueHashes: 10082, nestedArchiveMembers: 1221, classification: "Restricted", connectedToD1: false } as const;
 
 const transitions: Record<LifecycleStatus, LifecycleStatus[]> = {
@@ -84,6 +86,43 @@ export function treatKnowledgeContentAsUntrusted(content: string) {
 }
 
 const q = (ownership: QualityDimension, freshness: QualityDimension, completeness: QualityDimension, findability: QualityDimension, usage: QualityDimension, linkHealth: QualityDimension) => calculateKnowledgeQuality({ ownership, freshness, completeness, findability, usage, linkHealth });
+
+export const verifiedKnowledgeData: KnowledgeData = {
+  source:"verified_snapshot", database:"published_snapshot", asOf:"2026-07-21T11:40:00.000Z",
+  activation:"Verified governed knowledge snapshot. Sanitized historical capability aggregates are available here; authorized users can connect the preserved local archive to open full source files without uploading them.",
+  assets: capabilityProfiles.map((profile):KnowledgeAsset => ({
+    id:profile.knowledgeAssetId,
+    title:profile.kind === "historical" ? `Historical capability — ${profile.label}` : `New prerogative — ${profile.label}`,
+    description:profile.summary,
+    businessArea:profile.kind === "historical" ? "Archive" : "Research",
+    assetType:"RES",
+    owner:profile.kind === "historical" ? "AGT-005" : "AGT-001",
+    author:profile.kind === "historical" ? "AGT-005" : "AGT-001",
+    reviewer:"Authorized executive",
+    approver:null,
+    status:"Review",
+    classification:"Internal",
+    version:"0.1",
+    effectiveDate:null,
+    reviewDate:profile.kind === "historical" ? "2026-07-27" : "2026-08-15",
+    sourceSystem:profile.kind === "historical" ? "Restricted legacy archive aggregate index" : "Symbiont operating charter",
+    canonicalLocation:profile.kind === "historical" ? `local-vault://capabilities/${profile.id.toLowerCase()}` : `knowledge://company-prerogatives/${profile.id.toLowerCase()}`,
+    sourceEvidence:profile.kind === "historical" ? `${profile.evidenceCount} ${profile.evidenceUnit}; full files require local archive authorization and qualification.` : "Current company direction; no historical delivery claim is implied.",
+    contentHash:`verified:${profile.id}:2026-07-21`,
+    relatedProject:null,
+    relatedAgent:"AGT-009",
+    tags:[profile.label, profile.kind === "historical" ? "historical capability" : "new prerogative"],
+    synonyms:profile.keywords,
+    quality:q(100,100,profile.kind === "historical" ? 65 : 70,100,"unknown",profile.kind === "historical" ? 75 : 100),
+    linkStatus:profile.kind === "historical" ? "Unknown" : "Healthy",
+    isAuthoritative:false,
+    isDemonstration:false,
+    updatedAt:"2026-07-21T11:40:00.000Z",
+  })),
+  alerts:[{ id:"ALT-2026-CAP-001", kind:"Orphan", severity:"Review", title:"Historical capability claims require file-level qualification", detail:"Aggregate evidence supports internal matching, but full source files must be opened and reviewed before any external past-performance statement.", assetIds:capabilityProfiles.filter((item)=>item.kind==="historical").map((item)=>item.knowledgeAssetId) }],
+  auditEvents:[],
+};
+
 export const demonstrationKnowledgeData: KnowledgeData = {
   source: "demonstration", database: "connected_empty", asOf: "2026-07-20T22:45:00.000Z",
   activation: "Restricted local intake complete: 10,648 historical files indexed. The archive and document text are not connected to D1 or this deployment; review and activation remain pending.",

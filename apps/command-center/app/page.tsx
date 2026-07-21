@@ -22,6 +22,7 @@ import type { MarketingData } from "@/lib/marketing";
 import type { ArchitectureData } from "@/lib/technical-architecture";
 import type { ProductPortfolioData } from "@/lib/product-architecture";
 import type { FinanceData } from "@/lib/finance";
+import { matchOpportunityToKnowledge, type OpportunityKnowledgeBrief } from "@/lib/capability-matching";
 
 type View = "Overview" | "Action Portal" | "Agent Network" | "Shared Goals" | "Sales Operations" | "Marketing" | "Delivery Control" | "Finance" | "Product" | "Client Success" | "Quality" | "Knowledge" | "Reliability" | "Technical Architecture" | "Security & Data" | "Opportunity Scout" | "Decisions" | "Systems";
 type Connection = "checking" | "unavailable" | "authorization_required" | "connected" | "error";
@@ -38,27 +39,22 @@ const navItems: { label: View; code: string }[] = [
   { label: "Sales Operations", code: "04" }, { label: "Marketing", code: "11" }, { label: "Delivery Control", code: "03" }, { label: "Finance", code: "06" }, { label: "Product", code: "10" }, { label: "Client Success", code: "13" }, { label: "Quality", code: "QA" }, { label: "Knowledge", code: "K5" }, { label: "Reliability", code: "08" }, { label: "Technical Architecture", code: "12" }, { label: "Security & Data", code: "14" }, { label: "Opportunity Scout", code: "09" }, { label: "Decisions", code: "06" }, { label: "Systems", code: "07" },
 ];
 
-const demoAgents: Agent[] = [
-  { stable_id: "AGT-001", name: "Symbiont COO", mission: "Coordinate company operations, priorities, standards, and agent work.", authority_level: "L2", status: "Ready" },
-  { stable_id: "AGT-002", name: "Sales Operations", mission: "Convert qualified client needs into profitable, repeatable work.", authority_level: "L1", status: "Draft mode" },
-  { stable_id: "AGT-003", name: "Delivery Control", mission: "Coordinate project authorization, delivery health, exceptions, changes, quality gates, and closeout.", authority_level: "L1", status: "Draft mode" },
-  { stable_id: "AGT-004", name: "QA/QC", mission: "Independently validate exact deliverable versions against approved requirements and release gates.", authority_level: "L1", status: "Draft mode" },
-  { stable_id: "AGT-005", name: "Knowledge Steward", mission: "Maintain an evidence-backed, searchable, governed source of operating truth.", authority_level: "L2", status: "Review" },
-  { stable_id: "AGT-006", name: "Finance Operations", mission: "Transform approved accounting and operational data into reconciled visibility, forecasts, and draft financial controls.", authority_level: "L1", status: "Draft mode" },
-  { stable_id: "AGT-008", name: "Automation Reliability", mission: "Detect automation failures, contain impact, preserve evidence, and coordinate verified recovery.", authority_level: "L2", status: "Pilot" },
-  { stable_id: "AGT-009", name: "Opportunity Scout", mission: "Discover and verify public buying signals, then route evidence-backed leads.", authority_level: "L1", status: "Activation required" },
-  { stable_id: "AGT-010", name: "Product & Service Architecture", mission: "Convert recurring delivery knowledge into repeatable, measurable, profitable building-intelligence products.", authority_level: "L1", status: "Draft mode" },
-  { stable_id: "AGT-014", name: "Security & Data Governance", mission: "Protect Symbiont and client data while enabling authorized work through governed controls.", authority_level: "L1", status: "Draft" },
-  { stable_id: "AGT-013", name: "Client Success", mission: "Protect client outcomes from onboarding through value realization, renewal, and expansion routing.", authority_level: "L1", status: "Draft mode" },
-  { stable_id: "AGT-011", name: "Marketing & Content Operations", mission: "Turn approved knowledge and outcomes into evidence-backed marketing assets and qualified demand.", authority_level: "L1", status: "Draft mode" },
-  { stable_id: "AGT-012", name: "Technical Architecture", mission: "Define interoperable, secure, scalable, and supportable building-intelligence architectures.", authority_level: "L1", status: "Draft" },
+const publishedAgents: Agent[] = [
+  { stable_id: "AGT-001", name: "Symbiont COO", mission: "Coordinate company operations, priorities, standards, and agent work.", authority_level: "L2", status: "Active" },
+  { stable_id: "AGT-002", name: "Sales Operations", mission: "Convert qualified client needs into profitable, repeatable work.", authority_level: "L1", status: "Active · human approval gated" },
+  { stable_id: "AGT-003", name: "Delivery Control", mission: "Coordinate project authorization, delivery health, exceptions, changes, quality gates, and closeout.", authority_level: "L1", status: "Built · activation pending" },
+  { stable_id: "AGT-004", name: "QA/QC", mission: "Independently validate exact deliverable versions against approved requirements and release gates.", authority_level: "L1", status: "Built · activation pending" },
+  { stable_id: "AGT-005", name: "Knowledge Steward", mission: "Maintain an evidence-backed, searchable, governed source of operating truth.", authority_level: "L2", status: "Active · source review" },
+  { stable_id: "AGT-006", name: "Finance Operations", mission: "Transform approved accounting and operational data into reconciled visibility, forecasts, and draft financial controls.", authority_level: "L1", status: "Built · activation pending" },
+  { stable_id: "AGT-008", name: "Automation Reliability", mission: "Detect automation failures, contain impact, preserve evidence, and coordinate verified recovery.", authority_level: "L2", status: "Built · monitoring pending" },
+  { stable_id: "AGT-009", name: "Opportunity Scout", mission: "Discover, verify, match, and route NJ/NY public opportunities against governed historical capabilities and new company prerogatives.", authority_level: "L1", status: "Active — governed" },
+  { stable_id: "AGT-010", name: "Product & Service Architecture", mission: "Convert recurring delivery knowledge into repeatable, measurable, profitable building-intelligence products.", authority_level: "L1", status: "Built · activation pending" },
+  { stable_id: "AGT-014", name: "Security & Data Governance", mission: "Protect Symbiont and client data while enabling authorized work through governed controls.", authority_level: "L1", status: "Built · activation pending" },
+  { stable_id: "AGT-013", name: "Client Success", mission: "Protect client outcomes from onboarding through value realization, renewal, and expansion routing.", authority_level: "L1", status: "Built · activation pending" },
+  { stable_id: "AGT-011", name: "Marketing & Content Operations", mission: "Turn approved knowledge and outcomes into evidence-backed marketing assets and qualified demand.", authority_level: "L1", status: "Built · activation pending" },
+  { stable_id: "AGT-012", name: "Technical Architecture", mission: "Define interoperable, secure, scalable, and supportable building-intelligence architectures.", authority_level: "L1", status: "Built · activation pending" },
 ];
-const demoGoals: Goal[] = [{ stable_id: "GOAL-2026-001", objective: "Prove governed multi-agent sales-to-delivery coordination", status: "Approved", priority: "P1", success_metrics: ["One claim owner", "Human proposal approval", "Auditable handoff"] }];
-const demoOpps: Opportunity[] = [
-  { stable_id: "OPP-2026-001", name: "Portfolio intelligence foundation", stage: "Discovery", qualification_score: 78, recommendation: "Pursue", amount: 240000, currency: "USD", probability: 45, expected_close: "2026-09-18", next_action: "Confirm decision criteria", next_action_date: "2026-07-22", proposal_status: "Not started", recurring_potential: "High", required_approvals: [] },
-  { stable_id: "OPP-2026-002", name: "Reality-capture program", stage: "Proposal", qualification_score: 64, recommendation: "Nurture", amount: 165000, currency: "USD", probability: 55, expected_close: "2026-08-28", next_action: "Resolve access assumptions", next_action_date: "2026-07-18", proposal_status: "Human review", recurring_potential: "Medium", required_approvals: ["Pricing", "External proposal"] },
-  { stable_id: "OPP-2026-003", name: "Building data operations", stage: "Solution", qualification_score: 84, recommendation: "Pursue", amount: 312000, currency: "USD", probability: 60, expected_close: "2026-10-02", next_action: "Validate support cadence", next_action_date: "2026-07-25", proposal_status: "Draft", recurring_potential: "High", required_approvals: ["Scope"] },
-];
+const publishedGoals: Goal[] = [{ stable_id: "GOAL-2026-009", objective: "Find NJ/NY network, cabling, switching, voice, physical-security, IT consulting, and 3D-scanning work and match it to governed knowledge.", status: "Active", priority: "P1", success_metrics: ["Official canonical evidence", "Historical capability match", "Human pursuit approval", "Auditable handoff"] }];
 
 export default function Home() {
   const [view, setView] = useState<View>("Overview");
@@ -113,15 +109,16 @@ export default function Home() {
 
   const agents = useMemo(() => {
     const liveAgents = new Map((dashboard?.agents ?? []).map(agent => [agent.stable_id, agent]));
-    const consolidated = demoAgents.map(agent => ({ ...agent, ...liveAgents.get(agent.stable_id) }));
+    const consolidated = publishedAgents.map(agent => ({ ...agent, ...liveAgents.get(agent.stable_id) }));
     const knownIds = new Set(consolidated.map(agent => agent.stable_id));
     return consolidated.concat((dashboard?.agents ?? []).filter(agent => !knownIds.has(agent.stable_id)));
   }, [dashboard]);
-  const goals = dashboard?.goals ?? demoGoals;
-  const opportunities = dashboard?.opportunities ?? demoOpps;
+  const goals = dashboard?.goals ?? publishedGoals;
+  const publishedPipeline:Opportunity[] = (scoutData?.opportunities ?? []).filter((item)=>!item.isDemonstration).map((item)=>({ stable_id:item.id, name:item.title, stage:item.route === "sales_operations" ? "Qualified" : "Lead", qualification_score:item.totalScore, recommendation:item.route === "sales_operations" ? "Review" : "Watch", amount:item.statedValue ?? undefined, currency:"USD", probability:item.route === "sales_operations" ? 35 : 15, expected_close:item.deadlineAt?.slice(0,10), next_action:item.nextAction, next_action_date:item.deadlineAt?.slice(0,10), proposal_status:item.handoffStatus, recurring_potential:"To qualify", required_approvals:["AGT-002 acceptance"] }));
+  const opportunities = dashboard?.opportunities ?? publishedPipeline;
   const weighted = opportunities.reduce((sum, item) => sum + Number(item.amount || 0) * Number(item.probability || 0) / 100, 0);
   const stale = opportunities.filter(item => item.next_action_date && new Date(item.next_action_date) < new Date("2026-07-20T00:00:00")).length;
-  const sourceLabel = connection === "connected" ? "Live governed data" : "Demonstration data";
+  const sourceLabel = connection === "connected" ? "Live governed data" : "Verified published registry";
 
   return (
     <div className="app-shell">
@@ -130,7 +127,7 @@ export default function Home() {
         <nav aria-label="Primary navigation"><p className="eyebrow nav-label">Command views</p>{navItems.map(item => <button className={`nav-item ${view === item.label ? "active" : ""}`} key={item.label} onClick={() => setView(item.label)} type="button"><span className="nav-code">{item.code}</span><span>{item.label}</span></button>)}</nav>
         <div className="side-divider" />
         <div className="system-state"><p className="eyebrow">Runtime state</p><StateRow label="Shared data" state={connection === "connected" ? "Live" : connection === "checking" ? "Checking" : "Restricted"} tone={connection === "connected" ? "green" : "amber"} /><StateRow label="Agent authority" state="Governed" tone="green" /><StateRow label="External actions" state="Approval" tone="amber" /></div>
-        <div className="agent-card"><div className="agent-orbit"><span>009</span></div><div><p>OPPORTUNITY SCOUT</p><strong>L1 · Activation required</strong></div><i className="pulse amber-pulse" /></div>
+        <div className="agent-card"><div className="agent-orbit"><span>009</span></div><div><p>OPPORTUNITY SCOUT</p><strong>L1 · Active — governed</strong></div><i className="pulse" /></div>
       </aside>
       <main>
         <header className="topbar"><div><p className="eyebrow">Executive command center</p><h1>{view}</h1></div><div className="top-actions"><span className={`demo-pill ${connection === "connected" ? "live-pill" : ""}`}>{sourceLabel}</span><div className="avatar">JW</div></div></header>
@@ -138,7 +135,7 @@ export default function Home() {
           <ConnectionBanner connection={connection} connect={connect} accessKey={accessKey} setAccessKey={setAccessKey} />
           {view === "Overview" && <Overview agents={agents} goals={goals} opportunities={opportunities} weighted={weighted} stale={stale} source={sourceLabel} />}
           {view === "Action Portal" && <WorkflowPortal accessKey={accessKey} />}
-          {view === "Agent Network" && <AgentNetwork agents={agents} source={sourceLabel} />}
+          {view === "Agent Network" && <AgentNetwork agents={agents} source={sourceLabel} onNavigate={setView} />}
           {view === "Shared Goals" && <SharedGoals goals={goals} agents={agents} source={sourceLabel} />}
           {view === "Sales Operations" && <SalesOperations opportunities={opportunities} source={sourceLabel} />}
           {view === "Marketing" && <MarketingControl data={marketingData} />}
@@ -148,7 +145,7 @@ export default function Home() {
           {view === "Product" && <ProductControl data={productData} />}
           {view === "Client Success" && <ClientSuccessControl data={clientSuccessData} />}
           {view === "Quality" && <QualityControl data={qualityData} />}
-          {view === "Knowledge" && <KnowledgeControl data={knowledgeData} />}
+          {view === "Knowledge" && <KnowledgeControl data={knowledgeData} onNavigate={(next)=>setView(next)} />}
           {view === "Reliability" && <ReliabilityControl data={reliabilityData} />}
           {view === "Technical Architecture" && <TechnicalArchitectureControl data={architectureData} />}
           {view === "Security & Data" && <SecurityGovernanceControl data={securityData} />}
@@ -172,7 +169,7 @@ function Overview({ agents, goals, opportunities, weighted, stale, source }: { a
   return <><section className="brief-intro"><div><p className="date-line">{date} · {source}</p><h2>Governed agents. One<br/><em>operating truth.</em></h2></div><div className="brief-score"><span>AGENT READINESS</span><strong>{agents.length >= 7 ? "82" : "—"}</strong><small>/100</small><div className="score-track"><i style={{width: agents.length >= 7 ? "82%" : "0"}} /></div><p>Production gate: shared data + model</p></div></section><section className="metric-grid"><Metric label="Registered agents" value={String(agents.length).padStart(2,"0")} note="Governed cooperative network" /><Metric label="Shared goals" value={String(goals.length).padStart(2,"0")} note="One accountable owner" /><Metric label="Weighted pipeline" value={money(weighted)} note={`${opportunities.length} opportunities`} /><Metric label="Stale actions" value={String(stale).padStart(2,"0")} note={stale ? "Requires sales review" : "Within date"} tone={stale ? "warning" : "positive"} /></section><section className="dashboard-grid"><div className="panel"><PanelTitle kicker="Agent network" title="Cooperative capacity" />{agents.map(a => <div className="network-row" key={a.stable_id}><span>{a.stable_id}</span><div><strong>{a.name}</strong><p>{a.mission}</p></div><b>{a.authority_level}</b><i>{a.status}</i></div>)}</div><div className="panel attention-panel"><PanelTitle kicker="Governance" title="Human approval remains the gate" /><div className="focus-list"><Focus n="01" text="External client communications" /><Focus n="02" text="Pricing, proposals, scope + terms" /><Focus n="03" text="Material decisions + commitments" /></div></div><div className="panel"><PanelTitle kicker="Shared goal" title={goals[0]?.stable_id || "No active goal"} /><h3 className="feature-title">{goals[0]?.objective || "Create an approved governed goal."}</h3><div className="goal-meta"><span>OWNER <b>AGT-001</b></span><span>CONTRIBUTOR <b>AGT-002</b></span><span>STATUS <b>{goals[0]?.status || "Unavailable"}</b></span></div></div><div className="panel acid-panel"><p className="eyebrow">Sales operations signal</p><h3>{stale ? `${stale} opportunity needs a dated next action.` : "Pipeline actions are current."}</h3><p>AGT-002 can qualify, draft, and hand off. A human approves every external or commercial commitment.</p></div></section></>;
 }
 
-function AgentNetwork({ agents, source }: { agents: Agent[]; source: string }) {
+function AgentNetwork({ agents, source, onNavigate }: { agents: Agent[]; source: string; onNavigate:(view:View)=>void }) {
   const [activeId, setActiveId] = useState(agents[0]?.stable_id ?? "AGT-001");
   const active = agents.find(agent => agent.stable_id === activeId) ?? agents[0];
   const count = Math.max(agents.length, 1);
@@ -190,6 +187,7 @@ function AgentNetwork({ agents, source }: { agents: Agent[]; source: string }) {
     return { x: 50 + Math.cos(angle) * radius, y: 50 + Math.sin(angle) * radius };
   };
   const statusCounts = agents.reduce((totals, agent) => { totals[agentTone(agent.status)] += 1; return totals; }, { green:0, amber:0, red:0, gray:0 } as Record<AgentTone,number>);
+  const workspace = active ? agentWorkspace(active.stable_id) : "Agent Network";
 
   return <section className="network-view">
     <SectionLead kicker="Cooperative intelligence" title="One network. Explicit authority." body={`${source}. Explore each agent and the governed relationships that connect discovery, sales, delivery, quality, knowledge, and operations.`} />
@@ -205,7 +203,7 @@ function AgentNetwork({ agents, source }: { agents: Agent[]; source: string }) {
           <circle cx="50" cy="50" r="42" className="orbit-ring" />
           {relationships.map(([from,to], index) => { const a=point(from), b=point(to); const highlighted=agents[from]?.stable_id===activeId||agents[to]?.stable_id===activeId; return <path key={`${from}-${to}-${index}`} d={`M ${a.x} ${a.y} Q 50 50 ${b.x} ${b.y}`} className={highlighted ? "active-link" : ""} />; })}
         </svg>
-        {agents.map((agent,index) => { const p=point(index); const tone=agentTone(agent.status); return <button key={agent.stable_id} type="button" className={`network-node ${tone} ${agent.stable_id===activeId?"selected":""}`} style={{left:`${p.x}%`,top:`${p.y}%`}} onMouseEnter={()=>setActiveId(agent.stable_id)} onFocus={()=>setActiveId(agent.stable_id)} onClick={()=>setActiveId(agent.stable_id)} aria-pressed={agent.stable_id===activeId} aria-label={`${agent.stable_id}, ${agent.name}, ${agent.status}`}><i /><strong>{agent.stable_id.replace("AGT-","")}</strong><span>{shortAgentName(agent.name)}</span></button>; })}
+        {agents.map((agent,index) => { const p=point(index); const tone=agentTone(agent.status); return <button key={agent.stable_id} type="button" className={`network-node ${tone} ${agent.stable_id===activeId?"selected":""}`} style={{left:`${p.x}%`,top:`${p.y}%`}} onMouseEnter={()=>setActiveId(agent.stable_id)} onFocus={()=>setActiveId(agent.stable_id)} onClick={()=>setActiveId(agent.stable_id)} onDoubleClick={()=>onNavigate(agentWorkspace(agent.stable_id))} aria-pressed={agent.stable_id===activeId} aria-label={`${agent.stable_id}, ${agent.name}, ${agent.status}`} title={`${agent.status} · ${agent.authority_level}\n${agent.mission}\nDouble-click to open ${agentWorkspace(agent.stable_id)}`}><i /><strong>{agent.stable_id.replace("AGT-","")}</strong><span>{shortAgentName(agent.name)}</span></button>; })}
         {active && <article className="network-core" aria-live="polite">
           <p>{active.stable_id} · {active.authority_level}</p>
           <h3>{active.name}</h3>
@@ -219,18 +217,21 @@ function AgentNetwork({ agents, source }: { agents: Agent[]; source: string }) {
         <h3>{active?.name ?? "No agent selected"}</h3>
         <p>{active?.mission}</p>
         <dl>
-          <div><dt>Agent ID</dt><dd>{active?.stable_id}</dd></div>
-          <div><dt>Authority</dt><dd>{active?.authority_level}</dd></div>
-          <div><dt>Parent</dt><dd>{active?.stable_id === "AGT-001" ? "Founder" : "AGT-001 · COO"}</dd></div>
-          <div><dt>Human owner</dt><dd>Authorized executive</dd></div>
-          <div><dt>Shared goal</dt><dd>GOAL-2026-001</dd></div>
-          <div><dt>External action</dt><dd>{active?.authority_level === "L1" ? "Human approval required" : "Governed boundary"}</dd></div>
+          <InspectorDatum label="Agent ID" value={active?.stable_id ?? "Unavailable"} detail="Controlled identifier in the agent registry" onOpen={()=>onNavigate(workspace)} />
+          <InspectorDatum label="Authority" value={active?.authority_level ?? "Unavailable"} detail="Click to open the agent workspace and its authority controls" onOpen={()=>onNavigate(workspace)} />
+          <InspectorDatum label="Parent" value={active?.stable_id === "AGT-001" ? "Founder" : "AGT-001 · COO"} detail="Accountability relationship" onOpen={()=>onNavigate("Agent Network")} />
+          <InspectorDatum label="Human owner" value="Authorized executive" detail="Material action and external commitment owner" onOpen={()=>onNavigate("Decisions")} />
+          <InspectorDatum label="Shared goal" value={active?.stable_id === "AGT-009" ? "GOAL-2026-009" : "GOAL-2026-001"} detail="Open the governed shared-goal register" onOpen={()=>onNavigate("Shared Goals")} />
+          <InspectorDatum label="External action" value={active?.authority_level === "L1" ? "Human approval required" : "Governed boundary"} detail="Open system authority controls" onOpen={()=>onNavigate("Systems")} />
         </dl>
-        <p className="network-help">Hover, focus, or tap any node to inspect its operating contract.</p>
+        <button type="button" className="network-open" onClick={()=>onNavigate(workspace)}>Open {workspace} →</button>
+        <p className="network-help">Hover or focus for status and mission. Tap to inspect; double-click a node or use Open to enter its workspace.</p>
       </aside>
     </div>
   </section>;
 }
+
+function InspectorDatum({label,value,detail,onOpen}:{label:string;value:string;detail:string;onOpen:()=>void}) { return <div><dt>{label}</dt><dd><button type="button" title={detail} onClick={onOpen}>{value}<span>→</span></button></dd></div>; }
 
 type AgentTone = "green" | "amber" | "red" | "gray";
 function agentTone(status: string): AgentTone {
@@ -240,12 +241,14 @@ function agentTone(status: string): AgentTone {
   return "gray";
 }
 function shortAgentName(name: string) { return name.replace("Symbiont ","").replace(" Operations","").replace(" & Service Architecture"," Product").replace(" & Data Governance"," Security").replace("Marketing & Content","Marketing"); }
+function agentWorkspace(id:string):View { return ({"AGT-001":"Overview","AGT-002":"Sales Operations","AGT-003":"Delivery Control","AGT-004":"Quality","AGT-005":"Knowledge","AGT-006":"Finance","AGT-008":"Reliability","AGT-009":"Opportunity Scout","AGT-010":"Product","AGT-011":"Marketing","AGT-012":"Technical Architecture","AGT-013":"Client Success","AGT-014":"Security & Data"} as Record<string,View>)[id] ?? "Agent Network"; }
 
 function SharedGoals({ goals, agents, source }: { goals: Goal[]; agents: Agent[]; source: string }) { return <section><SectionLead kicker="Shared outcomes" title="One owner. Many contributors." body={`${source}. Goals preserve success measures, dependencies, decisions, work evidence, and append-only events.`} />{goals.map(g => <article className="goal-card" key={g.stable_id}><div><p className="eyebrow">{g.stable_id} · {g.priority}</p><h3>{g.objective}</h3><span className="status-chip">{g.status}</span></div><div className="goal-members"><p>ACCOUNTABLE OWNER</p><strong>{agents[0]?.stable_id} · {agents[0]?.name}</strong><p>CONTRIBUTOR</p><strong>{agents[1]?.stable_id} · {agents[1]?.name}</strong></div><div><p className="eyebrow">Success evidence</p><ul>{(g.success_metrics || []).map(m => <li key={m}>{m}</li>)}</ul><p className="empty-note">Recent events and work-item evidence appear when the live data plane is connected.</p></div></article>)}</section>; }
 
-function SalesOperations({ opportunities, source }: { opportunities: Opportunity[]; source: string }) { return <section><SectionLead kicker="AGT-002 · Sales operations" title="Qualified work, clean handoffs." body={`${source}. Values shown below are ${source.startsWith("Live") ? "authorized operational records" : "harmless demonstration records"}.`} /><div className="sales-table"><div className="sales-head"><span>Opportunity</span><span>Qualification</span><span>Commercial</span><span>Next action</span><span>Governance</span></div>{opportunities.map(o => { const weighted = Number(o.amount||0)*Number(o.probability||0)/100; const stale = Boolean(o.next_action_date && new Date(o.next_action_date)<new Date("2026-07-20")); return <article className="sales-row" key={o.stable_id}><div><p>{o.stable_id} · {o.stage}</p><strong>{o.name}</strong><small>{o.recommendation || "Not scored"}</small></div><div><b className="score-badge">{o.qualification_score ?? "—"}</b><small>/100</small></div><div><strong>{money(Number(o.amount||0))}</strong><p>{o.probability || 0}% · {money(weighted)} weighted</p><small>Close {o.expected_close || "Unknown"}</small></div><div><strong>{o.next_action || "Missing"}</strong><p className={stale ? "danger-text" : ""}>{o.next_action_date || "No date"}{stale ? " · STALE" : ""}</p></div><div><span className="status-chip">{o.proposal_status}</span><p>Recurring: {o.recurring_potential}</p><small>{o.required_approvals?.length ? `${o.required_approvals.length} approval(s)` : "No open approval"}</small></div></article>})}</div></section>; }
+function SalesOperations({ opportunities, source }: { opportunities: Opportunity[]; source: string }) { const recordKind=source.startsWith("Live")?"authorized operational records":source.includes("Verified")?"verified published opportunity records":"demonstration records"; return <section><SectionLead kicker="AGT-002 · Sales operations" title="Qualified work, clean handoffs." body={`${source}. Values shown below are ${recordKind}.`} /><div className="sales-table"><div className="sales-head"><span>Opportunity</span><span>Qualification</span><span>Commercial</span><span>Next action</span><span>Governance</span></div>{opportunities.map(o => { const weighted = Number(o.amount||0)*Number(o.probability||0)/100; const stale = Boolean(o.next_action_date && new Date(o.next_action_date)<new Date("2026-07-20")); return <article className="sales-row" key={o.stable_id}><div><p>{o.stable_id} · {o.stage}</p><strong>{o.name}</strong><small>{o.recommendation || "Not scored"}</small></div><div><b className="score-badge">{o.qualification_score ?? "—"}</b><small>/100</small></div><div><strong>{money(Number(o.amount||0))}</strong><p>{o.probability || 0}% · {money(weighted)} weighted</p><small>Close {o.expected_close || "Unknown"}</small></div><div><strong>{o.next_action || "Missing"}</strong><p className={stale ? "danger-text" : ""}>{o.next_action_date || "No date"}{stale ? " · STALE" : ""}</p></div><div><span className="status-chip">{o.proposal_status}</span><p>Recurring: {o.recurring_potential}</p><small>{o.required_approvals?.length ? `${o.required_approvals.length} approval(s)` : "No open approval"}</small></div></article>})}</div></section>; }
 
 function OpportunityScout({ data }: { data: ScoutData | null }) {
+  const [selectedBrief, setSelectedBrief] = useState<OpportunityKnowledgeBrief|null>(null);
   if (!data) return <section><SectionLead kicker="AGT-009 · Opportunity Scout" title="Evidence before pipeline." body="Loading the read-only opportunity surface. No scan, source connection, database write, or handoff is being simulated." /><div className="scout-loading">READ-ONLY DATA ADAPTER · CHECKING</div></section>;
   const isLive = data.source === "d1";
   const isVerified = isLive || data.source === "verified_snapshot";
@@ -257,6 +260,7 @@ function OpportunityScout({ data }: { data: ScoutData | null }) {
   const averageScore = visible.length ? Math.round(visible.reduce((sum,item)=>sum+item.totalScore,0)/visible.length) : 0;
   const averageConfidence = visible.length ? Math.round(visible.reduce((sum,item)=>sum+item.confidence,0)/visible.length) : 0;
   const sourceCategories = new Set(data.monitoringQueries.map(query => query.sourceCategory)).size;
+  const briefOpportunity = selectedBrief ? visible.find((item)=>item.id===selectedBrief.opportunityId) : null;
 
   return <section className="scout-view">
     <div className="scout-hero"><div><p className="eyebrow">AGT-009 · Opportunity Scout</p><h2>Evidence before<br/><em>pipeline.</em></h2><p>Canonical-source verification, reproducible fit scoring, amendment-aware deduplication, and governed routing to AGT-002.</p></div><div className="scout-activation"><span className={`dot ${isVerified ? "green" : "amber"}`} /><div><strong>{isLive ? "Live D1 records" : isVerified ? "Verified published snapshot" : "Demonstration mode"}</strong><p>{data.activation}</p></div></div></div>
@@ -270,12 +274,13 @@ function OpportunityScout({ data }: { data: ScoutData | null }) {
       <Metric label="Evidence confidence" value={`${averageConfidence}%`} note={isVerified ? "Verified records" : "Demonstration scoring"} />
     </div>
     <div className="scout-layout">
-      <div className="scout-opportunities"><PanelTitle kicker="Opportunity register" title="Verified, watch, archive" />{visible.map(item => <article className="scout-opportunity" key={item.id}>
+      <div className="scout-opportunities"><PanelTitle kicker="Opportunity register" title="Verified, watch, archive" />{visible.map(item => { const brief=matchOpportunityToKnowledge(item); return <article className="scout-opportunity" key={item.id}>
         <div className="scout-score"><strong>{item.totalScore}</strong><span>/100</span><i className={`route-dot ${item.route}`} /></div>
-        <div className="scout-main"><div className="scout-titleline"><div><p>{item.id} · {item.procurementType}{item.isDemonstration ? " · DEMO" : ""}</p><h3>{item.title}</h3><span>{item.issuer} · {item.location || "Location unknown"}</span></div><b className={`route-chip ${item.route}`}>{routeLabel(item.route)}</b></div><p className="scout-fit">{item.fitRationale}</p><div className="scout-facts"><span>DEADLINE <b>{formatDeadline(item.deadlineAt, item.deadlineTimezone)}</b></span><span>VALUE <b>{item.statedValue ? money(item.statedValue) : "Not stated"}</b></span><span>CONFIDENCE <b>{item.confidence}%</b></span><span>FRESHNESS <b>{item.freshness}</b></span></div><div className="scout-risk"><div><span>RISKS</span><p>{item.risks.length ? item.risks.join(" · ") : "None recorded"}</p></div><div><span>MISSING</span><p>{item.missingInformation.length ? item.missingInformation.join(" · ") : "None recorded"}</p></div></div><div className="scout-next"><span>{item.handoffStatus}</span><p>{item.nextAction}</p><a href={item.canonicalUrl} target="_blank" rel="noreferrer">Canonical source ↗</a></div></div>
-      </article>)}</div>
+        <div className="scout-main"><div className="scout-titleline"><div><p>{item.id} · {item.procurementType}{item.isDemonstration ? " · DEMO" : ""}</p><h3>{item.title}</h3><span>{item.issuer} · {item.location || "Location unknown"}</span></div><b className={`route-chip ${item.route}`}>{routeLabel(item.route)}</b></div><p className="scout-fit">{item.fitRationale}</p><div className="capability-match-row">{brief.matches.slice(0,4).map((match)=><button type="button" key={match.id} title={`${match.summary} ${match.kind === "historical" ? `${match.evidenceCount} ${match.evidenceUnit}.` : "New company prerogative."}`} onClick={()=>setSelectedBrief(brief)}><span>{match.kind === "historical" ? "HISTORY" : "NEW"}</span>{match.label}<b>{match.relevance}%</b></button>)}</div><div className="scout-facts"><button type="button" title="Open the evidence brief for deadline context" onClick={()=>setSelectedBrief(brief)}>DEADLINE <b>{formatDeadline(item.deadlineAt, item.deadlineTimezone)}</b></button><button type="button" title="Open value evidence and missing information" onClick={()=>setSelectedBrief(brief)}>VALUE <b>{item.statedValue ? money(item.statedValue) : "Not stated"}</b></button><button type="button" title="Confidence measures source reliability, not desirability" onClick={()=>setSelectedBrief(brief)}>CONFIDENCE <b>{item.confidence}%</b></button><button type="button" title={item.sourceKind} onClick={()=>setSelectedBrief(brief)}>FRESHNESS <b>{item.freshness}</b></button></div><div className="scout-risk"><button type="button" title="Open the complete risk and evidence brief" onClick={()=>setSelectedBrief(brief)}><span>RISKS</span><p>{item.risks.length ? item.risks.join(" · ") : "None recorded"}</p></button><button type="button" title="Open the missing-information and source checklist" onClick={()=>setSelectedBrief(brief)}><span>MISSING</span><p>{item.missingInformation.length ? item.missingInformation.join(" · ") : "None recorded"}</p></button></div><div className="scout-next"><span>{item.handoffStatus}</span><p>{item.nextAction}</p><div><button type="button" onClick={()=>setSelectedBrief(brief)}>Open knowledge brief →</button><a href={item.canonicalUrl} target="_blank" rel="noreferrer">Canonical source ↗</a></div></div></div>
+      </article>; })}</div>
       <aside className="monitoring-panel"><PanelTitle kicker="Monitoring queries" title="Coverage plan" /><p className="monitoring-note">{isVerified ? "Active weekday monitoring uses official public sources and stops at every access or procurement boundary." : "Queries remain inactive until their sources, terms, cadence, and authenticated runtime are approved."}</p>{data.monitoringQueries.map(query => <article className="query-row" key={query.id}><div><span>{query.id}</span><b>{query.status}</b></div><h3>{query.name}</h3><p>{query.queryText}</p><dl><div><dt>Sources</dt><dd>{query.sourceCategory}</dd></div><div><dt>Cadence</dt><dd>{query.cadence}</dd></div><div><dt>Access</dt><dd>{query.requiresAuthentication ? "Authentication boundary" : "Public-source review"}</dd></div></dl></article>)}</aside>
     </div>
+    {selectedBrief&&briefOpportunity&&<aside className="opportunity-brief-drawer" role="dialog" aria-modal="true" aria-label={`Opportunity brief for ${briefOpportunity.title}`}><button type="button" className="drawer-close" onClick={()=>setSelectedBrief(null)} aria-label="Close opportunity brief">×</button><p className="eyebrow">Knowledge-grounded opportunity brief</p><h3>{briefOpportunity.title}</h3><a href={briefOpportunity.canonicalUrl} target="_blank" rel="noreferrer">Open official source ↗</a><div className="brief-scoreline"><div><span>Opportunity fit</span><strong>{briefOpportunity.totalScore}</strong></div><div><span>Historical continuity</span><strong>{selectedBrief.continuityScore}</strong></div><div><span>Evidence confidence</span><strong>{briefOpportunity.confidence}%</strong></div></div><section><p className="eyebrow">Project brief</p><p>{selectedBrief.projectBrief}</p></section><section><p className="eyebrow">Historical matches + new prerogatives</p>{selectedBrief.matches.map((match)=><button type="button" className="brief-match" title={match.summary} key={match.id}><span>{match.kind === "historical" ? "Historical evidence" : "New prerogative"}</span><b>{match.label}</b><small>{match.kind === "historical" ? `${match.evidenceCount} ${match.evidenceUnit}` : "No legacy claim"} · {match.relevance}% relevance</small></button>)}</section><section><p className="eyebrow">Evidence-grounded starter text</p><blockquote>{selectedBrief.starterNarrative}</blockquote></section><section><p className="eyebrow">Next action</p><p>{briefOpportunity.nextAction}</p><ul>{briefOpportunity.missingInformation.map((item)=><li key={item}>{item}</li>)}</ul></section><p className="brief-warning">{selectedBrief.evidenceWarning}</p></aside>}
     <div className="handoff-strip"><div><p className="eyebrow">Governed route</p><strong>AGT-009</strong><span>Discovery + evidence</span></div><i>→</i><div><p className="eyebrow">Acceptance gate</p><strong>AGT-002</strong><span>Qualification + pursuit</span></div><i>↗</i><div><p className="eyebrow">Escalation</p><strong>AGT-001</strong><span>Priority + authority conflicts</span></div><b>{isVerified ? `${qualified} routed` : "No live handoff"}</b></div>
   </section>;
 }

@@ -19,6 +19,7 @@ test("Knowledge UI and skill expose demonstration, access, archive, and injectio
   ]);
   assert.match(ui, /DEMONSTRATION INDEX/); assert.match(ui, /Legacy Exchange/); assert.match(ui, /Human approval/);
   assert.match(ui, /Browse by need/); assert.match(ui, /Ready to use/); assert.match(ui, /Reference only/); assert.match(ui, /Governance and audit trail/);
+  assert.match(ui, /Connect full-file archive/); assert.match(ui, /never uploaded/i); assert.match(ui, /Open matched opportunities/);
   assert.match(skill, /untrusted source content/i); assert.match(skill, /permanently delete/i); assert.match(skill, /Active authoritative records/i);
   assert.match(access, /prompt-injection/i); assert.match(access, /client-restricted/i); assert.match(lifecycle, /Issued versions are immutable/i);
 });
