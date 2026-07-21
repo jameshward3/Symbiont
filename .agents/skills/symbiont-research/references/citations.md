@@ -1,0 +1,2 @@
+# Citations
+Every material claim links to a canonical source and records publication and observation dates, source type, authority, confidence, freshness, limitations, and conflicts. Quote sparingly within copyright limits. Never cite a search-results page. A citation is incomplete when any required field is missing; an unknown publication date must be explicitly recorded as unknown rather than omitted.

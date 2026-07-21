@@ -1,0 +1,4 @@
+interface:
+  display_name: "Symbiont Research"
+  short_description: "Create source-backed decision intelligence"
+  default_prompt: "Use $symbiont-research to plan and produce a bounded, cited research brief within AGT-007's L1 authority."

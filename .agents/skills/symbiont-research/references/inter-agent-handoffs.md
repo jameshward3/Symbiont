@@ -1,0 +1,2 @@
+# Inter-agent handoffs
+Include objective, source links, confidence, freshness, limitations, shared goal ID, correlation ID, owner, required action, deadline, and acceptance criteria. AGT-009 owns verification/deduplication of commercial signals; AGT-002 owns commercial qualification. AGT-005 governs durable research through Draft → Review → Approved → Active. Never mark another agent's acceptance or create a duplicate qualified opportunity.
