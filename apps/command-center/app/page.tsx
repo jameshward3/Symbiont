@@ -9,6 +9,8 @@ import { ClientSuccessControl } from "./client-success-control";
 import { SecurityGovernanceControl } from "./security-governance-control";
 import { MarketingControl } from "./marketing-control";
 import { TechnicalArchitectureControl } from "./technical-architecture-control";
+import { ProductControl } from "./product-control";
+import { FinanceControl } from "./finance-control";
 import type { DeliveryData } from "@/lib/delivery-control";
 import type { QualityData } from "@/lib/qaqc";
 import type { KnowledgeData } from "@/lib/knowledge";
@@ -17,8 +19,10 @@ import type { ClientSuccessData } from "@/lib/client-success";
 import type { SecurityGovernanceData } from "@/lib/security-governance";
 import type { MarketingData } from "@/lib/marketing";
 import type { ArchitectureData } from "@/lib/technical-architecture";
+import type { ProductPortfolioData } from "@/lib/product-architecture";
+import type { FinanceData } from "@/lib/finance";
 
-type View = "Overview" | "Agent Network" | "Shared Goals" | "Sales Operations" | "Marketing" | "Delivery Control" | "Client Success" | "Quality" | "Knowledge" | "Reliability" | "Technical Architecture" | "Security & Data" | "Opportunity Scout" | "Decisions" | "Systems";
+type View = "Overview" | "Agent Network" | "Shared Goals" | "Sales Operations" | "Marketing" | "Delivery Control" | "Finance" | "Product" | "Client Success" | "Quality" | "Knowledge" | "Reliability" | "Technical Architecture" | "Security & Data" | "Opportunity Scout" | "Decisions" | "Systems";
 type Connection = "checking" | "unavailable" | "authorization_required" | "connected" | "error";
 type Agent = { stable_id: string; name: string; mission: string; authority_level: string; status: string; updated_at?: string };
 type Goal = { stable_id: string; objective: string; status: string; priority: string; due_date?: string; success_metrics?: string[]; completion_evidence?: unknown };
@@ -30,7 +34,7 @@ type ScoutData = { source:"d1"|"demonstration"; database:"connected"|"connected_
 
 const navItems: { label: View; code: string }[] = [
   { label: "Overview", code: "01" }, { label: "Agent Network", code: "02" }, { label: "Shared Goals", code: "03" },
-  { label: "Sales Operations", code: "04" }, { label: "Marketing", code: "11" }, { label: "Delivery Control", code: "03" }, { label: "Client Success", code: "13" }, { label: "Quality", code: "QA" }, { label: "Knowledge", code: "K5" }, { label: "Reliability", code: "08" }, { label: "Technical Architecture", code: "12" }, { label: "Security & Data", code: "14" }, { label: "Opportunity Scout", code: "09" }, { label: "Decisions", code: "06" }, { label: "Systems", code: "07" },
+  { label: "Sales Operations", code: "04" }, { label: "Marketing", code: "11" }, { label: "Delivery Control", code: "03" }, { label: "Finance", code: "06" }, { label: "Product", code: "10" }, { label: "Client Success", code: "13" }, { label: "Quality", code: "QA" }, { label: "Knowledge", code: "K5" }, { label: "Reliability", code: "08" }, { label: "Technical Architecture", code: "12" }, { label: "Security & Data", code: "14" }, { label: "Opportunity Scout", code: "09" }, { label: "Decisions", code: "06" }, { label: "Systems", code: "07" },
 ];
 
 const demoAgents: Agent[] = [
@@ -39,8 +43,10 @@ const demoAgents: Agent[] = [
   { stable_id: "AGT-003", name: "Delivery Control", mission: "Coordinate project authorization, delivery health, exceptions, changes, quality gates, and closeout.", authority_level: "L1", status: "Draft mode" },
   { stable_id: "AGT-004", name: "QA/QC", mission: "Independently validate exact deliverable versions against approved requirements and release gates.", authority_level: "L1", status: "Draft mode" },
   { stable_id: "AGT-005", name: "Knowledge Steward", mission: "Maintain an evidence-backed, searchable, governed source of operating truth.", authority_level: "L2", status: "Review" },
+  { stable_id: "AGT-006", name: "Finance Operations", mission: "Transform approved accounting and operational data into reconciled visibility, forecasts, and draft financial controls.", authority_level: "L1", status: "Draft mode" },
   { stable_id: "AGT-008", name: "Automation Reliability", mission: "Detect automation failures, contain impact, preserve evidence, and coordinate verified recovery.", authority_level: "L2", status: "Pilot" },
   { stable_id: "AGT-009", name: "Opportunity Scout", mission: "Discover and verify public buying signals, then route evidence-backed leads.", authority_level: "L1", status: "Activation required" },
+  { stable_id: "AGT-010", name: "Product & Service Architecture", mission: "Convert recurring delivery knowledge into repeatable, measurable, profitable building-intelligence products.", authority_level: "L1", status: "Draft mode" },
   { stable_id: "AGT-014", name: "Security & Data Governance", mission: "Protect Symbiont and client data while enabling authorized work through governed controls.", authority_level: "L1", status: "Draft" },
   { stable_id: "AGT-013", name: "Client Success", mission: "Protect client outcomes from onboarding through value realization, renewal, and expansion routing.", authority_level: "L1", status: "Draft mode" },
   { stable_id: "AGT-011", name: "Marketing & Content Operations", mission: "Turn approved knowledge and outcomes into evidence-backed marketing assets and qualified demand.", authority_level: "L1", status: "Draft mode" },
@@ -71,6 +77,8 @@ export default function Home() {
   const [marketingData, setMarketingData] = useState<MarketingData | null>(null);
   const [securityData, setSecurityData] = useState<SecurityGovernanceData | null>(null);
   const [architectureData, setArchitectureData] = useState<ArchitectureData | null>(null);
+  const [productData, setProductData] = useState<ProductPortfolioData | null>(null);
+  const [financeData, setFinanceData] = useState<FinanceData | null>(null);
 
   useEffect(() => { fetch("/api/status", { cache: "no-store" }).then(r => r.json()).then(s => setConnection(s.dataPlane)).catch(() => setConnection("error")); }, []);
   useEffect(() => { fetch("/api/opportunities/", { cache: "no-store" }).then(r => r.json()).then(setScoutData).catch(() => setScoutData(null)); }, []);
@@ -82,6 +90,8 @@ export default function Home() {
   useEffect(() => { fetch("/api/marketing/", { headers: accessKey ? { "x-symbiont-access-key": accessKey } : {}, cache: "no-store" }).then(r => r.json()).then(setMarketingData).catch(() => setMarketingData(null)); }, [accessKey, connection]);
   useEffect(() => { fetch("/api/security-governance/", { headers: accessKey ? { "x-symbiont-access-key": accessKey } : {}, cache: "no-store" }).then(r => r.json()).then(setSecurityData).catch(() => setSecurityData(null)); }, [accessKey, connection]);
   useEffect(() => { fetch("/api/technical-architecture/", { headers: accessKey ? { "x-symbiont-access-key": accessKey } : {}, cache: "no-store" }).then(r => r.json()).then(setArchitectureData).catch(() => setArchitectureData(null)); }, [accessKey, connection]);
+  useEffect(() => { fetch("/api/products/", { headers: accessKey ? { "x-symbiont-access-key": accessKey } : {}, cache: "no-store" }).then(r => r.json()).then(setProductData).catch(() => setProductData(null)); }, [accessKey, connection]);
+  useEffect(() => { fetch("/api/finance/", { headers: accessKey ? { "x-symbiont-access-key": accessKey } : {}, cache: "no-store" }).then(r => r.json()).then(setFinanceData).catch(() => setFinanceData(null)); }, [accessKey, connection]);
 
   async function connect(event: FormEvent) {
     event.preventDefault(); setConnection("checking");
@@ -132,6 +142,8 @@ export default function Home() {
           {view === "Marketing" && <MarketingControl data={marketingData} />}
           {view === "Opportunity Scout" && <OpportunityScout data={scoutData} />}
           {view === "Delivery Control" && <DeliveryControl data={deliveryData} />}
+          {view === "Finance" && <FinanceControl data={financeData} />}
+          {view === "Product" && <ProductControl data={productData} />}
           {view === "Client Success" && <ClientSuccessControl data={clientSuccessData} />}
           {view === "Quality" && <QualityControl data={qualityData} />}
           {view === "Knowledge" && <KnowledgeControl data={knowledgeData} />}
