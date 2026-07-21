@@ -2,6 +2,7 @@ import assert from "node:assert/strict";
 import { readFile } from "node:fs/promises";
 import test from "node:test";
 import { isScoutInternalRequest, parseScoutIngest, SCOUT_GOAL_ID } from "../../lib/scout-internal.ts";
+import { activeMonitoringQueries, verifiedOpportunitySnapshot } from "../../lib/opportunities.ts";
 
 test("Scout mutation boundary requires the dedicated internal secret", () => {
   const previous = process.env.SCOUT_INTERNAL_KEY;
@@ -35,4 +36,12 @@ test("production activation migration registers NJ/NY monitoring and verified li
   assert.match(sql, /OPP-2026-NJDPP-T3163/);
   assert.match(sql, /RUN-AGT009-20260721-NYNJ/);
   assert.doesNotMatch(sql, /DEMO-OPP/);
+});
+
+test("public Scout fallback contains only approved verified records", () => {
+  assert.equal(verifiedOpportunitySnapshot.length, 2);
+  assert.equal(activeMonitoringQueries.length, 4);
+  assert.ok(verifiedOpportunitySnapshot.every((item) => !item.isDemonstration && item.canonicalUrl.startsWith("https://")));
+  assert.equal(verifiedOpportunitySnapshot.filter((item) => item.route === "sales_operations").length, 1);
+  assert.ok(activeMonitoringQueries.every((query) => query.status === "Active" && /New York|New Jersey/.test(query.geography ?? "")));
 });

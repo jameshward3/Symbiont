@@ -41,6 +41,72 @@ export type MonitoringQuery = {
   requiresAuthentication: boolean;
 };
 
+export const verifiedOpportunitySnapshot: ScoutOpportunity[] = [
+  {
+    id: "OPP-2026-RIOC-261379",
+    issuer: "Roosevelt Island Operating Corporation",
+    issuerWebsite: "https://rioc.ny.gov/",
+    title: "Flood Risk Assessment",
+    solicitationNumber: "26-1379",
+    canonicalUrl: "https://d3olf8azjyqv1e.cloudfront.net/media/RFP%2026-1379%20Flood%20Risk%20Assessment.pdf",
+    publicationDate: "2026-07-15",
+    deadlineAt: "2026-08-14T15:00:00-04:00",
+    deadlineTimezone: "America/New_York",
+    location: "Roosevelt Island, New York, NY",
+    statedValue: null,
+    procurementType: "RFP",
+    scope: "Flood-risk assessment with topographic, boundary, and utility survey requirements supporting resiliency planning.",
+    accessRequirements: "Prime must maintain a New York office or authorization; proposal has a 30 percent M/WBE goal and professional-liability requirements.",
+    fitRationale: "Strong fit for reality capture, surveying, GIS, and existing-condition documentation as a governed subconsultant pursuit.",
+    totalScore: 83,
+    confidence: 94,
+    freshness: "Official RFP verified July 21, 2026",
+    risks: ["Prime qualification and insurance requirements", "30 percent M/WBE participation goal", "Questions due July 29, 2026 at 3:00 PM ET"],
+    missingInformation: ["Expected contract value", "Prime teaming strategy", "Required NY authorization confirmation"],
+    nextAction: "AGT-002 to review fit and decide whether to pursue as a subconsultant; no contact or commitment has been made.",
+    route: "sales_operations",
+    handoffStatus: "Review — awaiting AGT-002 acceptance",
+    observedAt: "2026-07-21T10:20:00.000Z",
+    sourceKind: "Official issuer RFP",
+    isDemonstration: false,
+  },
+  {
+    id: "OPP-2026-NJDPP-T3163",
+    issuer: "New Jersey Division of Purchase and Property",
+    issuerWebsite: "https://www.nj.gov/treasury/purchase/",
+    title: "Unmanned Aircraft Systems, Software and Related Services",
+    solicitationNumber: "26DPP01263 / T3163",
+    canonicalUrl: "https://www.nj.gov/treasury/purchase/specialnotices/NJDPP-26DPP01263-20260828-20260717_125804.pdf",
+    publicationDate: "2026-07-17",
+    deadlineAt: "2026-08-28T14:00:00-04:00",
+    deadlineTimezone: "America/New_York",
+    location: "New Jersey statewide",
+    statedValue: null,
+    procurementType: "RFP amendment",
+    scope: "Statewide procurement for unmanned aircraft systems, software, and related services; amendment 3 revises the quote-opening date.",
+    accessRequirements: "Submission occurs through NJSTART; AGT-009 must not create accounts, authenticate, accept terms, or submit.",
+    fitRationale: "Potential fit for UAS capture and related reality-capture services, but the underlying scope and participation path require qualification.",
+    totalScore: 69,
+    confidence: 72,
+    freshness: "Official amendment verified July 21, 2026",
+    risks: ["Only amendment 3 was verified in this run", "NJSTART access may require account and terms", "Underlying scope and vendor requirements need review"],
+    missingInformation: ["Complete base RFP scope", "Contract value", "Vendor eligibility", "Teaming route"],
+    nextAction: "Keep on watchlist; retrieve and verify the base solicitation through an authorized owner before any sales routing.",
+    route: "watchlist",
+    handoffStatus: "Watchlist",
+    observedAt: "2026-07-21T10:20:00.000Z",
+    sourceKind: "Official state procurement amendment",
+    isDemonstration: false,
+  },
+];
+
+export const activeMonitoringQueries: MonitoringQuery[] = [
+  { id:"QRY-AGT009-NY-STATE", name:"New York state building intelligence", queryText:"BIM, reality capture, laser scanning, digital twin, facilities technology, and building-data procurements", sourceCategory:"NYS agencies, authorities, SUNY/CUNY, and official issuer sources", geography:"New York", cadence:"Weekdays 08:00 ET", status:"Active", lastCheckedAt:"2026-07-21T10:20:00.000Z", nextCheckAt:"2026-07-22T12:00:00.000Z", robotsPolicy:"Official public sources only; no account creation or terms acceptance", requiresAuthentication:false },
+  { id:"QRY-AGT009-NY-LOCAL", name:"New York local capital projects", queryText:"Renovation, assessment, infrastructure, survey, BIM, scan, digital twin, and asset-information notices", sourceCategory:"NYC, counties, municipalities, schools, transit, airports, and utilities", geography:"New York", cadence:"Weekdays 08:00 ET", status:"Active", lastCheckedAt:"2026-07-21T10:20:00.000Z", nextCheckAt:"2026-07-22T12:00:00.000Z", robotsPolicy:"Canonical issuer sources only; respect restricted-period contact rules", requiresAuthentication:false },
+  { id:"QRY-AGT009-NJ-STATE", name:"New Jersey state building intelligence", queryText:"BIM, reality capture, laser scanning, UAS, digital twin, and facilities-technology procurements", sourceCategory:"NJ Treasury DPP, NJSTART public notices, NJDOT, NJ Transit, and official issuer sources", geography:"New Jersey", cadence:"Weekdays 08:00 ET", status:"Active", lastCheckedAt:"2026-07-21T10:20:00.000Z", nextCheckAt:"2026-07-22T12:00:00.000Z", robotsPolicy:"Stop at authentication, CAPTCHA, or click-through terms", requiresAuthentication:false },
+  { id:"QRY-AGT009-NJ-LOCAL", name:"New Jersey local capital projects", queryText:"Facility, campus, school, utility, transit, survey, scan, BIM, and asset-data notices", sourceCategory:"Counties, municipalities, schools, universities, authorities, and utilities", geography:"New Jersey", cadence:"Weekdays 08:00 ET", status:"Active", lastCheckedAt:"2026-07-21T10:20:00.000Z", nextCheckAt:"2026-07-22T12:00:00.000Z", robotsPolicy:"Official procurement and capital-plan sources only", requiresAuthentication:false },
+];
+
 export const demonstrationOpportunities: ScoutOpportunity[] = [
   {
     id: "DEMO-OPP-009-001",

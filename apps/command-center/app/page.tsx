@@ -31,7 +31,7 @@ type Opportunity = { stable_id: string; name: string; stage: string; qualificati
 type Dashboard = { source: "live"; asOf: string; agents: Agent[]; goals: Goal[]; opportunities: Opportunity[]; decisions: Array<Record<string, string>>; runs: Array<Record<string, unknown>>; handoffs: Array<Record<string, unknown>> };
 type ScoutOpportunity = { id:string; issuer:string; issuerWebsite?:string|null; title:string; solicitationNumber?:string|null; canonicalUrl:string; publicationDate?:string|null; deadlineAt?:string|null; deadlineTimezone?:string|null; location?:string|null; statedValue?:number|null; procurementType:string; scope:string; accessRequirements?:string|null; fitRationale:string; totalScore:number; confidence:number; freshness:string; risks:string[]; missingInformation:string[]; nextAction:string; route:"sales_operations"|"watchlist"|"archive"; handoffStatus:string; observedAt:string; sourceKind:string; isDemonstration:boolean };
 type MonitoringQuery = { id:string; name:string; queryText:string; sourceCategory:string; geography?:string|null; cadence:string; status:string; lastCheckedAt?:string|null; nextCheckAt?:string|null; robotsPolicy:string; requiresAuthentication:boolean };
-type ScoutData = { source:"d1"|"demonstration"; database:"connected"|"connected_empty"|"unavailable"; asOf:string; activation:string; opportunities:ScoutOpportunity[]; monitoringQueries:MonitoringQuery[] };
+type ScoutData = { source:"d1"|"verified_snapshot"|"demonstration"; database:"connected"|"connected_empty"|"published_snapshot"|"unavailable"; asOf:string; activation:string; opportunities:ScoutOpportunity[]; monitoringQueries:MonitoringQuery[] };
 
 const navItems: { label: View; code: string }[] = [
   { label: "Overview", code: "01" }, { label: "Action Portal", code: "ACT" }, { label: "Agent Network", code: "02" }, { label: "Shared Goals", code: "03" },
@@ -248,9 +248,10 @@ function SalesOperations({ opportunities, source }: { opportunities: Opportunity
 function OpportunityScout({ data }: { data: ScoutData | null }) {
   if (!data) return <section><SectionLead kicker="AGT-009 · Opportunity Scout" title="Evidence before pipeline." body="Loading the read-only opportunity surface. No scan, source connection, database write, or handoff is being simulated." /><div className="scout-loading">READ-ONLY DATA ADAPTER · CHECKING</div></section>;
   const isLive = data.source === "d1";
+  const isVerified = isLive || data.source === "verified_snapshot";
   const visible = data.opportunities;
-  const verified = isLive ? visible.length : 0;
-  const qualified = isLive ? visible.filter(item => item.route === "sales_operations").length : 0;
+  const verified = isVerified ? visible.length : 0;
+  const qualified = isVerified ? visible.filter(item => item.route === "sales_operations").length : 0;
   const leadTimes = visible.filter(item => item.deadlineAt).map(item => Math.ceil((new Date(item.deadlineAt!).getTime() - new Date("2026-07-20T00:00:00Z").getTime()) / 86400000)).filter(days => days >= 0);
   const medianLead = leadTimes.length ? [...leadTimes].sort((a,b)=>a-b)[Math.floor(leadTimes.length/2)] : null;
   const averageScore = visible.length ? Math.round(visible.reduce((sum,item)=>sum+item.totalScore,0)/visible.length) : 0;
@@ -258,24 +259,24 @@ function OpportunityScout({ data }: { data: ScoutData | null }) {
   const sourceCategories = new Set(data.monitoringQueries.map(query => query.sourceCategory)).size;
 
   return <section className="scout-view">
-    <div className="scout-hero"><div><p className="eyebrow">AGT-009 · Opportunity Scout</p><h2>Evidence before<br/><em>pipeline.</em></h2><p>Canonical-source verification, reproducible fit scoring, amendment-aware deduplication, and governed routing to AGT-002.</p></div><div className="scout-activation"><span className={`dot ${isLive ? "green" : "amber"}`} /><div><strong>{isLive ? "D1 records" : "Demonstration mode"}</strong><p>{data.activation}</p></div></div></div>
-    {!isLive && <div className="demo-disclosure"><b>DEMONSTRATION DATA</b><span>These records and monitoring queries are illustrative. No live scan, source connection, database write, or AGT-002 handoff occurred.</span></div>}
+    <div className="scout-hero"><div><p className="eyebrow">AGT-009 · Opportunity Scout</p><h2>Evidence before<br/><em>pipeline.</em></h2><p>Canonical-source verification, reproducible fit scoring, amendment-aware deduplication, and governed routing to AGT-002.</p></div><div className="scout-activation"><span className={`dot ${isVerified ? "green" : "amber"}`} /><div><strong>{isLive ? "Live D1 records" : isVerified ? "Verified published snapshot" : "Demonstration mode"}</strong><p>{data.activation}</p></div></div></div>
+    {!isVerified && <div className="demo-disclosure"><b>DEMONSTRATION DATA</b><span>These records and monitoring queries are illustrative. No live scan, source connection, database write, or AGT-002 handoff occurred.</span></div>}
     <div className="scout-metrics">
-      <Metric label="Source coverage" value={isLive ? String(sourceCategories).padStart(2,"0") : "00"} note={`${sourceCategories} ${isLive ? "active" : "planned demo"} categories`} />
-      <Metric label="Verified opportunities" value={String(verified).padStart(2,"0")} note={isLive ? "Canonical evidence in D1" : `${visible.length} demonstration records`} />
-      <Metric label="Qualified handoffs" value={String(qualified).padStart(2,"0")} note={isLive ? "Score 70+ routed" : "None sent"} />
-      <Metric label="Deadline lead time" value={medianLead === null ? "—" : `${medianLead}d`} note={isLive ? "Median verified lead" : "Demonstration median"} />
+      <Metric label="Source coverage" value={isVerified ? String(sourceCategories).padStart(2,"0") : "00"} note={`${sourceCategories} ${isVerified ? "active" : "planned demo"} categories`} />
+      <Metric label="Verified opportunities" value={String(verified).padStart(2,"0")} note={isLive ? "Canonical evidence in D1" : isVerified ? "Approved official-source snapshot" : `${visible.length} demonstration records`} />
+      <Metric label="Qualified handoffs" value={String(qualified).padStart(2,"0")} note={isVerified ? "Score 70+ routed" : "None sent"} />
+      <Metric label="Deadline lead time" value={medianLead === null ? "—" : `${medianLead}d`} note={isVerified ? "Median verified lead" : "Demonstration median"} />
       <Metric label="Average fit" value={String(averageScore)} note="Weighted /100" />
-      <Metric label="Evidence confidence" value={`${averageConfidence}%`} note={isLive ? "Verified records" : "Demonstration scoring"} />
+      <Metric label="Evidence confidence" value={`${averageConfidence}%`} note={isVerified ? "Verified records" : "Demonstration scoring"} />
     </div>
     <div className="scout-layout">
       <div className="scout-opportunities"><PanelTitle kicker="Opportunity register" title="Verified, watch, archive" />{visible.map(item => <article className="scout-opportunity" key={item.id}>
         <div className="scout-score"><strong>{item.totalScore}</strong><span>/100</span><i className={`route-dot ${item.route}`} /></div>
         <div className="scout-main"><div className="scout-titleline"><div><p>{item.id} · {item.procurementType}{item.isDemonstration ? " · DEMO" : ""}</p><h3>{item.title}</h3><span>{item.issuer} · {item.location || "Location unknown"}</span></div><b className={`route-chip ${item.route}`}>{routeLabel(item.route)}</b></div><p className="scout-fit">{item.fitRationale}</p><div className="scout-facts"><span>DEADLINE <b>{formatDeadline(item.deadlineAt, item.deadlineTimezone)}</b></span><span>VALUE <b>{item.statedValue ? money(item.statedValue) : "Not stated"}</b></span><span>CONFIDENCE <b>{item.confidence}%</b></span><span>FRESHNESS <b>{item.freshness}</b></span></div><div className="scout-risk"><div><span>RISKS</span><p>{item.risks.length ? item.risks.join(" · ") : "None recorded"}</p></div><div><span>MISSING</span><p>{item.missingInformation.length ? item.missingInformation.join(" · ") : "None recorded"}</p></div></div><div className="scout-next"><span>{item.handoffStatus}</span><p>{item.nextAction}</p><a href={item.canonicalUrl} target="_blank" rel="noreferrer">Canonical source ↗</a></div></div>
       </article>)}</div>
-      <aside className="monitoring-panel"><PanelTitle kicker="Monitoring queries" title="Coverage plan" /><p className="monitoring-note">Queries remain inactive until their sources, terms, cadence, and authenticated runtime are approved.</p>{data.monitoringQueries.map(query => <article className="query-row" key={query.id}><div><span>{query.id}</span><b>{query.status}</b></div><h3>{query.name}</h3><p>{query.queryText}</p><dl><div><dt>Sources</dt><dd>{query.sourceCategory}</dd></div><div><dt>Cadence</dt><dd>{query.cadence}</dd></div><div><dt>Access</dt><dd>{query.requiresAuthentication ? "Authentication boundary" : "Public-source review"}</dd></div></dl></article>)}</aside>
+      <aside className="monitoring-panel"><PanelTitle kicker="Monitoring queries" title="Coverage plan" /><p className="monitoring-note">{isVerified ? "Active weekday monitoring uses official public sources and stops at every access or procurement boundary." : "Queries remain inactive until their sources, terms, cadence, and authenticated runtime are approved."}</p>{data.monitoringQueries.map(query => <article className="query-row" key={query.id}><div><span>{query.id}</span><b>{query.status}</b></div><h3>{query.name}</h3><p>{query.queryText}</p><dl><div><dt>Sources</dt><dd>{query.sourceCategory}</dd></div><div><dt>Cadence</dt><dd>{query.cadence}</dd></div><div><dt>Access</dt><dd>{query.requiresAuthentication ? "Authentication boundary" : "Public-source review"}</dd></div></dl></article>)}</aside>
     </div>
-    <div className="handoff-strip"><div><p className="eyebrow">Governed route</p><strong>AGT-009</strong><span>Discovery + evidence</span></div><i>→</i><div><p className="eyebrow">Acceptance gate</p><strong>AGT-002</strong><span>Qualification + pursuit</span></div><i>↗</i><div><p className="eyebrow">Escalation</p><strong>AGT-001</strong><span>Priority + authority conflicts</span></div><b>{isLive ? `${qualified} routed` : "No live handoff"}</b></div>
+    <div className="handoff-strip"><div><p className="eyebrow">Governed route</p><strong>AGT-009</strong><span>Discovery + evidence</span></div><i>→</i><div><p className="eyebrow">Acceptance gate</p><strong>AGT-002</strong><span>Qualification + pursuit</span></div><i>↗</i><div><p className="eyebrow">Escalation</p><strong>AGT-001</strong><span>Priority + authority conflicts</span></div><b>{isVerified ? `${qualified} routed` : "No live handoff"}</b></div>
   </section>;
 }
 
