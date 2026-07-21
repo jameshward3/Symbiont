@@ -11,6 +11,7 @@ import { MarketingControl } from "./marketing-control";
 import { TechnicalArchitectureControl } from "./technical-architecture-control";
 import { ProductControl } from "./product-control";
 import { FinanceControl } from "./finance-control";
+import { WorkflowPortal } from "./workflow-portal";
 import type { DeliveryData } from "@/lib/delivery-control";
 import type { QualityData } from "@/lib/qaqc";
 import type { KnowledgeData } from "@/lib/knowledge";
@@ -22,7 +23,7 @@ import type { ArchitectureData } from "@/lib/technical-architecture";
 import type { ProductPortfolioData } from "@/lib/product-architecture";
 import type { FinanceData } from "@/lib/finance";
 
-type View = "Overview" | "Agent Network" | "Shared Goals" | "Sales Operations" | "Marketing" | "Delivery Control" | "Finance" | "Product" | "Client Success" | "Quality" | "Knowledge" | "Reliability" | "Technical Architecture" | "Security & Data" | "Opportunity Scout" | "Decisions" | "Systems";
+type View = "Overview" | "Action Portal" | "Agent Network" | "Shared Goals" | "Sales Operations" | "Marketing" | "Delivery Control" | "Finance" | "Product" | "Client Success" | "Quality" | "Knowledge" | "Reliability" | "Technical Architecture" | "Security & Data" | "Opportunity Scout" | "Decisions" | "Systems";
 type Connection = "checking" | "unavailable" | "authorization_required" | "connected" | "error";
 type Agent = { stable_id: string; name: string; mission: string; authority_level: string; status: string; updated_at?: string };
 type Goal = { stable_id: string; objective: string; status: string; priority: string; due_date?: string; success_metrics?: string[]; completion_evidence?: unknown };
@@ -33,7 +34,7 @@ type MonitoringQuery = { id:string; name:string; queryText:string; sourceCategor
 type ScoutData = { source:"d1"|"demonstration"; database:"connected"|"connected_empty"|"unavailable"; asOf:string; activation:string; opportunities:ScoutOpportunity[]; monitoringQueries:MonitoringQuery[] };
 
 const navItems: { label: View; code: string }[] = [
-  { label: "Overview", code: "01" }, { label: "Agent Network", code: "02" }, { label: "Shared Goals", code: "03" },
+  { label: "Overview", code: "01" }, { label: "Action Portal", code: "ACT" }, { label: "Agent Network", code: "02" }, { label: "Shared Goals", code: "03" },
   { label: "Sales Operations", code: "04" }, { label: "Marketing", code: "11" }, { label: "Delivery Control", code: "03" }, { label: "Finance", code: "06" }, { label: "Product", code: "10" }, { label: "Client Success", code: "13" }, { label: "Quality", code: "QA" }, { label: "Knowledge", code: "K5" }, { label: "Reliability", code: "08" }, { label: "Technical Architecture", code: "12" }, { label: "Security & Data", code: "14" }, { label: "Opportunity Scout", code: "09" }, { label: "Decisions", code: "06" }, { label: "Systems", code: "07" },
 ];
 
@@ -136,6 +137,7 @@ export default function Home() {
         <div className="view-wrap">
           <ConnectionBanner connection={connection} connect={connect} accessKey={accessKey} setAccessKey={setAccessKey} />
           {view === "Overview" && <Overview agents={agents} goals={goals} opportunities={opportunities} weighted={weighted} stale={stale} source={sourceLabel} />}
+          {view === "Action Portal" && <WorkflowPortal accessKey={accessKey} />}
           {view === "Agent Network" && <AgentNetwork agents={agents} source={sourceLabel} />}
           {view === "Shared Goals" && <SharedGoals goals={goals} agents={agents} source={sourceLabel} />}
           {view === "Sales Operations" && <SalesOperations opportunities={opportunities} source={sourceLabel} />}
