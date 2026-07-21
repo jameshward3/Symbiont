@@ -71,6 +71,13 @@
       "when": 1784612122087,
       "tag": "0009_narrow_hannibal_king",
       "breakpoints": true
+    },
+    {
+      "idx": 10,
+      "version": "6",
+      "when": 1784643600000,
+      "tag": "0010_opportunity_scout_activation",
+      "breakpoints": true
     }
   ]
 }

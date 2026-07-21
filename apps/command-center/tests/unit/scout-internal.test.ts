@@ -1,4 +1,5 @@
 import assert from "node:assert/strict";
+import { readFile } from "node:fs/promises";
 import test from "node:test";
 import { isScoutInternalRequest, parseScoutIngest, SCOUT_GOAL_ID } from "../../lib/scout-internal.ts";
 
@@ -21,4 +22,17 @@ test("Scout ingest rejects demonstrations and accepts a complete canonical recor
   assert.equal(parsed.opportunities[0].canonicalUrl, "https://example.gov/rfq");
   assert.throws(() => parseScoutIngest({ ...base, opportunities:[{ ...base.opportunities[0], id:"DEMO-OPP-001" }] }), /DEMONSTRATION_WRITE_REJECTED/);
   assert.throws(() => parseScoutIngest({ ...base, correlationId:"" }), /INVALID_CORRELATIONID/);
+});
+
+test("production activation migration registers NJ/NY monitoring and verified live records", async () => {
+  const sql = await readFile(new URL("../../drizzle/0010_opportunity_scout_activation.sql", import.meta.url), "utf8");
+  assert.match(sql, /AGT-009[^\n]+Active — governed/);
+  assert.match(sql, /QRY-AGT009-NY-STATE/);
+  assert.match(sql, /QRY-AGT009-NY-LOCAL/);
+  assert.match(sql, /QRY-AGT009-NJ-STATE/);
+  assert.match(sql, /QRY-AGT009-NJ-LOCAL/);
+  assert.match(sql, /OPP-2026-RIOC-261379/);
+  assert.match(sql, /OPP-2026-NJDPP-T3163/);
+  assert.match(sql, /RUN-AGT009-20260721-NYNJ/);
+  assert.doesNotMatch(sql, /DEMO-OPP/);
 });
