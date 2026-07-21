@@ -185,6 +185,7 @@ export function WorkflowPortal({ accessKey }: { accessKey: string }) {
   return <section className="workflow-view">
     <div className="workflow-hero"><div><p className="eyebrow">Symbiont actions</p><h2>Lead to <em>closeout.</em></h2></div><p>One approval queue moves opportunities and projects through governed agent handoffs. Background agents surface only recommendations, exceptions, and decisions that need attention.</p></div>
     <div className="workflow-tabs"><button className={tab === "actions" ? "active" : ""} onClick={() => setTab("actions")}>Action queue</button><button className={tab === "response" ? "active" : ""} onClick={() => setTab("response")}>RFP / RFQ response studio</button><span>L1 draft · material actions require human approval</span></div>
+    <div className="workflow-boundary" role="note"><b>Interaction preview</b><span>Action queue records are controlled demonstrations. Stage changes remain browser-local until governed workflow persistence is enabled.</span></div>
     {notice && <div className="workflow-notice" role="status">{notice}</div>}
     {tab === "actions" ? <>
       <div className="queue-filters" aria-label="Action queue filters">{filters.map(item => <button key={item.id} className={filter === item.id ? "active" : ""} onClick={() => setFilter(item.id)}><span>{item.label}</span><b>{countFilter(projects, item.id)}</b></button>)}</div>
