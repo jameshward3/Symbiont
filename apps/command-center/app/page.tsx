@@ -207,7 +207,7 @@ export default function Home() {
       id:item.stable_id||`DEC-LIVE-${item.statement||"REVIEW"}`,projectId:item.project_id,statement:item.statement||"Decision review required",
       owner:item.decision_owner||item.owner,requiredBy:item.required_by,status:item.status,rationale:item.rationale,source:"Governed dashboard decision register",isDemonstration:false,
     })):[]),
-    ...(deliveryData?.decisions??[]).map(item=>({id:item.id,projectId:item.projectId,statement:item.statement,owner:item.owner,requiredBy:item.requiredBy,status:item.status,rationale:"Review the linked project evidence, delivery impact, and accountable recommendation.",source:"Delivery Control decision register",isDemonstration:deliveryData.source==="demonstration"})),
+    ...(deliveryData?.decisions??[]).map(item=>({id:item.id,projectId:item.projectId,statement:item.statement,owner:item.owner,requiredBy:item.requiredBy,status:item.status,rationale:"Review the linked project evidence, delivery impact, and accountable recommendation.",source:"Delivery Control decision register",isDemonstration:deliveryData?.source==="demonstration"})),
   ];
   const actionCount = visibleWorkflowProjects.filter(project => project.status !== "Closed").length;
   const weighted = opportunities.reduce((sum, item) => sum + Number(item.amount || 0) * Number(item.probability || 0) / 100, 0);
