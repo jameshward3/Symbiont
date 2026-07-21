@@ -1,7 +1,7 @@
 import assert from "node:assert/strict";
 import { readFile } from "node:fs/promises";
 import test from "node:test";
-import { calculateProjectHealth, isActionOverdue } from "../../lib/delivery-control.ts";
+import { calculateProjectHealth, deliveryDataForMode, demonstrationDeliveryData, emptyDeliveryData, isActionOverdue } from "../../lib/delivery-control.ts";
 
 test("project health enforces schedule and margin thresholds", () => {
   assert.equal(calculateProjectHealth({ scheduleVariancePercent: 5, marginVariancePoints: 3 }), "Green");
@@ -23,6 +23,16 @@ test("overdue actions exclude terminal statuses and respect the end of due day",
   assert.equal(isActionOverdue({ dueDate: "2026-07-19", status: "Open" }, at), true);
   assert.equal(isActionOverdue({ dueDate: "2026-07-20", status: "Open" }, at), false);
   assert.equal(isActionOverdue({ dueDate: "2026-07-19", status: "Complete" }, at), false);
+});
+
+test("live Projects never receives demonstration delivery records",()=>{
+  const live=deliveryDataForMode(demonstrationDeliveryData,false);
+  assert.equal(live?.projects.length,0);
+  assert.equal(live?.actions.length,0);
+  assert.equal(live?.decisions.length,0);
+  const empty=emptyDeliveryData("authorization_required","No demonstration project has been substituted.");
+  assert.equal(empty.source,"d1");
+  assert.deepEqual(empty.projects,[]);
 });
 
 test("D1 migration includes all delivery tables and control identifiers", async () => {
@@ -54,5 +64,6 @@ test("AGT-003 skill and UI preserve L1 boundaries and demonstration disclosure",
   assert.match(view, /DEMONSTRATION DATA/);
   assert.match(delivery, /No live project record, database write, agent handoff, or automated monitoring event/i);
   assert.match(api, /isAuthorized/);
+  assert.match(api, /No demonstration project has been substituted/);
   assert.doesNotMatch(api, /export async function (POST|PATCH|PUT|DELETE)/);
 });

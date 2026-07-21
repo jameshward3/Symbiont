@@ -54,6 +54,38 @@ export type DeliveryData = {
   handoffs: DeliveryHandoff[];
 };
 
+export function emptyDeliveryData(database: DeliveryData["database"], activation: string): DeliveryData {
+  return {
+    source: "d1",
+    database,
+    asOf: new Date().toISOString(),
+    activation,
+    projects: [],
+    actions: [],
+    risks: [],
+    gates: [],
+    changes: [],
+    decisions: [],
+    handoffs: [],
+  };
+}
+
+export function deliveryDataForMode(data: DeliveryData | null, demoMode: boolean): DeliveryData | null {
+  if (!data) return null;
+  const projects = data.projects.filter((project) => project.isDemonstration === demoMode);
+  const projectIds = new Set(projects.map((project) => project.id));
+  return {
+    ...data,
+    projects,
+    actions: data.actions.filter((item) => projectIds.has(item.projectId)),
+    risks: data.risks.filter((item) => projectIds.has(item.projectId)),
+    gates: data.gates.filter((item) => projectIds.has(item.projectId)),
+    changes: data.changes.filter((item) => projectIds.has(item.projectId)),
+    decisions: data.decisions.filter((item) => projectIds.has(item.projectId)),
+    handoffs: data.handoffs.filter((item) => projectIds.has(item.projectId)),
+  };
+}
+
 const healthRank: Record<Health, number> = { Green: 0, Amber: 1, Red: 2 };
 
 export function calculateProjectHealth(signal: ProjectSignal): Health {

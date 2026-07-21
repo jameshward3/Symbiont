@@ -1,7 +1,7 @@
 "use client";
 
 import { FormEvent, useEffect, useMemo, useState } from "react";
-import { DeliveryControl } from "./delivery-control";
+import { ProjectsControl } from "./projects-control";
 import { QualityControl } from "./quality-control";
 import { KnowledgeControl } from "./knowledge-control";
 import { ReliabilityControl } from "./reliability-control";
@@ -25,9 +25,9 @@ import type { ProductPortfolioData } from "@/lib/product-architecture";
 import type { FinanceData } from "@/lib/finance";
 import type { ResearchData } from "@/lib/research";
 import { matchOpportunityToKnowledge, type OpportunityKnowledgeBrief } from "@/lib/capability-matching";
-import { demonstrationPortalProjects, estimateForOpportunity, mergePortalProject, portalProjectFromOpportunity, visiblePortalProjects, type PortalProject } from "@/lib/workflow-portal";
+import { demonstrationPortalProjects, estimateForOpportunity, mergePortalProject, portalProjectFromOpportunity, visiblePortalProjects, type GovernedDecisionInput, type PortfolioOpportunityInput, type PortalProject } from "@/lib/workflow-portal";
 
-type View = "Overview" | "Action Portal" | "Agent Network" | "Shared Goals" | "Sales Operations" | "Marketing" | "Delivery Control" | "Finance" | "Product" | "Client Success" | "Quality" | "Knowledge" | "Research" | "Reliability" | "Technical Architecture" | "Security & Data" | "Opportunity Scout" | "Decisions" | "Systems";
+type View = "Overview" | "Action Portal" | "Agent Network" | "Shared Goals" | "Sales Operations" | "Marketing" | "Delivery Control" | "Finance" | "Product" | "Client Success" | "Quality" | "Knowledge" | "Research" | "Reliability" | "Technical Architecture" | "Security & Data" | "Opportunity Scout" | "Systems";
 type Connection = "checking" | "unavailable" | "authorization_required" | "connected" | "error";
 type Agent = { stable_id: string; name: string; mission: string; authority_level: string; status: string; updated_at?: string };
 type Goal = { stable_id: string; objective: string; status: string; priority: string; due_date?: string; success_metrics?: string[]; completion_evidence?: unknown };
@@ -47,7 +47,6 @@ const primaryNavItems: NavItem[] = [
   { view: "Action Portal", label: "Actions", code: "ACT" },
   { view: "Sales Operations", label: "Pipeline", code: "02" },
   { view: "Delivery Control", label: "Projects", code: "03" },
-  { view: "Decisions", label: "Decisions", code: "DEC" },
 ];
 const backgroundNavGroups: Array<{ label: string; items: NavItem[] }> = [
   { label: "Discover", items: [
@@ -122,7 +121,7 @@ export default function Home() {
 
   useEffect(() => { fetch("/api/status", { cache: "no-store" }).then(r => r.json()).then(s => setConnection(s.dataPlane)).catch(() => setConnection("error")); }, []);
   useEffect(() => { fetch(`/api/opportunities/${demoMode?"?demo=1":""}`, { cache: "no-store" }).then(r => r.json()).then(setScoutData).catch(() => setScoutData(null)); }, [demoMode]);
-  useEffect(() => { fetch("/api/delivery-control/", { headers: accessKey ? { "x-symbiont-access-key": accessKey } : {}, cache: "no-store" }).then(r => r.json()).then(setDeliveryData).catch(() => setDeliveryData(null)); }, [accessKey, connection]);
+  useEffect(() => { fetch(`/api/delivery-control/${demoMode?"?demo=1":""}`, { headers: accessKey ? { "x-symbiont-access-key": accessKey } : {}, cache: "no-store" }).then(r => r.json()).then(setDeliveryData).catch(() => setDeliveryData(null)); }, [accessKey, connection, demoMode]);
   useEffect(() => { fetch("/api/quality/", { headers: accessKey ? { "x-symbiont-access-key": accessKey } : {}, cache: "no-store" }).then(r => r.json()).then(setQualityData).catch(() => setQualityData(null)); }, [accessKey, connection]);
   useEffect(() => { fetch(`/api/knowledge/${demoMode?"?demo=1":""}`, { headers: accessKey ? { "x-symbiont-access-key": accessKey } : {}, cache: "no-store" }).then(r => r.json()).then(setKnowledgeData).catch(() => setKnowledgeData(null)); }, [accessKey, connection, demoMode]);
   useEffect(() => { fetch(`/api/research/${demoMode?"?demo=1":""}`, { cache: "no-store" }).then(r => r.json()).then(setResearchData).catch(() => setResearchData(null)); }, [demoMode]);
@@ -180,6 +179,13 @@ export default function Home() {
     setView("Action Portal");
   }
 
+  function openPursuit(id:string) {
+    const action=visibleWorkflowProjects.find(project=>project.id===id);
+    if (action) { setWorkflowFocusId(action.id); setView("Action Portal"); return; }
+    const opportunity=opportunities.find(item=>item.stable_id===id);
+    if (opportunity) startGovernedResponse(opportunity);
+  }
+
   const agents = useMemo(() => {
     const dashboardAgents = demoMode ? [] : dashboard?.agents ?? [];
     const liveAgents = new Map(dashboardAgents.map(agent => [agent.stable_id, agent]));
@@ -191,6 +197,18 @@ export default function Home() {
   const publishedPipeline:Opportunity[] = (scoutData?.opportunities ?? []).filter((item)=>demoMode?item.isDemonstration:!item.isDemonstration).map(opportunityFromScout);
   const opportunities = !demoMode && dashboard?.opportunities ? dashboard.opportunities : publishedPipeline;
   const visibleWorkflowProjects = visiblePortalProjects(workflowProjects, demoMode);
+  const portfolioOpportunities:PortfolioOpportunityInput[] = opportunities.map(item=>({
+    id:item.stable_id,title:item.name,client:item.client,stage:item.stage,scope:item.scope,amount:item.amount,
+    dueDate:item.next_action_date||item.expected_close,nextAction:item.next_action,recommendation:item.recommendation,
+    confidence:item.qualification_score,source:item.source,isDemonstration:item.is_demonstration??demoMode,
+  }));
+  const governedDecisions:GovernedDecisionInput[] = [
+    ...(!demoMode?(dashboard?.decisions??[]).map(item=>({
+      id:item.stable_id||`DEC-LIVE-${item.statement||"REVIEW"}`,projectId:item.project_id,statement:item.statement||"Decision review required",
+      owner:item.decision_owner||item.owner,requiredBy:item.required_by,status:item.status,rationale:item.rationale,source:"Governed dashboard decision register",isDemonstration:false,
+    })):[]),
+    ...(deliveryData?.decisions??[]).map(item=>({id:item.id,projectId:item.projectId,statement:item.statement,owner:item.owner,requiredBy:item.requiredBy,status:item.status,rationale:"Review the linked project evidence, delivery impact, and accountable recommendation.",source:"Delivery Control decision register",isDemonstration:deliveryData.source==="demonstration"})),
+  ];
   const actionCount = visibleWorkflowProjects.filter(project => project.status !== "Closed").length;
   const weighted = opportunities.reduce((sum, item) => sum + Number(item.amount || 0) * Number(item.probability || 0) / 100, 0);
   const stale = opportunities.filter(item => item.next_action_date && new Date(item.next_action_date) < new Date("2026-07-20T00:00:00")).length;
@@ -218,13 +236,13 @@ export default function Home() {
           <p className="sr-only" aria-live="polite">{connection === "connected" ? "Runtime connected to the governed data plane." : "Runtime unavailable for live agent actions."}</p>
           <ConnectionBanner connection={connection} connect={connect} accessKey={accessKey} setAccessKey={setAccessKey} demoMode={demoMode} />
           {view === "Overview" && <Overview agents={agents} goals={goals} opportunities={opportunities} weighted={weighted} stale={stale} source={sourceLabel} onNavigate={setView} />}
-          {view === "Action Portal" && <WorkflowPortal key={`${demoMode}-${workflowFocusId || "queue"}`} accessKey={accessKey} demoMode={demoMode} projects={workflowProjects} setProjects={setWorkflowProjects} focusProjectId={workflowFocusId} onOpenWorkProduct={(id)=>setView(agentWorkspace(id))} />}
+          {view === "Action Portal" && <WorkflowPortal key={`${demoMode}-${workflowFocusId || "queue"}`} accessKey={accessKey} demoMode={demoMode} projects={workflowProjects} setProjects={setWorkflowProjects} focusProjectId={workflowFocusId} onOpenWorkProduct={(id)=>setView(agentWorkspace(id))} governedDecisions={governedDecisions} />}
           {view === "Agent Network" && <AgentNetwork agents={agents} source={sourceLabel} onNavigate={setView} />}
           {view === "Shared Goals" && <SharedGoals goals={goals} agents={agents} source={sourceLabel} />}
           {view === "Sales Operations" && <SalesOperations opportunities={opportunities} source={sourceLabel} onStartResponse={startGovernedResponse} />}
           {view === "Marketing" && <MarketingControl data={marketingData} />}
           {view === "Opportunity Scout" && <OpportunityScout data={scoutData} onNavigate={setView} onStartResponse={(item)=>startGovernedResponse(opportunityFromScout(item))} />}
-          {view === "Delivery Control" && <DeliveryControl data={deliveryData} />}
+          {view === "Delivery Control" && <ProjectsControl opportunities={portfolioOpportunities} workflowProjects={workflowProjects} deliveryData={deliveryData} demoMode={demoMode} onOpenPursuit={openPursuit} />}
           {view === "Finance" && <FinanceControl data={financeData} />}
           {view === "Product" && <ProductControl data={productData} />}
           {view === "Client Success" && <ClientSuccessControl data={clientSuccessData} />}
@@ -234,7 +252,6 @@ export default function Home() {
           {view === "Reliability" && <ReliabilityControl data={reliabilityData} />}
           {view === "Technical Architecture" && <TechnicalArchitectureControl data={architectureData} />}
           {view === "Security & Data" && <SecurityGovernanceControl data={securityData} />}
-          {view === "Decisions" && <DecisionsView decisions={dashboard?.decisions ?? []} source={sourceLabel} />}
           {view === "Systems" && <SystemsView connection={connection} runs={dashboard?.runs ?? []} handoffs={dashboard?.handoffs ?? []} />}
           {(view === "Agent Network" || view === "Systems") && <CommandPanel agentId={agentId} setAgentId={setAgentId} command={command} setCommand={setCommand} submit={runAgentCommand} connection={connection} demoMode={demoMode} runState={runState} answer={answer} />}
         </div>
@@ -306,7 +323,7 @@ function AgentNetwork({ agents, source, onNavigate }: { agents: Agent[]; source:
           <InspectorDatum label="Agent ID" value={active?.stable_id ?? "Unavailable"} detail="Controlled identifier in the agent registry" onOpen={()=>onNavigate(workspace)} />
           <InspectorDatum label="Authority" value={active?.authority_level ?? "Unavailable"} detail="Click to open the agent workspace and its authority controls" onOpen={()=>onNavigate(workspace)} />
           <InspectorDatum label="Parent" value={active?.stable_id === "AGT-001" ? "Founder" : "AGT-001 · COO"} detail="Accountability relationship" onOpen={()=>onNavigate("Agent Network")} />
-          <InspectorDatum label="Human owner" value="Authorized executive" detail="Material action and external commitment owner" onOpen={()=>onNavigate("Decisions")} />
+          <InspectorDatum label="Human owner" value="Authorized executive" detail="Open the centralized decision and approval register" onOpen={()=>onNavigate("Action Portal")} />
           <InspectorDatum label="Shared goal" value={active?.stable_id === "AGT-009" ? "GOAL-2026-009" : "GOAL-2026-001"} detail="Open the governed shared-goal register" onOpen={()=>onNavigate("Shared Goals")} />
           <InspectorDatum label="External action" value={active?.authority_level === "L1" ? "Human approval required" : "Governed boundary"} detail="Open system authority controls" onOpen={()=>onNavigate("Systems")} />
         </dl>
@@ -386,10 +403,7 @@ function OpportunityScout({ data, onNavigate, onStartResponse }: { data: ScoutDa
   </section>;
 }
 
-function DecisionsView({ decisions, source }: { decisions: Array<Record<string,string>>; source: string }) { return <section><SectionLead kicker="Decision architecture" title="Agents recommend. Humans approve." body={`${source}. Material decisions cannot reach Approved without an authorized human and timestamp.`} />{decisions.length ? decisions.map(d => <article className="decision-row-wide" key={d.stable_id}><span>{d.stable_id}</span><strong>{d.statement}</strong><b>{d.status}</b><small>{d.required_by || "No deadline"}</small></article>) : <UnavailableView title="No live decisions available" body="The system will show decision requests here after the governed database is connected. No approval has been simulated." />}</section>; }
 function SystemsView({ connection, runs, handoffs }: { connection: Connection; runs: Array<Record<string,unknown>>; handoffs: Array<Record<string,unknown>> }) { return <section><SectionLead kicker="System controls" title="Authority enforced below the prompt." body="Application checks, database policies, atomic claims, leases, idempotency, audit events, and human approval gates govern execution." /><div className="control-grid"><Control name="Organization-scoped RLS" status="Implemented" /><Control name="Atomic claim + lease recovery" status="Implemented" /><Control name="Append-only goal events" status="Implemented" /><Control name="Human material-decision approval" status="Implemented" /><Control name="Shared Supabase runtime" status={connection === "connected" ? "Connected" : "Not configured"} /><Control name="OpenAI Responses runtime" status={connection === "connected" ? "Connection-dependent" : "Unavailable"} /><Control name="Recorded agent runs" status={String(runs.length)} /><Control name="Inter-agent handoffs" status={String(handoffs.length)} /></div></section>; }
-function UnavailableView({ title, body }: { title: string; body: string }) { return <section className="empty-state"><span>UNAVAILABLE</span><h2>{title}</h2><p>{body}</p></section>; }
-
 function CommandPanel({ agentId, setAgentId, command, setCommand, submit, connection, demoMode, runState, answer }: { agentId:string; setAgentId:(v:string)=>void; command:string; setCommand:(v:string)=>void; submit:(e:FormEvent)=>void; connection:Connection; demoMode:boolean; runState:string; answer:string }) { return <section className="command-panel"><div><p className="eyebrow">14-agent command panel</p><h2>Ask the network.</h2><p>{demoMode?"Demo responses exercise each agent charter without reading or changing a live system.":"Commands run through the governed server runtime. Unavailable services fail explicitly; no response is fabricated."}</p></div><form onSubmit={submit}><label htmlFor="agent-select">Agent</label><select id="agent-select" value={agentId} onChange={e=>setAgentId(e.target.value)}>{publishedAgents.map(agent=><option value={agent.stable_id} key={agent.stable_id}>{agent.stable_id} · {agent.name}</option>)}</select><label htmlFor="command">Command</label><textarea id="command" value={command} onChange={e=>setCommand(e.target.value)} placeholder="Request a project brief, opportunity match, research finding, control review, narrative, or governed handoff…"/><button type="submit" disabled={(!demoMode&&connection!=="connected")||runState==="running"}>{runState==="running"?"Running…":demoMode?"Run demo agent":connection==="connected"?"Run governed analysis":"Runtime unavailable"}</button></form>{answer && <div className={`runtime-answer ${runState}`}><b>{runState === "error" ? "SAFE FAILURE" : `${agentId}${demoMode?" · DEMO":""}`}</b><p>{answer}</p></div>}</section>; }
 
 function StateRow({label,state,tone}:{label:string;state:string;tone:string}) { return <div className="state-row"><span>{label}</span><b><i className={`dot ${tone}`}/>{state}</b></div>; }

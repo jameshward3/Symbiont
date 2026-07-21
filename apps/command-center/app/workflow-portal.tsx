@@ -2,6 +2,7 @@
 
 import { useMemo, useState, type Dispatch, type SetStateAction } from "react";
 import {
+  actionDecisionRegister,
   canApproveExternalIssue,
   releaseBlockers,
   repriceEstimate,
@@ -10,6 +11,7 @@ import {
   visiblePortalProjects,
   WORKFLOW_STAGES,
   type PortalProject,
+  type GovernedDecisionInput,
   type RequirementStatus,
   type ResponseDraft,
   type ResponsePackage,
@@ -34,13 +36,13 @@ const filters: Array<{ id: QueueFilter; label: string }> = [
 
 type PackageTab = "overview"|"requirements"|"draft"|"estimate";
 
-export function WorkflowPortal({ accessKey, demoMode, projects, setProjects, focusProjectId, onOpenWorkProduct }: { accessKey: string; demoMode:boolean; projects:PortalProject[]; setProjects:Dispatch<SetStateAction<PortalProject[]>>; focusProjectId:string|null; onOpenWorkProduct:(agentId:string)=>void }) {
+export function WorkflowPortal({ accessKey, demoMode, projects, setProjects, focusProjectId, onOpenWorkProduct, governedDecisions = [] }: { accessKey: string; demoMode:boolean; projects:PortalProject[]; setProjects:Dispatch<SetStateAction<PortalProject[]>>; focusProjectId:string|null; onOpenWorkProduct:(agentId:string)=>void; governedDecisions?:GovernedDecisionInput[] }) {
   const modeProjects = useMemo(() => visiblePortalProjects(projects, demoMode), [demoMode, projects]);
   const [selectedId, setSelectedId] = useState(focusProjectId || modeProjects[0]?.id || "");
   const [draft, setDraft] = useState<ResponseDraft>(() => modeProjects.find(project=>project.id===(focusProjectId || modeProjects[0]?.id))?.responsePackage?.draft || blank);
   const [gate, setGate] = useState(false);
   const [notice, setNotice] = useState("");
-  const [tab, setTab] = useState<"actions" | "response">("actions");
+  const [tab, setTab] = useState<"actions" | "decisions" | "response">("actions");
   const [packageTab, setPackageTab] = useState<PackageTab>("overview");
   const [filter, setFilter] = useState<QueueFilter>("attention");
 
@@ -51,6 +53,7 @@ export function WorkflowPortal({ accessKey, demoMode, projects, setProjects, foc
   const incompleteApprovals = selected ? selected.approvals.filter(item => !selected.completedApprovals.includes(item)) : [];
   const externalIssueReady = selected ? canApproveExternalIssue(selected) : false;
   const externalIssueBlockers = selected ? releaseBlockers(selected) : [];
+  const decisions = useMemo(()=>actionDecisionRegister(projects,governedDecisions,demoMode),[demoMode,governedDecisions,projects]);
 
   const queue = useMemo(() => modeProjects.filter(project => {
     if (filter === "closed") return project.status === "Closed";
@@ -236,7 +239,7 @@ export function WorkflowPortal({ accessKey, demoMode, projects, setProjects, foc
 
   return <section className="workflow-view">
     <div className="workflow-hero"><div><p className="eyebrow">Symbiont actions</p><h2>Lead to <em>closeout.</em></h2></div><p>One approval queue moves opportunities and projects through governed agent handoffs. Background agents surface only recommendations, exceptions, and decisions that need attention.</p></div>
-    <div className="workflow-tabs"><button className={tab === "actions" ? "active" : ""} onClick={() => setTab("actions")}>Action queue</button><button className={tab === "response" ? "active" : ""} onClick={() => setTab("response")}>Draft editor / export</button><span>L1 draft · material actions require human approval</span></div>
+    <div className="workflow-tabs"><button className={tab === "actions" ? "active" : ""} onClick={() => setTab("actions")}>Action queue</button><button className={tab === "decisions" ? "active" : ""} onClick={() => setTab("decisions")}>Decisions & approvals · {decisions.filter(item=>item.status!=="Approved").length}</button><button className={tab === "response" ? "active" : ""} onClick={() => setTab("response")}>Draft editor / export</button><span>L1 draft · material actions require human approval</span></div>
     <div className="workflow-boundary" role="note"><b>{demoMode ? "Demonstration queue" : "Session queue"}</b><span>{demoMode ? "Action queue records are controlled demonstrations. Stage changes remain browser-local." : "Only live or verified Pipeline handoffs appear here. Stage changes remain browser-local until governed workflow persistence is enabled."}</span></div>
     {notice && <div className="workflow-notice" role="status">{notice}</div>}
     {tab === "actions" ? <>
@@ -269,9 +272,23 @@ export function WorkflowPortal({ accessKey, demoMode, projects, setProjects, foc
           <ActivityTimeline activities={selected.activities} />
         </div> : <div className="workflow-empty"><p className="eyebrow">Governed handoff queue</p><h3>No live work has been handed over.</h3><p>Select an opportunity in Pipeline and choose <b>Start governed response</b>. The selected record will arrive here with its source, confidence, approvals, and next action preserved.</p></div>}
       </div>
-    </> : <ResponseStudio draft={draft} setDraft={updateDraft} exportFile={exportFile} />}
+    </> : tab === "decisions" ? <DecisionCenter decisions={decisions} onOpenAction={(projectId)=>{const project=modeProjects.find(item=>item.id===projectId);if(project){selectProject(project);setTab("actions");setFilter("all");}}} demoMode={demoMode} /> : <ResponseStudio draft={draft} setDraft={updateDraft} exportFile={exportFile} />}
   </section>;
 }
+
+function DecisionCenter({decisions,onOpenAction,demoMode}:{decisions:ReturnType<typeof actionDecisionRegister>;onOpenAction:(projectId:string)=>void;demoMode:boolean}) {
+  const open=decisions.filter(item=>item.status!=="Approved");
+  const approved=decisions.filter(item=>item.status==="Approved");
+  return <section className="decision-center">
+    <div className="decision-summary"><article><span>Open decisions</span><strong>{String(open.length).padStart(2,"0")}</strong><small>Authority and evidence required</small></article><article><span>Approved</span><strong>{String(approved.length).padStart(2,"0")}</strong><small>Retained for audit</small></article><article><span>Operating rule</span><strong>1</strong><small>Decide in Actions; execute through the linked work item</small></article></div>
+    <div className="decision-register"><header><div><p className="eyebrow">Central decision register</p><h3>Recommendations become accountable approvals.</h3></div><span>{demoMode?"Demonstration decisions":"Live governed decisions"}</span></header>
+      {decisions.map(item=><article className="decision-register-row" key={item.id}><div><small>{item.id} · {item.projectId}</small><strong>{item.statement}</strong><p>{item.rationale}</p></div><div><span>Owner</span><b>{item.owner}</b><small>Required {formatDecisionDate(item.requiredBy)}</small></div><div><span>Evidence source</span><b>{item.source}</b></div><div><strong className={item.status==="Approved"?"approved":"open"}>{item.status}</strong>{item.hasAction&&<button type="button" onClick={()=>onOpenAction(item.projectId)}>Open linked action →</button>}</div></article>)}
+      {!decisions.length&&<div className="decision-empty"><strong>No decisions in this mode.</strong><span>Approvals appear here when an Action record requests human authority. No decision has been simulated.</span></div>}
+    </div>
+  </section>;
+}
+
+function formatDecisionDate(value:string){if(!value||value==="Unscheduled")return "Unscheduled";const date=new Date(`${value}T12:00:00Z`);return Number.isFinite(date.getTime())?new Intl.DateTimeFormat("en-US",{month:"short",day:"numeric",year:"numeric",timeZone:"UTC"}).format(date):value;}
 
 function countFilter(projects: PortalProject[], filter: QueueFilter) {
   if (filter === "closed") return projects.filter(project => project.status === "Closed").length;

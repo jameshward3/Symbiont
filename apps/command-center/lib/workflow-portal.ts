@@ -249,6 +249,86 @@ export function visiblePortalProjects(projects:PortalProject[], demoMode:boolean
   return projects.filter(project => project.isDemonstration === demoMode);
 }
 
+export type PortfolioOpportunityInput = {
+  id:string; title:string; client?:string; stage:string; scope?:string; amount?:number;
+  dueDate?:string; nextAction?:string; recommendation?:string; confidence?:number;
+  source?:string; isDemonstration:boolean;
+};
+
+export type QualifiedPursuit = {
+  id:string; title:string; client:string; stage:string; owner:string; dueDate:string;
+  nextAction:string; recommendation:string; confidence:number; estimate:number;
+  estimateConfidence:number; bidDecision:string; source:string; inActionQueue:boolean;
+  isDemonstration:boolean;
+};
+
+const qualifiedWorkflowStages = new Set<WorkflowStageId>(["qualification", "bid", "response", "contract"]);
+
+export function qualifiedPursuitPortfolio(opportunities:PortfolioOpportunityInput[], projects:PortalProject[], demoMode:boolean):QualifiedPursuit[] {
+  const pursuits = new Map<string, QualifiedPursuit>();
+  for (const opportunity of opportunities) {
+    if (opportunity.isDemonstration !== demoMode || !/qualified|proposal|response|bid|contract/i.test(opportunity.stage)) continue;
+    const estimate = estimateForOpportunity({ title:opportunity.title, scope:opportunity.scope });
+    pursuits.set(opportunity.id, {
+      id:opportunity.id, title:opportunity.title, client:opportunity.client || "Client required", stage:opportunity.stage,
+      owner:"AGT-002", dueDate:opportunity.dueDate || "", nextAction:opportunity.nextAction || "Complete qualification and record the bid / no-bid decision",
+      recommendation:opportunity.recommendation || estimate.decision, confidence:Math.max(0,Math.min(100,Math.round(opportunity.confidence ?? 50))),
+      estimate:opportunity.amount || estimate.total, estimateConfidence:estimate.confidence, bidDecision:estimate.decision,
+      source:opportunity.source || "Governed Pipeline", inActionQueue:false, isDemonstration:opportunity.isDemonstration,
+    });
+  }
+  for (const project of projects) {
+    if (project.isDemonstration !== demoMode || project.status === "Closed" || !qualifiedWorkflowStages.has(project.stage)) continue;
+    const estimate = project.responsePackage?.estimate || estimateForOpportunity({ title:project.title });
+    pursuits.set(project.id, {
+      id:project.id, title:project.title, client:project.client || "Client required", stage:WORKFLOW_STAGES.find(item=>item.id===project.stage)?.label || project.stage,
+      owner:project.owner, dueDate:project.dueDate, nextAction:project.nextAction, recommendation:project.recommendation,
+      confidence:project.confidence, estimate:estimate.total, estimateConfidence:estimate.confidence, bidDecision:estimate.decision,
+      source:project.source, inActionQueue:true, isDemonstration:project.isDemonstration,
+    });
+  }
+  return [...pursuits.values()].sort((left,right) => (left.dueDate || "9999").localeCompare(right.dueDate || "9999") || left.title.localeCompare(right.title));
+}
+
+export type GovernedDecisionInput = {
+  id:string; projectId?:string; statement:string; owner?:string; requiredBy?:string;
+  status?:string; rationale?:string; source?:string; isDemonstration?:boolean;
+};
+
+export type ActionDecision = Required<GovernedDecisionInput> & { hasAction:boolean };
+
+export function actionDecisionRegister(projects:PortalProject[], governed:GovernedDecisionInput[], demoMode:boolean):ActionDecision[] {
+  const modeProjects = visiblePortalProjects(projects, demoMode);
+  const projectIds = new Set(modeProjects.map(project=>project.id));
+  const decisions = new Map<string,ActionDecision>();
+  for (const project of modeProjects) {
+    for (const approval of project.approvals) {
+      const id=`DEC-${project.id}-${approval.toUpperCase().replace(/[^A-Z0-9]+/g,"-").replace(/^-|-$/g,"")}`;
+      decisions.set(id, {
+        id, projectId:project.id, statement:`Approve ${approval} for ${project.title}`,
+        owner:"Authorized human", requiredBy:project.dueDate || "Unscheduled",
+        status:project.completedApprovals.includes(approval)?"Approved":"Decision required",
+        rationale:project.rationale, source:`${project.owner} recommendation · ${project.source}`,
+        isDemonstration:project.isDemonstration, hasAction:true,
+      });
+    }
+  }
+  for (const item of governed) {
+    const isDemonstration=item.isDemonstration ?? false;
+    if (isDemonstration !== demoMode) continue;
+    decisions.set(item.id, {
+      id:item.id, projectId:item.projectId || "Company", statement:item.statement,
+      owner:item.owner || "Authorized human", requiredBy:item.requiredBy || "Unscheduled",
+      status:item.status || "Proposed", rationale:item.rationale || "Review the linked evidence and recommendation before approval.",
+      source:item.source || "Governed decision register", isDemonstration, hasAction:Boolean(item.projectId && projectIds.has(item.projectId)),
+    });
+  }
+  return [...decisions.values()].sort((left,right)=>{
+    const leftOpen=left.status === "Approved" ? 1 : 0; const rightOpen=right.status === "Approved" ? 1 : 0;
+    return leftOpen-rightOpen || left.requiredBy.localeCompare(right.requiredBy) || left.id.localeCompare(right.id);
+  });
+}
+
 const demoOpportunity=(project:Omit<PortalProject,"responsePackage">,scope:string):PortalProject=>({ ...project, responsePackage:responsePackageForOpportunity({ id:project.id,title:project.title,client:project.client,solicitation:project.solicitation,stage:project.stage,scope,dueDate:project.dueDate,recommendation:project.recommendation,confidence:project.confidence,source:project.source,sourceUpdatedAt:project.sourceUpdatedAt,isDemonstration:true }) });
 
 export const demonstrationPortalProjects:PortalProject[] = [
