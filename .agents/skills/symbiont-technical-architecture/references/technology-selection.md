@@ -1,0 +1,2 @@
+# Technology selection
+Score functional fit, interoperability, security, privacy, portability, API maturity, scale, reliability, support, total cost, effort, vendor viability, lock-in, skills, and exit path. Separate verified vendor evidence from assumptions. Coordinate evidence with AGT-007 and economics with AGT-006. No recommendation authorizes purchase, account creation, vendor terms, production deployment, or client commitment.

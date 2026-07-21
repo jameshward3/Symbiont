@@ -1,0 +1,4 @@
+interface:
+  display_name: "Symbiont Finance Operations"
+  short_description: "Reconcile finance, forecast cash, and control billing"
+  default_prompt: "Use $symbiont-finance-operations to reconcile approved finance evidence, assess invoice readiness, and produce an approval-aware forecast and exception report."

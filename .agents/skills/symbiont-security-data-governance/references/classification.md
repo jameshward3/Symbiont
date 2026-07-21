@@ -1,0 +1,2 @@
+# Classification
+Public requires approved public disclosure. Internal is authorized operational information. Confidential is sensitive business or client information with controlled access. Restricted includes credentials, personal/payment/privileged/contract/security-sensitive/client-controlled data. When uncertain, use Restricted and request owner review. Record owner, purpose, source, access, retention, and handling.

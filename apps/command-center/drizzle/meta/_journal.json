@@ -43,6 +43,34 @@
       "when": 1784610551855,
       "tag": "0005_hot_magik",
       "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "6",
+      "when": 1784611941669,
+      "tag": "0006_lovely_captain_midlands",
+      "breakpoints": true
+    },
+    {
+      "idx": 7,
+      "version": "6",
+      "when": 1784611987296,
+      "tag": "0007_glossy_dakota_north",
+      "breakpoints": true
+    },
+    {
+      "idx": 8,
+      "version": "6",
+      "when": 1784612070686,
+      "tag": "0008_giant_marrow",
+      "breakpoints": true
+    },
+    {
+      "idx": 9,
+      "version": "6",
+      "when": 1784612122087,
+      "tag": "0009_narrow_hannibal_king",
+      "breakpoints": true
     }
   ]
 }

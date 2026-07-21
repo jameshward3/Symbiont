@@ -40,11 +40,15 @@ test("renders the Symbiont agent command center", async () => {
   assert.match(html, /Quality/i);
   assert.match(html, /Knowledge/i);
   assert.match(html, /Reliability/i);
+  assert.match(html, /Technical Architecture/i);
+  assert.match(html, /Client Success/i);
   assert.match(html, /AGT-003/i);
   assert.match(html, /AGT-004/i);
   assert.match(html, /AGT-005/i);
   assert.match(html, /AGT-008/i);
   assert.match(html, /AGT-009/i);
+  assert.match(html, /AGT-012/i);
+  assert.match(html, /AGT-013/i);
   assert.match(html, /Demonstration data/i);
   assert.match(html, /Runtime unavailable/i);
   assert.doesNotMatch(html, /Your site is taking shape|codex-preview/i);
