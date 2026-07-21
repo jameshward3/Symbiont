@@ -36,10 +36,40 @@ type ScoutOpportunity = { id:string; issuer:string; issuerWebsite?:string|null; 
 type MonitoringQuery = { id:string; name:string; queryText:string; sourceCategory:string; geography?:string|null; cadence:string; status:string; lastCheckedAt?:string|null; nextCheckAt?:string|null; robotsPolicy:string; requiresAuthentication:boolean };
 type ScoutData = { source:"d1"|"verified_snapshot"|"demonstration"; database:"connected"|"connected_empty"|"published_snapshot"|"unavailable"; asOf:string; activation:string; opportunities:ScoutOpportunity[]; monitoringQueries:MonitoringQuery[] };
 
-const navItems: { label: View; code: string }[] = [
-  { label: "Overview", code: "01" }, { label: "Action Portal", code: "ACT" }, { label: "Agent Network", code: "02" }, { label: "Shared Goals", code: "03" },
-  { label: "Sales Operations", code: "02" }, { label: "Marketing", code: "11" }, { label: "Delivery Control", code: "03" }, { label: "Finance", code: "06" }, { label: "Product", code: "10" }, { label: "Client Success", code: "13" }, { label: "Quality", code: "04" }, { label: "Knowledge", code: "05" }, { label: "Research", code: "07" }, { label: "Reliability", code: "08" }, { label: "Technical Architecture", code: "12" }, { label: "Security & Data", code: "14" }, { label: "Opportunity Scout", code: "09" }, { label: "Decisions", code: "DEC" }, { label: "Systems", code: "SYS" },
+type NavItem = { view: View; label: string; code: string };
+const primaryNavItems: NavItem[] = [
+  { view: "Overview", label: "Overview", code: "01" },
+  { view: "Action Portal", label: "Actions", code: "ACT" },
+  { view: "Sales Operations", label: "Pipeline", code: "02" },
+  { view: "Delivery Control", label: "Projects", code: "03" },
+  { view: "Decisions", label: "Decisions", code: "DEC" },
 ];
+const backgroundNavGroups: Array<{ label: string; items: NavItem[] }> = [
+  { label: "Discover", items: [
+    { view: "Opportunity Scout", label: "Opportunity Scout", code: "09" },
+    { view: "Research", label: "Research", code: "07" },
+    { view: "Marketing", label: "Marketing", code: "11" },
+  ] },
+  { label: "Advise", items: [
+    { view: "Finance", label: "Finance", code: "06" },
+    { view: "Product", label: "Product", code: "10" },
+    { view: "Client Success", label: "Client Success", code: "13" },
+    { view: "Technical Architecture", label: "Technical Architecture", code: "12" },
+  ] },
+  { label: "Assure", items: [
+    { view: "Quality", label: "Quality", code: "04" },
+    { view: "Knowledge", label: "Knowledge", code: "05" },
+    { view: "Reliability", label: "Reliability", code: "08" },
+    { view: "Security & Data", label: "Security & Data", code: "14" },
+  ] },
+  { label: "Govern", items: [
+    { view: "Agent Network", label: "Agent Network", code: "NET" },
+    { view: "Shared Goals", label: "Shared Goals", code: "GOA" },
+    { view: "Systems", label: "Systems & Logs", code: "SYS" },
+  ] },
+];
+const backgroundViews = new Set<View>(backgroundNavGroups.flatMap(group => group.items.map(item => item.view)));
+const allNavigationItems = [...primaryNavItems, ...backgroundNavGroups.flatMap(group => group.items)];
 
 const publishedAgents: Agent[] = [
   { stable_id: "AGT-001", name: "Symbiont COO", mission: "Coordinate company operations, priorities, standards, and agent work.", authority_level: "L2", status: "Active" },
@@ -61,6 +91,7 @@ const publishedGoals: Goal[] = [{ stable_id: "GOAL-2026-009", objective: "Find N
 
 export default function Home() {
   const [view, setView] = useState<View>("Overview");
+  const [backgroundOpen, setBackgroundOpen] = useState(false);
   const [demoMode, setDemoMode] = useState(false);
   const [connection, setConnection] = useState<Connection>("checking");
   const [dashboard, setDashboard] = useState<Dashboard | null>(null);
@@ -130,19 +161,27 @@ export default function Home() {
   const weighted = opportunities.reduce((sum, item) => sum + Number(item.amount || 0) * Number(item.probability || 0) / 100, 0);
   const stale = opportunities.filter(item => item.next_action_date && new Date(item.next_action_date) < new Date("2026-07-20T00:00:00")).length;
   const sourceLabel = demoMode ? "Demonstration mode" : connection === "connected" ? "Live governed data" : "Verified published registry";
+  const backgroundActive = backgroundViews.has(view);
+  const viewTitle = allNavigationItems.find(item => item.view === view)?.label ?? view;
 
   return (
     <div className="app-shell">
       <aside className="sidebar">
         <div className="brand"><div className="brand-mark">S</div><div><strong>SYMBIONT</strong><span>OPERATING SYSTEM</span></div></div>
-        <nav aria-label="Primary navigation"><p className="eyebrow nav-label">Command views</p>{navItems.map(item => <button className={`nav-item ${view === item.label ? "active" : ""}`} key={item.label} onClick={() => setView(item.label)} type="button"><span className="nav-code">{item.code}</span><span>{item.label}</span></button>)}</nav>
+        <nav aria-label="Primary navigation">
+          <p className="eyebrow nav-label">Operating views</p>
+          {primaryNavItems.map(item => <button className={`nav-item ${view === item.view ? "active" : ""}`} key={item.view} onClick={() => setView(item.view)} type="button"><span className="nav-code">{item.code}</span><span>{item.label}</span>{item.view === "Action Portal" && <b className="nav-badge">3</b>}</button>)}
+          <button className={`nav-item nav-folder ${backgroundActive ? "active" : ""}`} aria-expanded={backgroundOpen || backgroundActive} onClick={() => setBackgroundOpen(open => !open)} type="button"><span className="nav-code">BG</span><span>Background Agents</span><b>{backgroundOpen || backgroundActive ? "−" : "+"}</b></button>
+          {(backgroundOpen || backgroundActive) && <div className="background-menu">{backgroundNavGroups.map(group => <div className="nav-group" key={group.label}><p>{group.label}</p>{group.items.map(item => <button className={`nav-subitem ${view === item.view ? "active" : ""}`} key={item.view} onClick={() => setView(item.view)} type="button"><span>{item.code}</span>{item.label}</button>)}</div>)}</div>}
+        </nav>
         <div className="side-divider" />
         <div className="system-state"><p className="eyebrow">Runtime state</p><StateRow label="Shared data" state={connection === "connected" ? "Live" : connection === "checking" ? "Checking" : "Restricted"} tone={connection === "connected" ? "green" : "amber"} /><StateRow label="Agent authority" state="Governed" tone="green" /><StateRow label="External actions" state="Approval" tone="amber" /></div>
-        <div className="agent-card"><div className="agent-orbit"><span>009</span></div><div><p>OPPORTUNITY SCOUT</p><strong>L1 · Active — governed</strong></div><i className="pulse" /></div>
+        <div className="agent-card"><div className="agent-orbit"><span>BG</span></div><div><p>BACKGROUND AGENTS</p><strong>{agents.length} governed roles</strong></div><i className="pulse" /></div>
       </aside>
       <main>
-        <header className="topbar"><div><p className="eyebrow">Executive command center</p><h1>{view}</h1></div><div className="top-actions"><label className="demo-toggle" title="Switch between verified/live records and clearly labeled demonstration data"><input type="checkbox" checked={demoMode} onChange={event=>{setDemoMode(event.target.checked);setAnswer("");setRunState("idle");}}/><span>Demo mode</span><i /></label><span className={`demo-pill ${!demoMode && connection === "connected" ? "live-pill" : ""}`}>{sourceLabel}</span><div className="avatar">JW</div></div></header>
+        <header className="topbar"><div><p className="eyebrow">Executive command center</p><h1>{viewTitle}</h1></div><div className="top-actions"><label className="demo-toggle" title="Switch between live records and demo mode"><input type="checkbox" checked={demoMode} onChange={event=>{setDemoMode(event.target.checked);setAnswer("");setRunState("idle");}}/><span>Demo mode</span><i /></label><span className={`demo-pill ${!demoMode && connection === "connected" ? "live-pill" : ""}`}>{sourceLabel}</span><div className="avatar">JW</div></div></header>
         <div className="view-wrap">
+          <p className="sr-only" aria-live="polite">{connection === "connected" ? "Runtime connected to the governed data plane." : "Runtime unavailable for live agent actions."}</p>
           <ConnectionBanner connection={connection} connect={connect} accessKey={accessKey} setAccessKey={setAccessKey} demoMode={demoMode} />
           {view === "Overview" && <Overview agents={agents} goals={goals} opportunities={opportunities} weighted={weighted} stale={stale} source={sourceLabel} onNavigate={setView} />}
           {view === "Action Portal" && <WorkflowPortal accessKey={accessKey} />}
@@ -163,7 +202,7 @@ export default function Home() {
           {view === "Security & Data" && <SecurityGovernanceControl data={securityData} />}
           {view === "Decisions" && <DecisionsView decisions={dashboard?.decisions ?? []} source={sourceLabel} />}
           {view === "Systems" && <SystemsView connection={connection} runs={dashboard?.runs ?? []} handoffs={dashboard?.handoffs ?? []} />}
-          <CommandPanel agentId={agentId} setAgentId={setAgentId} command={command} setCommand={setCommand} submit={runAgentCommand} connection={connection} demoMode={demoMode} runState={runState} answer={answer} />
+          {(view === "Agent Network" || view === "Systems") && <CommandPanel agentId={agentId} setAgentId={setAgentId} command={command} setCommand={setCommand} submit={runAgentCommand} connection={connection} demoMode={demoMode} runState={runState} answer={answer} />}
         </div>
       </main>
     </div>

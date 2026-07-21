@@ -51,6 +51,8 @@ The production application is available at [symbiont-three.vercel.app](https://s
 
 The interface now includes the Agent Network, Shared Goals, Sales Operations, governed command panel, and explicit live/disconnected states. It reads one organization-scoped Supabase/PostgreSQL data plane when securely configured and otherwise uses clearly labeled harmless demonstration records without simulating runtime success.
 
+The primary navigation is outcome-first: Overview, Actions, Pipeline, Projects, and Decisions. Specialist and utility workspaces are consolidated beneath Background Agents. The Actions workspace monitors work from opportunity intake through closeout with stage-specific handoffs, recommendations, sourced input fields, approval gates, and an activity/evidence timeline. See [Action Workflow Interface](docs/SYM-OPS-DES-003_action-workflow-interface_2026-07-21_v1.0.md) for the operating contract and persistence roadmap.
+
 ## Sales Operations Agent
 
 Invoke AGT-002 with `$symbiont-sales-ops`. The repository skill is located at `.agents/skills/symbiont-sales-ops`, and the matching project custom-agent definition is `.codex/agents/symbiont-sales-ops.toml`. AGT-002 operates at L1 — Draft and Recommend and requires human approval for external communications, pricing, proposals, contractual statements, and material commitments.

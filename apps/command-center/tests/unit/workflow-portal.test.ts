@@ -1,5 +1,7 @@
 import assert from "node:assert/strict";import test from "node:test";
-import {cleanResponseDraft,validateStageMove} from "../../lib/workflow-portal.ts";
+import {cleanResponseDraft,demonstrationPortalProjects,stageActionLabel,validateStageMove} from "../../lib/workflow-portal.ts";
 test("workflow advances only one governed stage",()=>{assert.equal(validateStageMove("intake","qualification",true),true);assert.throws(()=>validateStageMove("intake","response",true),/one governed stage/);assert.throws(()=>validateStageMove("intake","qualification",false),/gate/)});
+test("workflow actions describe the governed handoff",()=>{assert.equal(stageActionLabel("intake"),"Accept and send to Sales Qualification");assert.equal(stageActionLabel("closeout"),"Approve closeout and archive")});
+test("action records preserve recommendations, approvals, provenance, and activity",()=>{for(const project of demonstrationPortalProjects){assert.ok(project.recommendation);assert.ok(project.rationale);assert.ok(project.source);assert.ok(project.activities.length);assert.ok(project.confidence>=0&&project.confidence<=100);assert.ok(project.completedApprovals.every(approval=>project.approvals.includes(approval)))}});
 test("response exports require identifying fields",()=>assert.throws(()=>cleanResponseDraft({responseType:"RFP"}),/Client/));
 test("response draft is normalized and bounded",()=>{const value=cleanResponseDraft({responseType:"RFQ",client:" Agency ",title:" Work ",solicitation:" RFQ-1 ",approach:"x".repeat(13000)});assert.equal(value.responseType,"RFQ");assert.equal(value.client,"Agency");assert.equal(value.approach.length,12000)});
