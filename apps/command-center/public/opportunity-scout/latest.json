@@ -1,20 +1,20 @@
 {
   "schemaVersion": "1.0.0",
   "automationId": "agt-009-opportunity-scout",
-  "runId": "RUN-AGT009-20260801-WEEKDAY-PROD",
+  "runId": "RUN-AGT009-20260802-WEEKDAY-PROD",
   "sharedGoalId": "GOAL-2026-009",
-  "correlationId": "CORR-AGT009-NYNJ-20260801-WEEKDAY-PROD",
-  "runDate": "2026-08-01",
-  "startedAt": "2026-08-01T12:05:19Z",
-  "evidenceCollectionCompletedAt": "2026-08-01T12:15:01Z",
+  "correlationId": "CORR-AGT009-NYNJ-20260802-WEEKDAY-PROD",
+  "runDate": "2026-08-02",
+  "startedAt": "2026-08-02T12:00:56Z",
+  "evidenceCollectionCompletedAt": "2026-08-02T12:14:53Z",
   "authority": "AGT-009 L1 — Founder-approved governed internal publication workflow",
-  "lookbackWindow": "2026-07-31 through 2026-08-01, plus currently open solicitations and active official capital signals",
+  "lookbackWindow": "2026-08-01 through 2026-08-02, plus currently open solicitations and active official capital signals",
   "scope": "NY/NJ state and local network, cabling, voice, physical security, IT consulting, reality capture, BIM/digital twin, UAS, building-data and asset-information opportunities",
-  "methodology": "Canonical issuer/public-authority sources opened across NY state, NY local, NJ state, and NJ local lanes; normalized and deduplicated on issuer, title, solicitation number, URL, deadline, and geography; weighted score computed exactly with the repository Scout weights. Official addenda were attached to existing records and timing was recalculated from the August 1 observation date without inflating urgency.",
+  "methodology": "Canonical issuer/public-authority sources opened across NY state, NY local, NJ state, and NJ local lanes; normalized and deduplicated on issuer, title, solicitation number, URL, deadline, and geography; weighted score computed exactly with the repository Scout weights. Current official evidence and addenda were attached to existing records and timing was recalculated from the August 2 observation date without inflating urgency.",
   "noExternalAction": "No prospect or buyer was contacted; no account was created; no authentication or click-through terms were used; no bid, price, payment, commitment, or external capability claim was submitted.",
   "reportUrl": "https://symbiont-three.vercel.app/opportunity-scout/latest.html",
   "counts": {
-    "sourcesChecked": 22,
+    "sourcesChecked": 28,
     "candidates": 16,
     "verified": 16,
     "routed": 10,
@@ -28,11 +28,11 @@
   "deltaFromPriorRun": {
     "newCandidates": 0,
     "newVerified": 0,
-    "amended": 3,
+    "amended": 1,
     "closed": 0,
-    "scoreChanged": 2,
-    "routeChanged": 2,
-    "note": "No new in-scope verified record was found. RIOC Addendum 1 extended Flood Risk Assessment RFP 26-1379 from August 14 to August 20. The Port Authority official listing shows Addendum 1 and extends RFP-6000003325 and RFP-6000003326 from August 4 to August 25; their timing scores increased to 100, totals increased to 78 and 81, and both returned to AGT-002 review."
+    "scoreChanged": 0,
+    "routeChanged": 0,
+    "note": "No new in-scope verified record and no post-August 1 canonical amendment were found. A pre-existing OGS HBITS Solicitation Update 9, issued July 22 but not captured in the prior report, was newly verified and attached to Solicitation 23311. It confirms the August 12 deadline and revises bidder qualification, subcontractor, proposal, and submission mechanics; score 81 and AGT-002 review route remain unchanged."
   },
   "urgentDeadlines": [
     {
@@ -70,6 +70,7 @@
   "deduplication": {
     "duplicateGroups": 0,
     "amendmentsAttached": [
+      "NYS OGS Solicitation 23311 Update 9",
       "RIOC RFP 26-1379 Addendum 1",
       "PANYNJ RFP-6000003325 Addendum 1 deadline extension",
       "PANYNJ RFP-6000003326 Addendum 1 deadline extension",
@@ -85,7 +86,7 @@
       "geography"
     ],
     "newRecordChecks": [
-      "No new record created; all three changes matched existing issuer + solicitation identities and were attached as amendments"
+      "No new record created; OGS Update 9 matched the existing issuer + solicitation identity and was attached to OPP-2026-NYSOGS-23311"
     ]
   },
   "sources": [
@@ -93,133 +94,169 @@
       "lane": "NY state",
       "name": "NYS OGS HBITS bid documents",
       "url": "https://ogs.ny.gov/procurement/biddocuments/23311bid",
-      "observedAt": "2026-08-01T12:15:01Z"
+      "observedAt": "2026-08-02T12:14:53Z"
     },
     {
       "lane": "NY state",
       "name": "NYS OGS D&C consultant opportunities",
       "url": "https://online2.ogs.ny.gov/dnc/contractorConsultant/esb/esbConsultantOpsIndex.asp",
-      "observedAt": "2026-08-01T12:15:01Z"
+      "observedAt": "2026-08-02T12:14:53Z"
     },
     {
       "lane": "NY state",
       "name": "NYS Contract Reporter public listing",
       "url": "https://www.nyscr.ny.gov/Ads/IFrameDetails/2131029?FromAction=Search",
-      "observedAt": "2026-08-01T12:15:01Z"
+      "observedAt": "2026-08-02T12:14:53Z"
     },
     {
       "lane": "NY state",
       "name": "NYS Gaming Commission procurement",
       "url": "https://gaming.ny.gov/procurement",
-      "observedAt": "2026-08-01T12:15:01Z"
+      "observedAt": "2026-08-02T12:14:53Z"
     },
     {
       "lane": "NY local",
       "name": "NYC City Record — OTI unified communications",
       "url": "https://a856-cityrecord.nyc.gov/RequestDetail/20260617041",
-      "observedAt": "2026-08-01T12:15:01Z"
+      "observedAt": "2026-08-02T12:14:53Z"
     },
     {
       "lane": "NY local",
       "name": "NYC City Record — NYCHA Surfside Gardens",
       "url": "https://a856-cityrecord.nyc.gov/RequestDetail/20260626002",
-      "observedAt": "2026-08-01T12:15:01Z"
+      "observedAt": "2026-08-02T12:14:53Z"
     },
     {
       "lane": "NY local",
       "name": "NYC School Construction Authority reports",
       "url": "https://www.nycsca.org/Doing-Business/Contracting-with-Us/Reports",
-      "observedAt": "2026-08-01T12:15:01Z"
+      "observedAt": "2026-08-02T12:14:53Z"
     },
     {
       "lane": "NY local",
       "name": "RIOC RFPs and bids",
       "url": "https://www.rioc.ny.gov/info/rfps-and-bids",
-      "observedAt": "2026-08-01T12:15:01Z"
+      "observedAt": "2026-08-02T12:14:53Z"
     },
     {
       "lane": "NJ state",
       "name": "NJ DPP legal and special notices",
       "url": "https://www.nj.gov/treasury/purchase/",
-      "observedAt": "2026-08-01T12:15:01Z"
+      "observedAt": "2026-08-02T12:14:53Z"
     },
     {
       "lane": "NJ state",
       "name": "NJ DPP T3163 amendment 3",
       "url": "https://www.nj.gov/treasury/purchase/specialnotices/NJDPP-26DPP01263-20260828-20260717_125804.pdf",
-      "observedAt": "2026-08-01T12:15:01Z"
+      "observedAt": "2026-08-02T12:14:53Z"
     },
     {
       "lane": "NJ state",
       "name": "NJ DPP T2870 amendment 2",
       "url": "https://www.nj.gov/treasury/purchase/specialnotices/NJDPP-26DPP01314-20260728-20260720_125548.pdf",
-      "observedAt": "2026-08-01T12:15:01Z"
+      "observedAt": "2026-08-02T12:14:53Z"
     },
     {
       "lane": "NJ state",
       "name": "NJ TRANSIT procurement calendar",
       "url": "https://www.njtransit.com/procurement/calendar/",
-      "observedAt": "2026-08-01T12:15:01Z"
+      "observedAt": "2026-08-02T12:14:53Z"
     },
     {
       "lane": "NJ state",
       "name": "NJ TRANSIT customer communications RFI release",
       "url": "https://www.njtransit.com/press-releases/nj-transit-advances-ongoing-modernization-customer-communications-technology",
-      "observedAt": "2026-08-01T12:15:01Z"
+      "observedAt": "2026-08-02T12:14:53Z"
     },
     {
       "lane": "NJ state",
       "name": "NJEDA bidding opportunities",
       "url": "https://www.njeda.gov/bidding/",
-      "observedAt": "2026-08-01T12:15:01Z"
+      "observedAt": "2026-08-02T12:14:53Z"
     },
     {
       "lane": "NJ local",
       "name": "Atlantic County public notice",
       "url": "https://www.atlanticcountynj.gov/Home/Components/News/News/2223/977",
-      "observedAt": "2026-08-01T12:15:01Z"
+      "observedAt": "2026-08-02T12:14:53Z"
     },
     {
       "lane": "NJ local",
       "name": "Hunterdon County legal notices and IT capital ordinance",
       "url": "https://www.co.hunterdon.nj.us/2908/Legal-Notices",
-      "observedAt": "2026-08-01T12:15:01Z"
+      "observedAt": "2026-08-02T12:14:53Z"
     },
     {
       "lane": "NJ local",
       "name": "Newark Board of Education current bids",
       "url": "https://www.nps.k12.nj.us/departments/purchasing/view-current-bids/",
-      "observedAt": "2026-08-01T12:15:01Z"
+      "observedAt": "2026-08-02T12:14:53Z"
     },
     {
       "lane": "NJ local",
       "name": "PANYNJ professional services opportunities",
       "url": "https://www.portauthoritybuilds.com/port-authority/en/business-opportunities/solicitations-advertisements/professional-services.html",
-      "observedAt": "2026-08-01T12:15:01Z"
+      "observedAt": "2026-08-02T12:14:53Z"
     },
     {
       "lane": "NY state",
       "name": "NYS OGS Business Consulting Services RFP 23420",
       "url": "https://ogs.ny.gov/procurement/biddocuments/23420bid",
-      "observedAt": "2026-08-01T12:15:01Z"
+      "observedAt": "2026-08-02T12:14:53Z"
     },
     {
       "lane": "NJ state",
       "name": "NJ TRANSIT RFP 0000238 public advertisement",
       "url": "https://content.njtransit.com/sites/default/files/RFP%200000238-%20Advertisement%20-%20Final.pdf",
-      "observedAt": "2026-08-01T12:15:01Z"
+      "observedAt": "2026-08-02T12:14:53Z"
     },
     {
       "lane": "NY local",
       "name": "RIOC RFP 26-1379 Addendum 1",
       "url": "https://d3olf8azjyqv1e.cloudfront.net/media/Addenda%201%20RFI%20and%20Bid%20date%20extensions.pdf",
-      "observedAt": "2026-08-01T12:15:01Z"
+      "observedAt": "2026-08-02T12:14:53Z"
     },
     {
       "lane": "NJ local / NY local regional authority",
       "name": "PANYNJ official professional-services opportunities page model",
       "url": "https://www.portauthoritybuilds.com/content/port-authority/en/business-opportunities/solicitations-advertisements/professional-services.model.json",
-      "observedAt": "2026-08-01T12:15:01Z"
+      "observedAt": "2026-08-02T12:14:53Z"
+    },
+    {
+      "lane": "NY state",
+      "name": "NYS OGS HBITS Solicitation Update 9",
+      "url": "https://ogs.ny.gov/system/files/documents/2026/07/23311_bid-solicitation-update-9.pdf",
+      "observedAt": "2026-08-02T12:14:53Z"
+    },
+    {
+      "lane": "NY state",
+      "name": "NYS OGS HBITS combined Solicitation Updates 1-9",
+      "url": "https://ogs.ny.gov/system/files/documents/2026/07/23311_bid-solicitation-updates_1-9.pdf",
+      "observedAt": "2026-08-02T12:14:53Z"
+    },
+    {
+      "lane": "NY state",
+      "name": "NYS OGS HBITS revised solicitation",
+      "url": "https://ogs.ny.gov/system/files/documents/2026/07/solicitation-23311_072226.pdf",
+      "observedAt": "2026-08-02T12:14:53Z"
+    },
+    {
+      "lane": "NY local",
+      "name": "RIOC RFP 26-1379 base solicitation",
+      "url": "https://d3olf8azjyqv1e.cloudfront.net/media/RFP%2026-1379%20Flood%20Risk%20Assessment.pdf",
+      "observedAt": "2026-08-02T12:14:53Z"
+    },
+    {
+      "lane": "NJ local",
+      "name": "Hunterdon County Capital Ordinance 2026-08",
+      "url": "https://www.co.hunterdon.nj.us/DocumentCenter/View/20130/Capital-Ordinance-2026-08-IT-Improvements-Statement-and-Summary",
+      "observedAt": "2026-08-02T12:14:53Z"
+    },
+    {
+      "lane": "NJ state",
+      "name": "NJEDA RFP 2026-276 public document",
+      "url": "https://www.njeda.gov/wp-content/uploads/2026/07/276-RFP-Revised-Final-7-14-26.pdf",
+      "observedAt": "2026-08-02T12:14:53Z"
     }
   ],
   "opportunities": [
@@ -243,7 +280,7 @@
       "evidenceHash": "eefcc9c0cf723790c0015712299dadb41bb34fb6088101d8a99bca29467bd479",
       "hashBasis": "SHA-256 of canonical OGS solicitation landing-page response; scope attachment SHA-256 24d9ff38e3a1fcc401ffb9d2439298dac0a838e521b19b7b9142f27e6b6e1918",
       "sourceKind": "Official state procurement page and official scope attachment",
-      "sourceObservedAt": "2026-08-01T12:15:01Z",
+      "sourceObservedAt": "2026-08-02T12:14:53Z",
       "scope": "A five-year multi-award master agreement, with up to five additional renewal years, for Business Consulting Services including Digital Operations, general IT consulting, technical application assessments, requirements development, digital transformation, readiness assessments, IT policy, infrastructure and architecture planning, independent verification and validation, data and analytics, project management, and related consulting. Implementation, managed services, networking services, software, and hardware are expressly excluded from the Digital Operations category.",
       "accessRequirements": "The landing page, solicitation, scope, updates, and response files are public. The restricted period applies. Bid delivery, vendor-responsibility, certifications, pricing, insurance, USB-media, and building-access requirements require an authorized owner; AGT-009 did not register, contact OGS, deliver materials, or accept terms.",
       "scores": {
@@ -302,7 +339,7 @@
       "score": 93,
       "route": "Review — awaiting AGT-002 acceptance",
       "handoffStatus": "Review — awaiting AGT-002 acceptance",
-      "idempotencyKey": "agt009:2026-08-01:CORR-AGT009-NYNJ-20260801-WEEKDAY-PROD:eefcc9c0cf723790c0015712299dadb41bb34fb6088101d8a99bca29467bd479"
+      "idempotencyKey": "agt009:2026-08-02:CORR-AGT009-NYNJ-20260802-WEEKDAY-PROD:eefcc9c0cf723790c0015712299dadb41bb34fb6088101d8a99bca29467bd479"
     },
     {
       "id": "OPP-2026-RIOC-261379",
@@ -324,7 +361,7 @@
       "evidenceHash": "812526274911175bf3576a590c04ecb32f7fad9c4b87726fea17ba01fed10780",
       "hashBasis": "SHA-256 of official RIOC Addendum 1 PDF; original solicitation PDF SHA-256 c95d2a5a5276b6d800e668500a44551ade1efe4a6c85cde0773bdad885c87b5c retained as prior evidence",
       "sourceKind": "Official public-benefit-corporation solicitation PDF and official Addendum 1",
-      "sourceObservedAt": "2026-08-01T12:15:01Z",
+      "sourceObservedAt": "2026-08-02T12:14:53Z",
       "scope": "Comprehensive flood-risk assessment including coastal/hydrodynamic/hydraulic modeling, vulnerability assessment, drainage review, and all necessary topographic, boundary, and utility survey work; the report will inform a future islandwide infrastructure assessment.",
       "accessRequirements": "Public issuer page, solicitation PDF, and Addendum 1. Restricted-period communications are limited to the designated contact. Addendum 1 requests a signed return with any proposal; AGT-009 made no contact, signature, or submission.",
       "scores": {
@@ -379,7 +416,7 @@
       "score": 84,
       "route": "Review — awaiting AGT-002 acceptance",
       "handoffStatus": "Review — awaiting AGT-002 acceptance",
-      "idempotencyKey": "agt009:2026-08-01:CORR-AGT009-NYNJ-20260801-WEEKDAY-PROD:812526274911175bf3576a590c04ecb32f7fad9c4b87726fea17ba01fed10780",
+      "idempotencyKey": "agt009:2026-08-02:CORR-AGT009-NYNJ-20260802-WEEKDAY-PROD:812526274911175bf3576a590c04ecb32f7fad9c4b87726fea17ba01fed10780",
       "amendments": [
         {
           "number": "1",
@@ -410,12 +447,12 @@
       "procurementType": "RFP",
       "statedValue": null,
       "currency": "USD",
-      "evidenceHash": "c2a0171a65a73db841e5ff9c38889b7f377d4d1c6a8cde489f09e82cdd242d80",
-      "hashBasis": "SHA-256 of canonical OGS HTML response",
-      "sourceKind": "Official state procurement page",
-      "sourceObservedAt": "2026-08-01T12:15:01Z",
+      "evidenceHash": "b0e824f8686c2179a7577bd7538d01c961f3a73d9506ba2d768fcf038946240d",
+      "hashBasis": "SHA-256 of official OGS Solicitation Update 9 PDF; current landing-page SHA-256 13a296d37da5f8ddf0c4b0c825e4db9fabdad256921fb6dff611df6989c5b4c7; revised solicitation SHA-256 6981d836b6b6a7e13e97b074c391d71d4499e88640ce183d4fea4cd3eaa3c351",
+      "sourceKind": "Official state procurement page, revised solicitation, and Solicitation Update 9",
+      "sourceObservedAt": "2026-08-02T12:14:53Z",
       "scope": "Statewide hourly information-technology services contract supported by defined job titles, skill levels, regions, minimum qualifications, technical submission, subcontractor, and contract-use requirements.",
-      "accessRequirements": "Thirty-four public solicitation files are linked from OGS. Bidder qualifications, certifications, insurance, pricing, and submission requirements require authorized owner review.",
+      "accessRequirements": "Thirty-seven public solicitation files are linked from OGS. Update 9 requires use of current forms and signed acknowledgment with any bid. Bidder qualifications, certifications, insurance, pricing, staffing, and submission requirements require authorized owner review; AGT-009 made no contact or submission.",
       "scores": {
         "serviceFit": 72,
         "buyerFit": 90,
@@ -440,31 +477,49 @@
       "historicalLabel": "Historical continuity — 80 sanitized IT-consulting/program-support text hits; not project or past-performance proof",
       "newPrerogativeLabels": [],
       "verifiedFacts": [
-        "Solicitation 23311 is for HBITS",
-        "Completed responses are due August 12, 2026 at 1:30 PM",
-        "OGS lists mandatory qualifications, job titles, skill levels, regions, subcontractor information, and technical proposal files"
+        "Solicitation 23311 is for statewide HBITS",
+        "OGS Solicitation Update 9 was issued July 22, 2026 and confirms completed responses are due August 12, 2026 at 1:30 PM ET",
+        "Update 9 revises the solicitation and Attachments 1, 5, 6, 8, 9, 10, 11, and 12",
+        "An IT staff individual may count only once toward the placement qualification; awarded contractors must be able to provide on-site staff where required",
+        "Subcontractors must be approved before a task-order release to be eligible, and the prior web-based ordering-system requirement was removed"
       ],
       "inferences": [
         "A subcontractor or category-specific path may be more realistic than prime pursuit"
       ],
       "risks": [
-        "Mandatory minimum qualifications",
-        "Staffing capacity and regional coverage",
+        "Mandatory minimum qualifications and revised placement-count rules",
+        "Staffing capacity, on-site availability, and regional coverage",
+        "Subcontractors must be approved before a task-order release",
+        "Current amended forms and signed Update 9 acknowledgment are required for any authorized bid",
         "Pricing and contract terms require human approval"
       ],
       "missingInformation": [
-        "Eligible service categories for Symbiont",
-        "Bidder qualification fit",
-        "Teaming strategy",
+        "Eligible service categories and job titles for Symbiont",
+        "Qualification fit under the revised placement rules",
+        "Approved subcontractors and teaming strategy",
         "Approved rate structure"
       ],
-      "nextAction": "AGT-002 reviews mandatory qualifications and determines prime, subcontractor, or no-bid path before August 12.",
-      "projectBrief": "Strong recurring statewide IT-services vehicle. Direct fit depends on job-title categories, staffing depth, mandatory qualifications, and a governed teaming strategy.",
-      "starterNarrative": "Internal draft: Symbiont may support infrastructure assessment, implementation, technical services, and program support where the HBITS categories and qualifications align. Do not convert this into an external staffing or past-performance claim until AGT-005 and AGT-002 complete their gates.",
+      "nextAction": "AGT-002 reviews Update 9, the revised mandatory qualifications, and subcontractor preapproval mechanics, then records a prime, subcontractor, or no-bid decision before August 12; no contact or submission is authorized by this Scout record.",
+      "projectBrief": "Strong recurring statewide IT-services vehicle with newly reconciled Update 9. The amendment confirms the August 12 deadline and materially clarifies placement, on-site staffing, subcontractor-preapproval, and current-form requirements without changing the score or route.",
+      "starterNarrative": "Internal draft: Symbiont may support infrastructure assessment, implementation, technical services, and program support where the amended HBITS job-title, placement, subcontractor, and qualification rules align. Do not convert this into an external staffing or past-performance claim until AGT-005 and AGT-002 complete their gates.",
       "score": 81,
       "route": "Review — awaiting AGT-002 acceptance",
       "handoffStatus": "Review — awaiting AGT-002 acceptance",
-      "idempotencyKey": "agt009:2026-08-01:CORR-AGT009-NYNJ-20260801-WEEKDAY-PROD:c2a0171a65a73db841e5ff9c38889b7f377d4d1c6a8cde489f09e82cdd242d80"
+      "idempotencyKey": "agt009:2026-08-02:CORR-AGT009-NYNJ-20260802-WEEKDAY-PROD:b0e824f8686c2179a7577bd7538d01c961f3a73d9506ba2d768fcf038946240d",
+      "amendments": [
+        {
+          "number": "9",
+          "observedAt": "2026-08-02T12:14:53Z",
+          "canonicalUrl": "https://ogs.ny.gov/system/files/documents/2026/07/23311_bid-solicitation-update-9.pdf",
+          "evidenceHash": "b0e824f8686c2179a7577bd7538d01c961f3a73d9506ba2d768fcf038946240d",
+          "changedFields": [
+            "bid opening date confirmed as 2026-08-12 13:30 ET",
+            "mandatory placement qualifications and on-site staffing requirements revised",
+            "subcontractors must be approved before task-order release",
+            "financial, bidder, technical-proposal, and submission documents revised"
+          ]
+        }
+      ]
     },
     {
       "id": "OPP-2026-NJTRANSIT-26025",
@@ -486,7 +541,7 @@
       "evidenceHash": "c0e4eb387cc6b53e77df596ef4cfae141ce50dbcb51f109dc95790e15ff4d380",
       "hashBasis": "SHA-256 of normalized facts from the canonical NJ TRANSIT press release and procurement calendar",
       "sourceKind": "Official state public-transportation RFI notice",
-      "sourceObservedAt": "2026-08-01T12:15:01Z",
+      "sourceObservedAt": "2026-08-02T12:14:53Z",
       "scope": "Market information and innovative solutions for a unified customer communications platform delivering accurate, timely, consistent real-time system status across a complex multimodal transit system.",
       "accessRequirements": "Canonical press release and calendar are public. Response mechanics require authorized review; AGT-009 did not submit information or contact NJ TRANSIT.",
       "scores": {
@@ -535,7 +590,7 @@
       "score": 80,
       "route": "Review — awaiting AGT-002 acceptance",
       "handoffStatus": "Review — awaiting AGT-002 acceptance",
-      "idempotencyKey": "agt009:2026-08-01:CORR-AGT009-NYNJ-20260801-WEEKDAY-PROD:c0e4eb387cc6b53e77df596ef4cfae141ce50dbcb51f109dc95790e15ff4d380"
+      "idempotencyKey": "agt009:2026-08-02:CORR-AGT009-NYNJ-20260802-WEEKDAY-PROD:c0e4eb387cc6b53e77df596ef4cfae141ce50dbcb51f109dc95790e15ff4d380"
     },
     {
       "id": "SIG-2026-HUNTERDON-ORD-2026-08",
@@ -557,7 +612,7 @@
       "evidenceHash": "3c99e6edd17639a2e149827b508061cf4ee4abee3f3a2fc5f69a7dc0e8aa00ec",
       "hashBasis": "SHA-256 of canonical county ordinance PDF response",
       "sourceKind": "Official county capital ordinance",
-      "sourceObservedAt": "2026-08-01T12:15:01Z",
+      "sourceObservedAt": "2026-08-02T12:14:53Z",
       "scope": "Countywide IT improvements funded at $4,163,462, including replacement of all access and distribution layer switches, GPS tracking improvements, forensic workstations, cameras for an internal-affairs interview room, and vehicle computer equipment.",
       "accessRequirements": "Public ordinance PDF; no solicitation or response path is yet identified.",
       "scores": {
@@ -607,7 +662,7 @@
       "score": 77,
       "route": "Review — awaiting AGT-002 acceptance",
       "handoffStatus": "Review — awaiting AGT-002 acceptance",
-      "idempotencyKey": "agt009:2026-08-01:CORR-AGT009-NYNJ-20260801-WEEKDAY-PROD:3c99e6edd17639a2e149827b508061cf4ee4abee3f3a2fc5f69a7dc0e8aa00ec"
+      "idempotencyKey": "agt009:2026-08-02:CORR-AGT009-NYNJ-20260802-WEEKDAY-PROD:3c99e6edd17639a2e149827b508061cf4ee4abee3f3a2fc5f69a7dc0e8aa00ec"
     },
     {
       "id": "OPP-2026-NYCOTI-85826P0003",
@@ -629,7 +684,7 @@
       "evidenceHash": "1726eb6fac3f8c16d16c1f68ea706951eb74ead4fe5b5a53a7a9e89b994bb8b4",
       "hashBasis": "SHA-256 of canonical City Record HTML response",
       "sourceKind": "Official municipal procurement notice",
-      "sourceObservedAt": "2026-08-01T12:15:01Z",
+      "sourceObservedAt": "2026-08-02T12:14:53Z",
       "scope": "Procurement, licensing, and implementation services—including cabling and electrical work—for unified communications equipment, accessories, and network infrastructure hosted by NYC DoITT.",
       "accessRequirements": "The canonical notice is public. The full package and response path are in PASSPort; an account is required to respond. AGT-009 did not register, authenticate, accept terms, or contact the buyer.",
       "scores": {
@@ -685,7 +740,7 @@
       "score": 76,
       "route": "Review — awaiting AGT-002 acceptance",
       "handoffStatus": "Review — awaiting AGT-002 acceptance",
-      "idempotencyKey": "agt009:2026-08-01:CORR-AGT009-NYNJ-20260801-WEEKDAY-PROD:1726eb6fac3f8c16d16c1f68ea706951eb74ead4fe5b5a53a7a9e89b994bb8b4"
+      "idempotencyKey": "agt009:2026-08-02:CORR-AGT009-NYNJ-20260802-WEEKDAY-PROD:1726eb6fac3f8c16d16c1f68ea706951eb74ead4fe5b5a53a7a9e89b994bb8b4"
     },
     {
       "id": "OPP-2026-NJTRANSIT-0000238",
@@ -707,7 +762,7 @@
       "evidenceHash": "b7ec349a24f6c8c674587435542d0b173fd20a2582137de2304363e356c3cbbe",
       "hashBasis": "SHA-256 of canonical NJ TRANSIT public advertisement PDF",
       "sourceKind": "Official state public-transportation RFP advertisement",
-      "sourceObservedAt": "2026-08-01T12:15:01Z",
+      "sourceObservedAt": "2026-08-02T12:14:53Z",
       "scope": "One or more task-order contracts for a comprehensive range of systemwide architectural and engineering services and related support, plus design/construction cost estimating and scheduling, constructability reviews, and claim support.",
       "accessRequirements": "The advertisement is public. The complete RFP and proposal documents require Bid Express registration. AGT-009 stopped at that boundary and did not register, authenticate, accept terms, join the pre-proposal conference, contact NJ TRANSIT, or submit a proposal.",
       "scores": {
@@ -762,7 +817,7 @@
       "score": 71,
       "route": "Review — awaiting AGT-002 acceptance",
       "handoffStatus": "Review — awaiting AGT-002 acceptance",
-      "idempotencyKey": "agt009:2026-08-01:CORR-AGT009-NYNJ-20260801-WEEKDAY-PROD:b7ec349a24f6c8c674587435542d0b173fd20a2582137de2304363e356c3cbbe"
+      "idempotencyKey": "agt009:2026-08-02:CORR-AGT009-NYNJ-20260802-WEEKDAY-PROD:b7ec349a24f6c8c674587435542d0b173fd20a2582137de2304363e356c3cbbe"
     },
     {
       "id": "OPP-2026-NJDPP-T3163",
@@ -784,7 +839,7 @@
       "evidenceHash": "693ed99c0439beb43e7a4ecacf1f979d3ca44c2fa61b52d9fb7f6de5f57122da",
       "hashBasis": "SHA-256 of canonical amendment PDF response",
       "sourceKind": "Official state procurement amendment",
-      "sourceObservedAt": "2026-08-01T12:15:01Z",
+      "sourceObservedAt": "2026-08-02T12:14:53Z",
       "scope": "Statewide procurement covering surveillance, cameras, ALPR, unmanned aerial vehicles, ancillary equipment, software, and related services; amendment 3 revises the quote-opening date.",
       "accessRequirements": "Submission and full documents are in NJSTART. AGT-009 did not create an account, authenticate, accept terms, or submit.",
       "scores": {
@@ -837,7 +892,7 @@
       "score": 71,
       "route": "Review — awaiting AGT-002 acceptance",
       "handoffStatus": "Review — awaiting AGT-002 acceptance",
-      "idempotencyKey": "agt009:2026-08-01:CORR-AGT009-NYNJ-20260801-WEEKDAY-PROD:693ed99c0439beb43e7a4ecacf1f979d3ca44c2fa61b52d9fb7f6de5f57122da"
+      "idempotencyKey": "agt009:2026-08-02:CORR-AGT009-NYNJ-20260802-WEEKDAY-PROD:693ed99c0439beb43e7a4ecacf1f979d3ca44c2fa61b52d9fb7f6de5f57122da"
     },
     {
       "id": "OPP-2026-PANYNJ-6000003326",
@@ -859,7 +914,7 @@
       "evidenceHash": "6d25dbea9e210435680a9a3fc4a8bcd83529eb21cba832747cc62257ae711a53",
       "hashBasis": "SHA-256 of the solicitation-specific row in the official Port Authority page model showing EXTENDED TO 25-Aug-2026 and Addendum 1; public advertisement PDF SHA-256 6f0857b2ed8097669bbf4d2f5c3d34121c4d3774eaeb1a3e4b911a7d74d4909d retains the original August 4 date as prior evidence",
       "sourceKind": "Official regional public-authority advertisement PDF and official current-opportunities page model",
-      "sourceObservedAt": "2026-08-01T12:15:01Z",
+      "sourceObservedAt": "2026-08-02T12:14:53Z",
       "scope": "Expert professional operational-technology cyber-security consulting services during 2026 through 2029.",
       "accessRequirements": "Public advertisement and official current-opportunities listing. Addendum 1, full package, and submission path require a Bonfire account and terms; AGT-009 did not register, authenticate, accept terms, contact the buyer, or submit.",
       "scores": {
@@ -912,7 +967,7 @@
       "score": 81,
       "route": "Review — awaiting AGT-002 acceptance",
       "handoffStatus": "Review — awaiting AGT-002 acceptance",
-      "idempotencyKey": "agt009:2026-08-01:CORR-AGT009-NYNJ-20260801-WEEKDAY-PROD:6d25dbea9e210435680a9a3fc4a8bcd83529eb21cba832747cc62257ae711a53",
+      "idempotencyKey": "agt009:2026-08-02:CORR-AGT009-NYNJ-20260802-WEEKDAY-PROD:6d25dbea9e210435680a9a3fc4a8bcd83529eb21cba832747cc62257ae711a53",
       "amendments": [
         {
           "number": "1",
@@ -947,7 +1002,7 @@
       "evidenceHash": "8c17802c58ba03fd842dddb5e0dd9f349be6ae3d5d2a47c4691fe54239639c8c",
       "hashBasis": "SHA-256 of the solicitation-specific row in the official Port Authority page model showing EXTENDED TO 25-Aug-2026 and Addendum 1; public advertisement PDF SHA-256 6afb6ce7266675ed7aeed4bd2cfecdc7e0c612fea5d96558dfd18a59258f8c28 retains the original August 4 date as prior evidence",
       "sourceKind": "Official regional public-authority advertisement PDF and official current-opportunities page model",
-      "sourceObservedAt": "2026-08-01T12:15:01Z",
+      "sourceObservedAt": "2026-08-02T12:14:53Z",
       "scope": "Expert professional information-technology cyber-security consulting services during 2026 through 2029.",
       "accessRequirements": "Public advertisement and official current-opportunities listing. Addendum 1, full package, and submission path require a Bonfire account and terms; AGT-009 did not register, authenticate, accept terms, contact the buyer, or submit.",
       "scores": {
@@ -1000,7 +1055,7 @@
       "score": 78,
       "route": "Review — awaiting AGT-002 acceptance",
       "handoffStatus": "Review — awaiting AGT-002 acceptance",
-      "idempotencyKey": "agt009:2026-08-01:CORR-AGT009-NYNJ-20260801-WEEKDAY-PROD:8c17802c58ba03fd842dddb5e0dd9f349be6ae3d5d2a47c4691fe54239639c8c",
+      "idempotencyKey": "agt009:2026-08-02:CORR-AGT009-NYNJ-20260802-WEEKDAY-PROD:8c17802c58ba03fd842dddb5e0dd9f349be6ae3d5d2a47c4691fe54239639c8c",
       "amendments": [
         {
           "number": "1",
@@ -1035,7 +1090,7 @@
       "evidenceHash": "cdf7eb6b8665fa0f78b26d9842502d65c9c6b4ba214c4cfbcbaf4ba42677c0f9",
       "hashBasis": "SHA-256 of normalized facts from the canonical NJ TRANSIT procurement calendar",
       "sourceKind": "Official state public-transportation procurement calendar",
-      "sourceObservedAt": "2026-08-01T12:15:01Z",
+      "sourceObservedAt": "2026-08-02T12:14:53Z",
       "scope": "EOI for potential development, ownership, operation, and maintenance of a communications tower at NJ TRANSIT's Meadowlands Maintenance Complex.",
       "accessRequirements": "The calendar is public, but the complete EOI package must be requested by email. AGT-009 stopped at that contact boundary.",
       "scores": {
@@ -1087,7 +1142,7 @@
       "score": 64,
       "route": "Watchlist",
       "handoffStatus": "Watchlist",
-      "idempotencyKey": "agt009:2026-08-01:CORR-AGT009-NYNJ-20260801-WEEKDAY-PROD:cdf7eb6b8665fa0f78b26d9842502d65c9c6b4ba214c4cfbcbaf4ba42677c0f9"
+      "idempotencyKey": "agt009:2026-08-02:CORR-AGT009-NYNJ-20260802-WEEKDAY-PROD:cdf7eb6b8665fa0f78b26d9842502d65c9c6b4ba214c4cfbcbaf4ba42677c0f9"
     },
     {
       "id": "OPP-2026-NYCHA-517907",
@@ -1109,7 +1164,7 @@
       "evidenceHash": "6e8202c805eed03b5120a436994e7bcff846e198b0294d2b755a01a0c8786fd2",
       "hashBasis": "SHA-256 of canonical City Record HTML response",
       "sourceKind": "Official municipal procurement notice",
-      "sourceObservedAt": "2026-08-01T12:15:01Z",
+      "sourceObservedAt": "2026-08-02T12:14:53Z",
       "scope": "Five-building lobby renovations including new intercoms, key-fob access controls, security cameras, entrance systems, recycling-room construction, lighting, and finishes.",
       "accessRequirements": "Canonical notice is public. Bid package and submission require NYCHA iSupplier registration; AGT-009 did not register or authenticate.",
       "scores": {
@@ -1159,7 +1214,7 @@
       "score": 63,
       "route": "Watchlist",
       "handoffStatus": "Watchlist",
-      "idempotencyKey": "agt009:2026-08-01:CORR-AGT009-NYNJ-20260801-WEEKDAY-PROD:6e8202c805eed03b5120a436994e7bcff846e198b0294d2b755a01a0c8786fd2"
+      "idempotencyKey": "agt009:2026-08-02:CORR-AGT009-NYNJ-20260802-WEEKDAY-PROD:6e8202c805eed03b5120a436994e7bcff846e198b0294d2b755a01a0c8786fd2"
     },
     {
       "id": "OPP-2026-PANYNJ-6000003375",
@@ -1181,7 +1236,7 @@
       "evidenceHash": "004795aa54fca356df47a466da36a206c34d4d32f2450a5c7aa6d2b446a16514",
       "hashBasis": "SHA-256 of normalized facts from the canonical PANYNJ professional-services listing",
       "sourceKind": "Official regional public-authority procurement listing",
-      "sourceObservedAt": "2026-08-01T12:15:01Z",
+      "sourceObservedAt": "2026-08-02T12:14:53Z",
       "scope": "Four-year task-order services covering geotechnical database administration support, dynamic pile testing, geophysical engineering, survey, and testing.",
       "accessRequirements": "The canonical public listing is available, but solicitation-document instructions require the advertisement path. AGT-009 did not request documents or contact the authority.",
       "scores": {
@@ -1239,7 +1294,7 @@
       "score": 61,
       "route": "Watchlist",
       "handoffStatus": "Watchlist",
-      "idempotencyKey": "agt009:2026-08-01:CORR-AGT009-NYNJ-20260801-WEEKDAY-PROD:004795aa54fca356df47a466da36a206c34d4d32f2450a5c7aa6d2b446a16514"
+      "idempotencyKey": "agt009:2026-08-02:CORR-AGT009-NYNJ-20260802-WEEKDAY-PROD:004795aa54fca356df47a466da36a206c34d4d32f2450a5c7aa6d2b446a16514"
     },
     {
       "id": "OPP-2026-NJDPP-T2870",
@@ -1261,7 +1316,7 @@
       "evidenceHash": "081b0706dc1b840285d6a96c6ff8cd6df8c51770f97fc5b5e9b05f26279f17ba",
       "hashBasis": "SHA-256 of canonical amendment PDF response",
       "sourceKind": "Official state procurement amendment",
-      "sourceObservedAt": "2026-08-01T12:15:01Z",
+      "sourceObservedAt": "2026-08-02T12:14:53Z",
       "scope": "Transmission-facility management for the New Jersey Public Broadcasting Authority; amendment 2 revises the quote-opening date.",
       "accessRequirements": "Full solicitation and submission are in NJSTART. AGT-009 did not create an account, authenticate, accept terms, or submit.",
       "scores": {
@@ -1315,7 +1370,7 @@
       "score": 53,
       "route": "Watchlist",
       "handoffStatus": "Watchlist",
-      "idempotencyKey": "agt009:2026-08-01:CORR-AGT009-NYNJ-20260801-WEEKDAY-PROD:081b0706dc1b840285d6a96c6ff8cd6df8c51770f97fc5b5e9b05f26279f17ba"
+      "idempotencyKey": "agt009:2026-08-02:CORR-AGT009-NYNJ-20260802-WEEKDAY-PROD:081b0706dc1b840285d6a96c6ff8cd6df8c51770f97fc5b5e9b05f26279f17ba"
     },
     {
       "id": "OPP-2026-ATLANTIC-2026042",
@@ -1337,7 +1392,7 @@
       "evidenceHash": "e36a1ec4131b4197199e166299e02733b6ed77c9f1d387a2933354c0e8efd4de",
       "hashBasis": "SHA-256 of normalized facts from the canonical county notice",
       "sourceKind": "Official county public notice",
-      "sourceObservedAt": "2026-08-01T12:15:01Z",
+      "sourceObservedAt": "2026-08-02T12:14:53Z",
       "scope": "Cloud-hosted electronic bidding services for Atlantic County.",
       "accessRequirements": "The public notice identifies the bid, deadline, and portal boundary. Documents require a free BidExpress account; AGT-009 did not register or accept terms.",
       "scores": {
@@ -1387,7 +1442,7 @@
       "score": 48,
       "route": "Archived",
       "handoffStatus": "Archived",
-      "idempotencyKey": "agt009:2026-08-01:CORR-AGT009-NYNJ-20260801-WEEKDAY-PROD:e36a1ec4131b4197199e166299e02733b6ed77c9f1d387a2933354c0e8efd4de"
+      "idempotencyKey": "agt009:2026-08-02:CORR-AGT009-NYNJ-20260802-WEEKDAY-PROD:e36a1ec4131b4197199e166299e02733b6ed77c9f1d387a2933354c0e8efd4de"
     },
     {
       "id": "ARC-2026-NJEDA-2026-RFP-276",
@@ -1409,7 +1464,7 @@
       "evidenceHash": "9ac96ecabbb9c961b8536b587448f54f58ed9ef857b7de824fde19e51da5b062",
       "hashBasis": "SHA-256 of canonical NJEDA RFP PDF response",
       "sourceKind": "Official state-authority solicitation PDF",
-      "sourceObservedAt": "2026-08-01T12:15:01Z",
+      "sourceObservedAt": "2026-08-02T12:14:53Z",
       "scope": "Consulting support to review and validate real-estate market studies and development cost estimates for Aspire Program applications.",
       "accessRequirements": "The full PDF is public. Electronic submission requires one-time portal registration; hard-copy submission is also described. AGT-009 took no response action.",
       "scores": {
@@ -1447,7 +1502,7 @@
       "score": 43,
       "route": "Archived",
       "handoffStatus": "Archived",
-      "idempotencyKey": "agt009:2026-08-01:CORR-AGT009-NYNJ-20260801-WEEKDAY-PROD:9ac96ecabbb9c961b8536b587448f54f58ed9ef857b7de824fde19e51da5b062"
+      "idempotencyKey": "agt009:2026-08-02:CORR-AGT009-NYNJ-20260802-WEEKDAY-PROD:9ac96ecabbb9c961b8536b587448f54f58ed9ef857b7de824fde19e51da5b062"
     }
   ]
 }
