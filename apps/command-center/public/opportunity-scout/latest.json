@@ -29,10 +29,10 @@
     "newCandidates": 6,
     "newVerified": 6,
     "amended": 1,
-    "closed": 2,
+    "closed": 1,
     "scoreChanged": 5,
     "routeChanged": 0,
-    "note": "New verified records: NYS ITS C000853 Enterprise Network Support, C000975 Google Analytics Implementation, C000978 Enterprise GitLab, C000979 Salesforce Implementation Enterprise Agreement, C000999 OASAS Salesforce Integration Modernization, and the NYC SCA anticipated Q3 IT Staffing program signal. HBITS Round 2 bidder Q&A dated August 3 was newly attached. NYC OTI 85826P0003 and OGS SG488 reached their public deadlines. Timing-only rescoring changed HBITS 79→76, NYC OTI 74→72, RIOC Tramway RFI 68→65, NYCHA 61→58, and OGS SG488 56→53; routes remain unchanged."
+    "note": "New verified records: NYS ITS C000853 Enterprise Network Support, C000975 Google Analytics Implementation, C000978 Enterprise GitLab, C000979 Salesforce Implementation Enterprise Agreement, C000999 OASAS Salesforce Integration Modernization, and the NYC SCA anticipated Q3 IT Staffing program signal. HBITS Round 2 bidder Q&A dated August 3 was newly attached. NYC OTI 85826P0003 closed on August 4; OGS SG488 is due August 5 but the public page does not state an exact time. Timing-only rescoring changed HBITS 79→76, NYC OTI 74→73, RIOC Tramway RFI 68→65, NYCHA 61→58, and OGS SG488 56→53; routes remain unchanged."
   },
   "urgentDeadlines": [
     {
@@ -1253,8 +1253,8 @@
         "MWBE goals",
         "Prime versus subcontractor path"
       ],
-      "nextAction": "Immediate AGT-002 and authorized-owner review of the verified public notice before the August 4 at 3:00 PM ET deadline; AGT-009 did not enter PASSPort, create an account, contact the buyer, price, or submit.",
-      "projectBrief": "High-fit unified-communications procurement with explicit network, switching, cabling, and implementation scope. The PASSPort response deadline is August 4 at 3:00 PM ET, leaving one business day at observation; the record remains Review pending AGT-002 acceptance and no response activity is authorized.",
+      "nextAction": "AGT-002 records a closed-cycle disposition and monitors only for an official award, cancellation, or re-solicitation; AGT-009 did not enter PASSPort, create an account, contact the buyer, price, or submit.",
+      "projectBrief": "High-fit unified-communications procurement with explicit network, switching, cabling, and implementation scope. The PASSPort response window closed August 4 at 3:00 PM ET; the record remains above the review threshold for governed disposition and future award or re-solicitation monitoring only.",
       "starterNarrative": "Internal draft: Symbiont may align to the cabling, network-infrastructure, implementation, and voice/data portions through a qualified prime or specialist partner. Any external capability statement must wait for AGT-005 full-file qualification and AGT-002 confirmation of current qualifications.",
       "score": 73,
       "route": "Review — awaiting AGT-002 acceptance",
