@@ -3,6 +3,7 @@ import test from "node:test";
 import {
   allowedEntraObjectIds,
   isMicrosoftEntraConfigured,
+  microsoftEntraConfigurationStatus,
   tenantIdFromEntraIssuer,
 } from "../../lib/entra-config.ts";
 
@@ -46,6 +47,12 @@ test("requires all server-side Entra secrets before reporting ready", () => {
 
   delete process.env.AUTH_MICROSOFT_ENTRA_ID_SECRET;
   assert.equal(isMicrosoftEntraConfigured(), false);
+  assert.deepEqual(microsoftEntraConfigurationStatus(), {
+    authSecret: true,
+    clientId: true,
+    clientSecret: false,
+    issuer: true,
+  });
 
   for (const [key, value] of Object.entries(original)) {
     const envKey = key === "secret" ? "AUTH_SECRET" : key === "clientId" ? "AUTH_MICROSOFT_ENTRA_ID_ID" : key === "clientSecret" ? "AUTH_MICROSOFT_ENTRA_ID_SECRET" : "AUTH_MICROSOFT_ENTRA_ID_ISSUER";

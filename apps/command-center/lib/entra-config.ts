@@ -1,5 +1,5 @@
 const ENTRA_TENANT_ID_PATTERN =
-  /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
+  /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 
 export function tenantIdFromEntraIssuer(
   issuer = process.env.AUTH_MICROSOFT_ENTRA_ID_ISSUER,
@@ -41,11 +41,14 @@ export function isAllowedEntraObjectId(objectId: string | undefined) {
 }
 
 export function isMicrosoftEntraConfigured() {
-  return Boolean(
-    process.env.AUTH_SECRET?.trim() &&
-      process.env.AUTH_SECRET.trim().length >= 32 &&
-      process.env.AUTH_MICROSOFT_ENTRA_ID_ID?.trim() &&
-      process.env.AUTH_MICROSOFT_ENTRA_ID_SECRET?.trim() &&
-      tenantIdFromEntraIssuer(),
-  );
+  return Object.values(microsoftEntraConfigurationStatus()).every(Boolean);
+}
+
+export function microsoftEntraConfigurationStatus() {
+  return {
+    authSecret: (process.env.AUTH_SECRET?.trim().length ?? 0) >= 32,
+    clientId: Boolean(process.env.AUTH_MICROSOFT_ENTRA_ID_ID?.trim()),
+    clientSecret: Boolean(process.env.AUTH_MICROSOFT_ENTRA_ID_SECRET?.trim()),
+    issuer: Boolean(tenantIdFromEntraIssuer()),
+  };
 }

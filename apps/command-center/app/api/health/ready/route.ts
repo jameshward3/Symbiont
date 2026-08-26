@@ -1,12 +1,13 @@
 import { NextResponse } from "next/server";
 import { hasServerDataPlane } from "@/lib/auth";
-import { isMicrosoftEntraConfigured } from "@/lib/entra-config";
+import { isMicrosoftEntraConfigured, microsoftEntraConfigurationStatus } from "@/lib/entra-config";
 
 export const dynamic = "force-dynamic";
 
 export function GET() {
   const checks = {
     microsoftEntra: isMicrosoftEntraConfigured(),
+    microsoftEntraConfiguration: microsoftEntraConfigurationStatus(),
     dataPlane: hasServerDataPlane(),
     modelRuntime: Boolean(process.env.OPENAI_API_KEY && process.env.OPENAI_MODEL),
   };
