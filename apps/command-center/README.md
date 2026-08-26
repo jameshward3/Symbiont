@@ -6,7 +6,7 @@ The Sites deployment uses one logical Cloudflare D1 binding named `DB`. Drizzle 
 
 ## Runtime
 
-The browser never receives the Supabase service role or OpenAI key. Live data and agent runs require the server-side variables listed in `.env.example` plus an in-memory secure-session key sent as `x-symbiont-access-key`. When the data plane or model is absent, the interface reports an unavailable state and does not simulate a response.
+The browser never receives the Supabase service role, OpenAI key, Microsoft Entra client secret, or Auth.js session secret. Microsoft Entra ID provides the browser sign-in boundary; live data and agent runs additionally enforce a validated server-side session, a trusted ChatGPT workspace identity, or a server-to-server `x-symbiont-access-key`. When the data plane or model is absent, the interface reports an unavailable state and does not simulate a response. See [Microsoft Entra ID access setup](../../docs/AZURE_ENTRA_AUTH_SETUP.md) to register the application and configure deployment secrets.
 
 The shared PostgreSQL migration and idempotent demonstration seed are under `supabase/`. Apply them to the identified existing Symbiont Supabase project only after preview review. See `supabase/ROLLBACK.md` before applying a production migration.
 

@@ -2,7 +2,7 @@ import {NextResponse} from "next/server";
 import {isAuthorized} from "@/lib/auth";
 import {WORKFLOW_STAGES,type PortalProject} from "@/lib/workflow-portal";
 export async function POST(request:Request){
- if(!isAuthorized(request))return NextResponse.json({error:"Authorization is required to create or update a Notion record."},{status:401});
+ if(!(await isAuthorized(request)))return NextResponse.json({error:"Authorization is required to create or update a Notion record."},{status:401});
  const project=await request.json() as PortalProject;
  if(project.notionUrl)return NextResponse.json({url:project.notionUrl,message:"The existing Notion page is linked. Automatic updates require the Notion integration settings."});
  const token=process.env.NOTION_TOKEN;const databaseId=process.env.NOTION_PROJECTS_DATABASE_ID;

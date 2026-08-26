@@ -13,6 +13,7 @@ import { ProductControl } from "./product-control";
 import { FinanceControl } from "./finance-control";
 import { WorkflowPortal } from "./workflow-portal";
 import { ResearchControl } from "./research-control";
+import { AccountControl } from "./account-control";
 import type { DeliveryData } from "@/lib/delivery-control";
 import type { QualityData } from "@/lib/qaqc";
 import type { KnowledgeData } from "@/lib/knowledge";
@@ -231,7 +232,7 @@ export default function Home() {
         <div className="agent-card"><div className="agent-orbit"><span>BG</span></div><div><p>BACKGROUND AGENTS</p><strong>{agents.length} governed roles</strong></div><i className="pulse" /></div>
       </aside>
       <main>
-        <header className="topbar"><div><p className="eyebrow">Executive command center</p><h1>{viewTitle}</h1></div><div className="top-actions"><label className="demo-toggle" title="Switch between live records and demo mode"><input type="checkbox" checked={demoMode} onChange={event=>{setDemoMode(event.target.checked);setWorkflowFocusId(null);setAnswer("");setRunState("idle");}}/><span>Demo mode</span><i /></label><span className={`demo-pill ${!demoMode && connection === "connected" ? "live-pill" : ""}`}>{sourceLabel}</span><div className="avatar">JW</div></div></header>
+        <header className="topbar"><div><p className="eyebrow">Executive command center</p><h1>{viewTitle}</h1></div><div className="top-actions"><label className="demo-toggle" title="Switch between live records and demo mode"><input type="checkbox" checked={demoMode} onChange={event=>{setDemoMode(event.target.checked);setWorkflowFocusId(null);setAnswer("");setRunState("idle");}}/><span>Demo mode</span><i /></label><span className={`demo-pill ${!demoMode && connection === "connected" ? "live-pill" : ""}`}>{sourceLabel}</span><AccountControl /></div></header>
         <div className="view-wrap">
           <p className="sr-only" aria-live="polite">{connection === "connected" ? "Runtime connected to the governed data plane." : "Runtime unavailable for live agent actions."}</p>
           <ConnectionBanner connection={connection} connect={connect} accessKey={accessKey} setAccessKey={setAccessKey} demoMode={demoMode} />

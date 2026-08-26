@@ -8,7 +8,7 @@ import { demonstrationQualityData, type FindingSeverity, type FindingStatus, typ
 export const dynamic = "force-dynamic";
 
 export async function GET(request: Request) {
-  if (!isAuthorized(request)) return NextResponse.json({ ...demonstrationQualityData, database: "authorization_required", asOf: new Date().toISOString() });
+  if (!(await isAuthorized(request))) return NextResponse.json({ ...demonstrationQualityData, database: "authorization_required", asOf: new Date().toISOString() });
   try {
     const db = await getDb();
     const reviewRows = await db.select().from(qualityReviews).orderBy(desc(qualityReviews.updatedAt)).limit(100);

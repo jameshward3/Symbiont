@@ -7,7 +7,7 @@ import { logEvent, requestId } from "@/lib/observability";
 
 export async function POST(request: Request) {
   if (!hasServerDataPlane()) return NextResponse.json({ error: "Shared data plane is unavailable; no agent run was simulated." }, { status: 503 });
-  if (!isAuthorized(request)) return NextResponse.json({ error: "Secure session required." }, { status: 401 });
+  if (!(await isAuthorized(request))) return NextResponse.json({ error: "Secure session required." }, { status: 401 });
   const requestKey = request.headers.get("x-forwarded-for")?.split(",")[0]?.trim() ?? "authorized-session";
   const correlationId = requestId(request);
   if (!(await allowDistributedRequest(requestKey))) return NextResponse.json({ error: "Agent run rate limit reached. Try again shortly.", correlationId }, { status: 429, headers: { "Retry-After": "60", "X-Request-Id": correlationId } });

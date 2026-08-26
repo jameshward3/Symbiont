@@ -4,7 +4,7 @@ import { dbRequest } from "@/lib/supabase/server";
 
 export async function GET(request: Request) {
   if (!hasServerDataPlane()) return NextResponse.json({ error: "Shared data plane is not configured.", source: "unavailable" }, { status: 503 });
-  if (!isAuthorized(request)) return NextResponse.json({ error: "Secure session required." }, { status: 401 });
+  if (!(await isAuthorized(request))) return NextResponse.json({ error: "Secure session required." }, { status: 401 });
   try {
     const agents = await dbRequest("agents", {}, { select: "stable_id,name,mission,authority_level,status,parent_agent_id,updated_at", order: "stable_id" });
     const goals = await dbRequest("goals", {}, { select: "stable_id,objective,status,priority,due_date,success_metrics,completion_evidence,updated_at", order: "updated_at.desc", limit: 25 });

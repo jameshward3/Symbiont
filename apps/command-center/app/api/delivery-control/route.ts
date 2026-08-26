@@ -10,7 +10,7 @@ export const dynamic = "force-dynamic";
 export async function GET(request: Request) {
   const demoMode = new URL(request.url).searchParams.get("demo") === "1";
   if (demoMode) return NextResponse.json({ ...demonstrationDeliveryData, asOf: new Date().toISOString() });
-  if (!isAuthorized(request)) {
+  if (!(await isAuthorized(request))) {
     return NextResponse.json(emptyDeliveryData("authorization_required", "Live project records require governed authorization. No demonstration project has been substituted."));
   }
 

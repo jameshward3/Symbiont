@@ -76,6 +76,8 @@ The responsive application is located at `apps/command-center`. It provides navi
 
 The production application is available at [symbiont-three.vercel.app](https://symbiont-three.vercel.app).
 
+Microsoft Entra ID is the browser access boundary for the Command Center. See the [Microsoft Entra setup guide](docs/AZURE_ENTRA_AUTH_SETUP.md) for the required single-tenant app registration, redirect URIs, and server-side deployment variables.
+
 The interface reads one organization-scoped Supabase/PostgreSQL data plane when securely configured and otherwise uses clearly labeled harmless demonstration records without simulating runtime success.
 
 The primary navigation is outcome-first: Overview, Actions, Pipeline, and Projects. Discover, Advise, and Assure workspaces are consolidated beneath Background Agents. The Actions workspace monitors work from opportunity intake through closeout with stage-specific handoffs, recommendations, sourced input fields, approval gates, and an activity/evidence timeline. See the [Action Workflow Interface](docs/SYM-OPS-DES-003_action-workflow-interface_2026-07-21_v1.0.md) for the operating contract and persistence roadmap, and the [Command Center README](apps/command-center/README.md) for runtime and verification commands.

@@ -11,7 +11,7 @@ export const dynamic = "force-dynamic";
 export async function GET(request: Request) {
   try {
     const db = await getDb();
-    if (!isAuthorized(request)) return NextResponse.json({ ...demonstrationReliabilityData, database: "authorization_required", activation: "Secure authorization is required for live reliability evidence. Sanitized demonstration records are shown; no action is available." });
+    if (!(await isAuthorized(request))) return NextResponse.json({ ...demonstrationReliabilityData, database: "authorization_required", activation: "Secure authorization is required for live reliability evidence. Sanitized demonstration records are shown; no action is available." });
     const [automationRecords, incidentRecords, runRecords, metricRecords] = await Promise.all([
       db.select().from(automations).where(eq(automations.isDemonstration, false)).orderBy(automations.id).limit(250),
       db.select().from(incidents).orderBy(desc(incidents.detectedAt)).limit(100),
