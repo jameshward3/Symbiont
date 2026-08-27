@@ -1,6 +1,8 @@
 import assert from "node:assert/strict";
+import { readFile } from "node:fs/promises";
 import test from "node:test";
 import { isScoutInternalRequest, parseScoutIngest, SCOUT_GOAL_ID } from "../../lib/scout-internal.ts";
+import { activeMonitoringQueries, verifiedOpportunitySnapshot } from "../../lib/opportunities.ts";
 
 test("Scout mutation boundary requires the dedicated internal secret", () => {
   const previous = process.env.SCOUT_INTERNAL_KEY;
@@ -21,4 +23,34 @@ test("Scout ingest rejects demonstrations and accepts a complete canonical recor
   assert.equal(parsed.opportunities[0].canonicalUrl, "https://example.gov/rfq");
   assert.throws(() => parseScoutIngest({ ...base, opportunities:[{ ...base.opportunities[0], id:"DEMO-OPP-001" }] }), /DEMONSTRATION_WRITE_REJECTED/);
   assert.throws(() => parseScoutIngest({ ...base, correlationId:"" }), /INVALID_CORRELATIONID/);
+});
+
+test("production activation migration registers NJ/NY monitoring and verified live records", async () => {
+  const sql = [
+    await readFile(new URL("../../drizzle/0010_opportunity_scout_activation.sql", import.meta.url), "utf8"),
+    await readFile(new URL("../../drizzle/0011_historical_capability_matching.sql", import.meta.url), "utf8"),
+  ].join("\n");
+  assert.match(sql, /AGT-009[^\n]+Active — governed/);
+  assert.match(sql, /QRY-AGT009-NY-STATE/);
+  assert.match(sql, /QRY-AGT009-NY-LOCAL/);
+  assert.match(sql, /QRY-AGT009-NJ-STATE/);
+  assert.match(sql, /QRY-AGT009-NJ-LOCAL/);
+  assert.match(sql, /OPP-2026-RIOC-261379/);
+  assert.match(sql, /OPP-2026-NJDPP-T3163/);
+  assert.match(sql, /OPP-2026-NYCOTI-85826P0003/);
+  assert.match(sql, /OPP-2026-NYSOGS-23311/);
+  assert.match(sql, /network cabling/i);
+  assert.match(sql, /access control/i);
+  assert.match(sql, /3D scanning/i);
+  assert.match(sql, /RUN-AGT009-20260721-NYNJ/);
+  assert.doesNotMatch(sql, /DEMO-OPP/);
+});
+
+test("public Scout fallback contains only approved verified records", () => {
+  assert.equal(verifiedOpportunitySnapshot.length, 4);
+  assert.equal(activeMonitoringQueries.length, 4);
+  assert.ok(verifiedOpportunitySnapshot.every((item) => !item.isDemonstration && item.canonicalUrl.startsWith("https://")));
+  assert.equal(verifiedOpportunitySnapshot.filter((item) => item.route === "sales_operations").length, 3);
+  assert.ok(activeMonitoringQueries.every((query) => query.status === "Active" && /New York|New Jersey/.test(query.geography ?? "")));
+  assert.ok(activeMonitoringQueries.every((query) => /cabling|network|switching|telephone|voice|access control|camera|IT|scanning/i.test(query.queryText)));
 });

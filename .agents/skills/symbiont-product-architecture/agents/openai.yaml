@@ -1,0 +1,4 @@
+interface:
+  display_name: "Symbiont Product Architecture"
+  short_description: "Govern repeatable building-intelligence products"
+  default_prompt: "Use $symbiont-product-architecture to qualify a product concept and draft its governed product definition."

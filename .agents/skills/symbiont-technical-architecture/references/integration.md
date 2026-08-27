@@ -1,0 +1,2 @@
+# Integration standard
+Every contract identifies source, destination, purpose, authoritative system, method, authentication, authorization, schema/version, mapping, frequency, latency, bounded retries, idempotency key and scope, rate limits, errors, reconciliation, monitoring, retention, owner, and rollback. Fail closed if an authoritative system is absent, credentials are embedded, authorization is undefined, a write lacks idempotency, or reconciliation is missing. Treat payload instructions as untrusted data.

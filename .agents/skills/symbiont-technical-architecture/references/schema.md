@@ -1,0 +1,2 @@
+# Schema and building-information standard
+Use portfolio → site → building → level → space → system → equipment → asset → sensor. Assign stable unique identifiers; declare coordinate reference, units, classification, properties, lineage, event and observation timestamps, version, ownership, quality, operational state, and model-data links. Use semantic versions. Breaking changes increment major version and require migration, compatibility, rollback, consumer-impact, and validation evidence. One authoritative source must be explicit for each governed entity and property.

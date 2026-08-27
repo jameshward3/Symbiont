@@ -5,13 +5,14 @@ import { isActionOverdue, worstHealth, type DeliveryData } from "@/lib/delivery-
 
 const DEMO_AS_OF = "2026-07-20T23:59:59.999Z";
 
-export function DeliveryControl({ data }: { data: DeliveryData | null }) {
+export function DeliveryControl({ data, demoMode = false, embedded = false }: { data: DeliveryData | null; demoMode?:boolean; embedded?:boolean }) {
   const [projectFilter, setProjectFilter] = useState("all");
   const [healthFilter, setHealthFilter] = useState("all");
   const [ownerFilter, setOwnerFilter] = useState("all");
-  if (!data) return <section><DeliveryLead /><div className="delivery-loading">DELIVERY CONTROL DATA ADAPTER · CHECKING</div></section>;
+  if (!data) return <section>{!embedded&&<DeliveryLead />}<div className="delivery-loading">DELIVERY CONTROL DATA ADAPTER · CHECKING</div></section>;
 
-  const isLive = data.source === "d1";
+  const isLive = !demoMode && data.source === "d1" && data.database === "connected";
+  const disclosure = demoMode ? "DEMONSTRATION DATA" : isLive ? "AUTHORIZED D1 RECORDS" : "LIVE PROJECTS UNAVAILABLE";
   const owners = [...new Set(data.projects.map((project) => project.projectManager))].sort();
   const visibleProjects = data.projects.filter((project) => (projectFilter === "all" || project.id === projectFilter) && (healthFilter === "all" || project.health === healthFilter) && (ownerFilter === "all" || project.projectManager === ownerFilter));
   const projectIds = new Set(visibleProjects.map((project) => project.id));
@@ -25,9 +26,9 @@ export function DeliveryControl({ data }: { data: DeliveryData | null }) {
   const health = worstHealth(visibleProjects.map((project) => project.health));
   const onTime = visibleProjects.length ? Math.round(visibleProjects.reduce((sum, project) => sum + project.milestonePerformance, 0) / visibleProjects.length) : 0;
 
-  return <section className="delivery-view">
-    <DeliveryLead />
-    <div className={`delivery-disclosure ${isLive ? "live" : "demo"}`}><div><span className={`dot ${isLive ? "green" : "amber"}`} /><b>{isLive ? "AUTHORIZED D1 RECORDS" : "DEMONSTRATION DATA"}</b></div><p>{data.activation}</p><span>AS OF {formatDateTime(data.asOf)}</span></div>
+  return <section className={`delivery-view ${embedded?"embedded":""}`}>
+    {!embedded&&<DeliveryLead />}
+    <div className={`delivery-disclosure ${isLive ? "live" : "demo"}`}><div><span className={`dot ${isLive ? "green" : "amber"}`} /><b>{disclosure}</b></div><p>{data.activation}</p><span>AS OF {formatDateTime(data.asOf)}</span></div>
     <div className="delivery-filters" aria-label="Delivery filters">
       <label>Project<select value={projectFilter} onChange={(event) => setProjectFilter(event.target.value)}><option value="all">All active projects</option>{data.projects.map((project) => <option key={project.id} value={project.id}>{project.id} · {project.name}</option>)}</select></label>
       <label>Owner<select value={ownerFilter} onChange={(event) => setOwnerFilter(event.target.value)}><option value="all">All owners</option>{owners.map((owner) => <option key={owner} value={owner}>{owner}</option>)}</select></label>
@@ -54,7 +55,7 @@ export function DeliveryControl({ data }: { data: DeliveryData | null }) {
     </div>
     <div className="delivery-grid triple">
       <div className="delivery-panel"><PanelTitle kicker="Delivery gates" title="Upcoming approvals" suffix={String(gates.length).padStart(2, "0")} />{gates.map((gate) => <CompactRow key={gate.id} code={`${gate.id} · ${gate.projectId}`} title={gate.name} meta={`${gate.gateType} · ${gate.owner}`} status={`${formatDate(gate.dueDate)} · ${gate.status}`} />)}</div>
-      <div className="delivery-panel"><PanelTitle kicker="Decisions + changes" title="Approval queue" suffix={String(decisions.length + changes.length).padStart(2, "0")} />{decisions.map((decision) => <CompactRow key={decision.id} code={`${decision.id} · ${decision.projectId}`} title={decision.statement} meta={decision.owner} status={`${formatDate(decision.requiredBy)} · ${decision.status}`} />)}{changes.map((change) => <CompactRow key={change.id} code={`${change.id} · ${change.projectId}`} title={change.title} meta={change.classification} status={change.status} />)}</div>
+      <div className="delivery-panel"><PanelTitle kicker="Change control" title="Change approvals" suffix={String(changes.length).padStart(2, "0")} />{changes.map((change) => <CompactRow key={change.id} code={`${change.id} · ${change.projectId}`} title={change.title} meta={change.classification} status={change.status} />)}{!changes.length&&<Empty text="No change approvals in this view. Decisions are centralized in Actions." />}</div>
       <div className="delivery-panel handoff-panel"><PanelTitle kicker="Agent cooperation" title="Draft handoffs" suffix={String(handoffs.length).padStart(2, "0")} />{handoffs.map((handoff) => <article className="handoff-card" key={handoff.id}><div><span>{handoff.from}</span><i>→</i><span>{handoff.to}</span></div><p>{handoff.id} · {handoff.projectId} · {handoff.priority}</p><h4>{handoff.objective}</h4><small>{handoff.owner} · {formatDate(handoff.dueDate)}</small><b>{handoff.status}</b><details><summary>Control contract</summary><p>{handoff.correlationId}</p><p>{handoff.acceptanceCriteria}</p></details></article>)}{!handoffs.length && <Empty text="No project handoffs recorded." />}</div>
     </div>
     <div className="authority-strip"><div><span>AGT-003</span><strong>L1 · DRAFT AUTHORITY</strong></div><p>May prepare controls, records, reports, and handoffs. Human approval remains required for contractual, financial, client-facing, legal, safety, production, and irreversible actions.</p><b>NO SILENT COMMITMENTS</b></div>

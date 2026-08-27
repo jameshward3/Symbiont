@@ -2,20 +2,22 @@ import { desc, eq } from "drizzle-orm";
 import { NextResponse } from "next/server";
 import { getDb } from "@/db";
 import { actions, agentMessages, changes, milestones, projects, projectDecisions, qualityReviews, risksAndIssues } from "@/db/schema";
-import { calculateProjectHealth, demonstrationDeliveryData, type DeliveryData, type DeliveryHandoff, type Health } from "@/lib/delivery-control";
+import { calculateProjectHealth, demonstrationDeliveryData, emptyDeliveryData, type DeliveryData, type DeliveryHandoff, type Health } from "@/lib/delivery-control";
 import { isAuthorized } from "@/lib/auth";
 
 export const dynamic = "force-dynamic";
 
 export async function GET(request: Request) {
-  if (!isAuthorized(request)) {
-    return NextResponse.json({ ...demonstrationDeliveryData, database: "authorization_required", asOf: new Date().toISOString() });
+  const demoMode = new URL(request.url).searchParams.get("demo") === "1";
+  if (demoMode) return NextResponse.json({ ...demonstrationDeliveryData, asOf: new Date().toISOString() });
+  if (!(await isAuthorized(request))) {
+    return NextResponse.json(emptyDeliveryData("authorization_required", "Live project records require governed authorization. No demonstration project has been substituted."));
   }
 
   try {
     const db = await getDb();
     const projectRows = await db.select().from(projects).where(eq(projects.isDemonstration, false)).orderBy(desc(projects.updatedAt)).limit(100);
-    if (!projectRows.length) return NextResponse.json({ ...demonstrationDeliveryData, database: "connected_empty", asOf: new Date().toISOString() });
+    if (!projectRows.length) return NextResponse.json(emptyDeliveryData("connected_empty", "The governed data plane is connected and contains no active live delivery projects. Qualified pursuits remain visible above."));
 
     const projectIds = new Set(projectRows.map((project) => project.id));
     const [actionRows, riskRows, milestoneRows, qualityRows, changeRows, decisionRows, messageRows] = await Promise.all([
@@ -71,7 +73,7 @@ export async function GET(request: Request) {
     };
     return NextResponse.json(payload);
   } catch {
-    return NextResponse.json({ ...demonstrationDeliveryData, database: "unavailable", asOf: new Date().toISOString() });
+    return NextResponse.json(emptyDeliveryData("unavailable", "The live delivery adapter is unavailable. No demonstration project has been substituted."));
   }
 }
 

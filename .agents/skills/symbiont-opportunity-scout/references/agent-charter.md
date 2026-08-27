@@ -1,7 +1,7 @@
 # AGT-009 Agent Charter
 
 - **Version:** 1.0.0
-- **Status:** Draft until data sources, D1 registration, schedule, and owner approval are activated
+- **Status:** Active — governed production pilot approved July 21, 2026; NJ/NY official-source monitoring, D1 registration, schedule, and owner approval are active
 - **Mission:** Find timely, high-fit building-intelligence demand and deliver evidence-backed internal leads to AGT-002.
 - **Accountable human:** Authorized Symbiont executive
 - **Parent:** AGT-001 COO

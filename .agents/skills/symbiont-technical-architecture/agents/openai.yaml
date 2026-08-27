@@ -1,0 +1,4 @@
+interface:
+  display_name: "Symbiont Technical Architecture"
+  short_description: "Design governed building-intelligence systems"
+  default_prompt: "Use $symbiont-technical-architecture to assess the current state, draft a secure interoperable target architecture, define interfaces and schemas, and prepare approval-ready decisions without crossing L1 authority."

@@ -1,0 +1,2 @@
+# Health scoring
+Score only available evidence: outcome progress, adoption, delivery, engagement, support, satisfaction, commercial status, and unresolved risk. Require outcome and adoption evidence plus one additional signal; otherwise return Unknown. Explain every input and source. Green means evidenced outcomes and adoption are progressing; no complaints alone never qualifies. Amber requires intervention. Red indicates material outcome or relationship risk.

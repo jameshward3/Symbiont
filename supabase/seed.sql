@@ -8,6 +8,24 @@ with org as (select id from organizations where stable_id='ORG-SYMBIONT'), coo a
 insert into agents(organization_id,stable_id,name,mission,parent_agent_id,authority_level,status,metadata)
 select org.id,'AGT-002','Sales Operations','Convert qualified client needs into clearly defined, profitable, repeatable work.',coo.id,'L1','Active','{"seed":"demonstration"}'::jsonb from org,coo
 on conflict(organization_id,stable_id) do update set parent_agent_id=excluded.parent_agent_id,mission=excluded.mission;
+with org as (select id from organizations where stable_id='ORG-SYMBIONT'), coo as (select id from agents where stable_id='AGT-001')
+insert into agents(organization_id,stable_id,name,mission,parent_agent_id,authority_level,status,metadata)
+select org.id,v.stable_id,v.name,v.mission,coo.id,v.authority_level,'Active',jsonb_build_object('seed','fourteen-agent-registry','authority','draft-or-governed-internal')
+from org,coo cross join (values
+  ('AGT-003','Delivery Control','Coordinate project authorization, delivery health, exceptions, changes, quality gates, and closeout.','L1'),
+  ('AGT-004','QA/QC','Validate exact deliverable versions against approved requirements and release gates.','L1'),
+  ('AGT-005','Knowledge Steward','Maintain an evidence-backed, searchable, governed source of operating truth.','L2'),
+  ('AGT-006','Finance Operations','Prepare reconciled visibility, forecasts, and draft financial controls.','L1'),
+  ('AGT-007','Research','Turn primary sources, historical evidence, and market signals into decision-ready findings.','L1'),
+  ('AGT-008','Automation Reliability','Detect automation failures, contain impact, preserve evidence, and coordinate recovery.','L2'),
+  ('AGT-009','Opportunity Scout','Discover and verify priority opportunities and match them to governed knowledge.','L1'),
+  ('AGT-010','Product & Service Architecture','Convert recurring delivery knowledge into repeatable building-intelligence products.','L1'),
+  ('AGT-011','Marketing & Content Operations','Turn approved knowledge into evidence-backed content and qualified demand.','L1'),
+  ('AGT-012','Technical Architecture','Define interoperable, secure, scalable, and supportable building-intelligence architectures.','L1'),
+  ('AGT-013','Client Success','Protect client outcomes from onboarding through value realization and renewal.','L1'),
+  ('AGT-014','Security & Data Governance','Protect Symbiont and client data through governed controls.','L1')
+) as v(stable_id,name,mission,authority_level)
+on conflict(organization_id,stable_id) do update set name=excluded.name,mission=excluded.mission,parent_agent_id=excluded.parent_agent_id,authority_level=excluded.authority_level;
 with sales as (select id from agents where stable_id='AGT-002')
 insert into agent_capabilities(agent_id,capability,description)
 select sales.id,v.capability,v.description from sales cross join (values
@@ -39,6 +57,13 @@ select 'GOAL-2026-001',org.id,'Prove governed multi-agent sales-to-delivery coor
 on conflict(stable_id) do nothing;
 insert into goal_members(goal_id,agent_id,role)
 select g.id,a.id,case when a.stable_id='AGT-001' then 'Owner' else 'Contributor' end from goals g join agents a on a.stable_id in ('AGT-001','AGT-002') where g.stable_id='GOAL-2026-001'
+on conflict(goal_id,agent_id) do update set role=excluded.role;
+with org as (select id from organizations where stable_id='ORG-SYMBIONT'), coo as (select id from agents where stable_id='AGT-001')
+insert into goals(stable_id,organization_id,objective,business_rationale,owning_agent_id,priority,status,success_metrics,constraints,data_classification,approval_requirements)
+select 'GOAL-2026-010',org.id,'Develop a governed, configurable Symbiont Command Center software offering for state and local governments, starting with clerk, constituent-service, case-management, CRM, and operational-workflow needs. Evaluate Clerkos and other CRM-like systems as potential integration or migration candidates.','Create a repeatable public-sector software direction while validating real operating needs and preserving security, accessibility, procurement, records, and human-approval boundaries.',coo.id,'P1','Approved','["Approved public-sector workflow and problem map","Configurable reference architecture with security, accessibility, records, retention, and data-governance requirements","Evidence-based evaluation of Clerkos and other CRM-like systems; no compatibility, partnership, or market claim without evidence","Human approval before outreach, pricing, pilot, credentials, data intake, or production activation"]','["No unapproved external outreach or commitments","No unapproved access to customer, resident, or government data","No production integration, pilot, or procurement action without authorized human review"]','Internal','["Human approval required before external outreach, pricing, data access, pilot activation, production deployment, or contractual commitment"]'::jsonb from org,coo
+on conflict(stable_id) do update set objective=excluded.objective,business_rationale=excluded.business_rationale,owning_agent_id=excluded.owning_agent_id,priority=excluded.priority,status=excluded.status,success_metrics=excluded.success_metrics,constraints=excluded.constraints,approval_requirements=excluded.approval_requirements,updated_at=now();
+insert into goal_members(goal_id,agent_id,role)
+select g.id,a.id,case when a.stable_id='AGT-001' then 'Owner' else 'Contributor' end from goals g join agents a on a.stable_id between 'AGT-001' and 'AGT-014' where g.stable_id='GOAL-2026-010'
 on conflict(goal_id,agent_id) do update set role=excluded.role;
 with org as (select id from organizations where stable_id='ORG-SYMBIONT'), goal as (select id from goals where stable_id='GOAL-2026-001'), sales as (select id from agents where stable_id='AGT-002')
 insert into work_items(stable_id,organization_id,goal_id,title,description,owner_agent_id,eligible_agent_ids,status,priority,acceptance_criteria,authority_level,required_approval,idempotency_key)

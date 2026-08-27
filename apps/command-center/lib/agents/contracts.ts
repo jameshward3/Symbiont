@@ -4,6 +4,15 @@ export const AGENTS = {
   "AGT-003": { id: "AGT-003", name: "Delivery Control", authority: "L1", parent: "AGT-001" },
   "AGT-004": { id: "AGT-004", name: "QA/QC", authority: "L1", parent: "AGT-001" },
   "AGT-005": { id: "AGT-005", name: "Knowledge Steward", authority: "L2", parent: "AGT-001" },
+  "AGT-006": { id: "AGT-006", name: "Finance Operations", authority: "L1", parent: "AGT-001" },
+  "AGT-007": { id: "AGT-007", name: "Research", authority: "L1", parent: "AGT-001" },
+  "AGT-008": { id: "AGT-008", name: "Automation Reliability", authority: "L2", parent: "AGT-001" },
+  "AGT-009": { id: "AGT-009", name: "Opportunity Scout", authority: "L1", parent: "AGT-001" },
+  "AGT-010": { id: "AGT-010", name: "Product & Service Architecture", authority: "L1", parent: "AGT-001" },
+  "AGT-011": { id: "AGT-011", name: "Marketing & Content Operations", authority: "L1", parent: "AGT-001" },
+  "AGT-012": { id: "AGT-012", name: "Technical Architecture", authority: "L1", parent: "AGT-001" },
+  "AGT-013": { id: "AGT-013", name: "Client Success", authority: "L1", parent: "AGT-001" },
+  "AGT-014": { id: "AGT-014", name: "Security & Data Governance", authority: "L1", parent: "AGT-001" },
 } as const;
 
 export type AgentId = keyof typeof AGENTS;
@@ -31,5 +40,8 @@ export function mayPerform(agentId: AgentId, action: string) {
   if (agentId === "AGT-004" && gatedForQuality.includes(action)) return { allowed: false, requiresApproval: true, reason: "AGT-004 has L1 Draft authority and must preserve reviewer independence" };
   const gatedForKnowledge = ["approve_controlled_content", "publish_knowledge", "permanent_delete", "change_access", "external_disclosure", "change_retention_rule", "overwrite_issued_version", "expand_permissions"];
   if (agentId === "AGT-005" && gatedForKnowledge.includes(action)) return { allowed: false, requiresApproval: true, reason: "AGT-005 has L2 authority for reversible internal knowledge actions only" };
+  const gatedForReliability = ["deploy_production", "irreversible_rollback", "send_external_communication", "spend", "change_permissions", "destructive_action", "accept_material_risk", "increase_budget", "increase_rate_limit", "permanently_disable", "retry_payment", "retry_contractual", "retry_client_facing"];
+  if (agentId === "AGT-008" && gatedForReliability.includes(action)) return { allowed: false, requiresApproval: true, reason: "AGT-008 has L2 authority for reversible internal reliability actions only" };
+  if (AGENTS[agentId].authority === "L1" && ["write_production_record", "approve_material_decision", "commit_scope", "commit_schedule", "approve_price", "approve_proposal", "publish", "contact_external_party"].includes(action)) return { allowed: false, requiresApproval: true, reason: `${agentId} has L1 Draft and Recommend authority` };
   return { allowed: true, requiresApproval: false };
 }

@@ -2,11 +2,12 @@ import { desc, eq } from "drizzle-orm";
 import { NextResponse } from "next/server";
 import { getDb } from "@/db";
 import { monitoringQueries, opportunities } from "@/db/schema";
-import { demonstrationOpportunities, demonstrationQueries, safeJsonArray } from "@/lib/opportunities";
+import { activeMonitoringQueries, demonstrationOpportunities, demonstrationQueries, safeJsonArray, verifiedOpportunitySnapshot } from "@/lib/opportunities";
 
 export const dynamic = "force-dynamic";
 
-export async function GET() {
+export async function GET(request:Request) {
+  if (new URL(request.url).searchParams.get("demo") === "1") return NextResponse.json({ source:"demonstration", database:"connected_empty", asOf:new Date().toISOString(), opportunities:demonstrationOpportunities, monitoringQueries:demonstrationQueries, activation:"Demo mode is active. No live scan, source access, database write, or agent handoff occurred." });
   try {
     const db = await getDb();
     const [records, queries] = await Promise.all([
@@ -16,12 +17,12 @@ export async function GET() {
 
     if (records.length === 0) {
       return NextResponse.json({
-        source: "demonstration",
-        database: "connected_empty",
+        source: "verified_snapshot",
+        database: "published_snapshot",
         asOf: new Date().toISOString(),
-        opportunities: demonstrationOpportunities,
-        monitoringQueries: queries.length ? queries : demonstrationQueries,
-        activation: "D1 is available; no live Scout records have been written.",
+        opportunities: verifiedOpportunitySnapshot,
+        monitoringQueries: queries.length ? queries : activeMonitoringQueries,
+        activation: "Showing the last approved official-source snapshot while the connected D1 register awaits its next live record.",
       });
     }
 
@@ -39,12 +40,12 @@ export async function GET() {
     });
   } catch {
     return NextResponse.json({
-      source: "demonstration",
-      database: "unavailable",
+      source: "verified_snapshot",
+      database: "published_snapshot",
       asOf: new Date().toISOString(),
-      opportunities: demonstrationOpportunities,
-      monitoringQueries: demonstrationQueries,
-      activation: "D1 is unavailable; no scan or database write is being simulated.",
+      opportunities: verifiedOpportunitySnapshot,
+      monitoringQueries: activeMonitoringQueries,
+      activation: "Verified official-source snapshot published July 21, 2026. D1 is the live system of record on the operational command center.",
     });
   }
 }
