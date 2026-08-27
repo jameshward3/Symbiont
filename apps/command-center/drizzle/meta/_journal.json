@@ -85,6 +85,13 @@
       "when": 1784648400000,
       "tag": "0011_historical_capability_matching",
       "breakpoints": true
+    },
+    {
+      "idx": 12,
+      "version": "6",
+      "when": 1787702400000,
+      "tag": "0012_public_sector_command_center_goal",
+      "breakpoints": true
     }
   ]
 }

@@ -92,7 +92,10 @@ const publishedAgents: Agent[] = [
   { stable_id: "AGT-011", name: "Marketing & Content Operations", mission: "Turn approved knowledge and outcomes into evidence-backed marketing assets and qualified demand.", authority_level: "L1", status: "Built · activation pending" },
   { stable_id: "AGT-012", name: "Technical Architecture", mission: "Define interoperable, secure, scalable, and supportable building-intelligence architectures.", authority_level: "L1", status: "Built · activation pending" },
 ];
-const publishedGoals: Goal[] = [{ stable_id: "GOAL-2026-009", objective: "Find NJ/NY network, cabling, switching, voice, physical-security, IT consulting, and 3D-scanning work and match it to governed knowledge.", status: "Active", priority: "P1", success_metrics: ["Official canonical evidence", "Historical capability match", "Human pursuit approval", "Auditable handoff"] }];
+const publishedGoals: Goal[] = [
+  { stable_id: "GOAL-2026-009", objective: "Find NJ/NY network, cabling, switching, voice, physical-security, IT consulting, and 3D-scanning work and match it to governed knowledge.", status: "Active", priority: "P1", success_metrics: ["Official canonical evidence", "Historical capability match", "Human pursuit approval", "Auditable handoff"] },
+  { stable_id: "GOAL-2026-010", objective: "Develop a governed, configurable Symbiont Command Center software offering for state and local governments, starting with clerk, constituent-service, case-management, CRM, and operational-workflow needs. Evaluate Clerkos and other CRM-like systems as potential integration or migration candidates.", status: "Approved", priority: "P1", success_metrics: ["Approved public-sector workflow and problem map", "Configurable reference architecture with security, accessibility, records, retention, and data-governance requirements", "Evidence-based evaluation of Clerkos and other CRM-like systems; no compatibility, partnership, or market claim without evidence", "Human approval before outreach, pricing, pilot, credentials, data intake, or production activation"] },
+];
 
 export default function Home() {
   const [view, setView] = useState<View>("Overview");

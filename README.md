@@ -33,6 +33,10 @@ The current full-build registry contains 14 numbered agents, `AGT-001` through `
 - The [Action Workflow](docs/SYM-OPS-DES-003_action-workflow-interface_2026-07-21_v1.0.md) coordinates opportunity intake, qualification, response development, approvals, delivery, QA/QC, and closeout across the network.
 - Human approval remains mandatory wherever work becomes external, commercial, contractual, financial, production-impacting, irreversible, or materially risky.
 
+### Public-sector product direction
+
+`GOAL-2026-010` expands the shared strategy to a governed, configurable Command Center offering for state and local governments. It begins with validating clerk, constituent-service, case-management, CRM, and operational-workflow needs. Clerkos and other CRM-like systems are evaluation or integration candidates only; Symbiont makes no compatibility, partnership, or market claim until it has supporting evidence and approval. All 14 agents contribute under `AGT-001`, with human approval required before outreach, pricing, pilot work, credentials, data intake, production activation, or contractual commitment.
+
 ## Repository-Scoped Agents
 
 Codex automatically discovers the packaged agent skills under `.agents/skills`. The Symbiont COO skill is the governing entry point for portfolio-level work.
