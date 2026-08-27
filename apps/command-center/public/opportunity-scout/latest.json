@@ -5,76 +5,76 @@
   "sharedGoalId": "GOAL-2026-009",
   "correlationId": "CORR-AGT009-NYNJ-20260826-WEEKDAY-PROD",
   "runDate": "2026-08-26",
-  "startedAt": "2026-08-26T14:38:00Z",
-  "evidenceCollectionCompletedAt": "2026-08-26T14:50:38Z",
+  "startedAt": "2026-08-27T00:25:00Z",
+  "evidenceCollectionCompletedAt": "2026-08-27T00:41:05Z",
   "authority": "L1 — public-source research, internal drafts, governed three-file publication, no external action",
   "lookbackWindow": "Delta since the prior governed run observed 2026-08-24T12:08:51Z, plus canonical re-observation of the retained record set",
   "scope": "NY/NJ state and local network, cabling, fiber, switching, voice, physical security, IT consulting, 3D scanning, reality capture, BIM/digital twins, building data, and asset-information opportunities",
-  "methodology": "Official issuer-controlled procurement pages and documents were opened across NY state, NY local, NJ state, and NJ local lanes. Records were normalized and deduplicated on issuer, title, solicitation number, canonical URL, deadline, and geography. Scores were recomputed exactly from the repository Scout weights. Two newly verified NJ DPP records, 26DPP01238 / T1708 and 26DPP01212 / T1932, were visually verified and SHA-256 hashed from official amendment PDFs. OGS 23420 and HBITS 23311 remain open at the current observation, while the two PANYNJ cybersecurity response windows elapsed without a robots-permitted package refresh. Gated package contents were not inferred.",
+  "methodology": "Official issuer-controlled procurement pages and documents were refreshed across NY state, NY local, NJ state, and NJ local lanes after the earlier August 26 observation. Records were normalized and deduplicated on issuer, title, solicitation number, canonical URL, deadline, and geography. Scores were recomputed exactly from the repository Scout weights. Newly posted NYS ITS IFB C000992 was downloaded from the canonical issuer endpoint, visually verified, and SHA-256 hashed. OGS 23420 passed its stated deadline without a public award or cancellation notice and remains a Review record after timing decay. C000988 Figma licensing and same-day NJ DPP printing, courier, and towing notices were verified as outside the priority service lanes. Gated package contents were not inferred.",
   "noExternalAction": "No prospect or buyer was contacted; no account was created; no authentication, CAPTCHA, or click-through terms were used; no bid, price, payment, submission, commitment, or external capability claim was made.",
   "reportUrl": "https://symbiont-three.vercel.app/opportunity-scout/latest.html",
   "counts": {
-    "sourcesChecked": 69,
-    "candidates": 31,
-    "verified": 31,
-    "routed": 15,
+    "sourcesChecked": 71,
+    "candidates": 32,
+    "verified": 32,
+    "routed": 16,
     "watchlisted": 11,
     "archived": 5,
-    "historicalMatchRecords": 28,
-    "historicalMatchLinks": 45,
+    "historicalMatchRecords": 29,
+    "historicalMatchLinks": 46,
     "newPrerogativeMatchRecords": 5,
     "newPrerogativeMatchLinks": 6
   },
   "deltaFromPriorRun": {
-    "newCandidates": 2,
-    "newVerified": 2,
-    "amended": 2,
-    "statusChanged": 2,
+    "newCandidates": 1,
+    "newVerified": 1,
+    "amended": 0,
+    "statusChanged": 1,
     "closed": 0,
-    "scoreChanged": 5,
-    "routeChanged": 1,
-    "note": "Two newly verified NJ DPP system-services records were added: 26DPP01238 / T1708 (74, Review) and 26DPP01212 / T1932 (75, Review). Their full packages remain behind NJSTART. Timing moved OGS 23420 85→81, HBITS 23311 76→72, and OGS SG484 75→71 while each remains Review. The August 25 PANYNJ response windows elapsed without a robots-permitted package refresh: OT cybersecurity moved 70→66 and Review→Watchlist; IT cybersecurity moved 67→63 and remains Watchlist. No official PANYNJ closure or extension is inferred."
+    "scoreChanged": 1,
+    "routeChanged": 0,
+    "note": "One newly posted NYS ITS record was verified: IFB C000992 Alcohol Price Posting and Delinquency Management (85, Review), due October 7 at 2:30 PM ET. Its official 35-page IFB establishes a hosted-platform implementation and support scope plus mandatory alcohol-pricing/distribution-platform experience. OGS 23420 passed its August 26 at 1:30 PM ET response deadline; timing moved 25→0 and score 81→78, while the route remains Review pending AGT-002 disposition. No other in-scope new posting, amendment, closure, or route change was verified after the earlier August 26 run."
   },
   "urgentDeadlines": [
-    {
-      "id": "OPP-2026-NYSOGS-23420",
-      "title": "Business Consulting Services",
-      "deadline": "2026-08-26T13:30:00-04:00",
-      "kind": "Due today at 1:30 PM ET; prime-project, staffing, category, physical-delivery, and submission gates require immediate authorized review",
-      "route": "Review — awaiting AGT-002 acceptance"
-    },
     {
       "id": "OPP-2026-NYSOGS-23311",
       "title": "Hourly Based Information Technology Services",
       "deadline": "2026-08-27T13:30:00-04:00",
-      "kind": "Due tomorrow at 1:30 PM ET; mandatory bidder, staffing, subcontractor-preapproval, and delivery requirements require immediate authorized review",
+      "kind": "Due August 27 at 1:30 PM ET; mandatory bidder, staffing, subcontractor-preapproval, and delivery requirements require immediate authorized review",
       "route": "Review — awaiting AGT-002 acceptance"
     },
     {
       "id": "OPP-2026-NYCSCA-26-00107R",
       "title": "Contingent & Temporary Staffing",
       "deadline": "2026-08-28",
-      "kind": "Due in two business days; package request, prequalification, staffing, and exact-time gates remain unresolved",
+      "kind": "Due August 28; package request, prequalification, staffing, and exact-time gates remain unresolved",
       "route": "Watchlist"
     },
     {
       "id": "OPP-2026-NYSOGS-SG484",
       "title": "Maintain Job Order Contract System (JOCS)",
       "deadline": "2026-09-01",
-      "kind": "Due in four business days; exact time and Bid Express package requirements remain unavailable within L1",
+      "kind": "Due September 1; exact time and Bid Express package requirements remain unavailable within L1",
       "route": "Review — awaiting AGT-002 acceptance"
     },
     {
       "id": "OPP-2026-NYSITS-C000972",
       "title": "Omnissa Workspace ONE",
       "deadline": "2026-09-02",
-      "kind": "Due in five business days; Platinum Partner, FedRAMP, migration, and product-channel gates remain unresolved",
+      "kind": "Due September 2; Platinum Partner, FedRAMP, migration, and product-channel gates remain unresolved",
+      "route": "Watchlist"
+    },
+    {
+      "id": "OPP-2026-NYSITS-C000978",
+      "title": "Enterprise GitLab",
+      "deadline": "2026-09-03T14:30:00-04:00",
+      "kind": "Due September 3 at 2:30 PM ET; certified-business eligibility, HA/DR delivery, and product-channel gates remain unresolved",
       "route": "Watchlist"
     }
   ],
   "accessBoundaries": [
-    "NYS ITS restricted-period communications were not used; public current-opportunity and canonical pages were read without contact, pricing, or submission",
-    "OGS HBITS and Business Consulting public pages and documents were opened; no designated-contact communication, physical delivery, pricing, or submission was attempted",
+    "NYS ITS current-opportunity pages and public solicitation documents, including C000992, were opened; restricted-period contacts and email submission paths were not used, and no pricing or submission was attempted",
+    "OGS HBITS and Business Consulting public pages and documents were opened; OGS 23420 is recorded only as deadline-elapsed, and no designated-contact communication, physical delivery, pricing, submission, award, or cancellation was inferred",
     "OGS D&C public summaries were opened; Bid Express packages, accounts, click-through terms, questions, addenda, and submission paths were not entered",
     "PANYNJ robots.txt exposes an allow-list limited to redevelopment paths; the professional-services listing/model path was not refreshed, last verified 2026-08-12T02:50:06Z facts were retained without inference, and the August 25 response windows are recorded only as elapsed",
     "RIOC public listings were opened; CloudFront package/addendum controls and restricted-period/direct-email response paths were not bypassed or used",
@@ -114,12 +114,11 @@
       "geography"
     ],
     "newRecordChecks": [
-      "All 29 prior records remain distinct after issuer, normalized-title, solicitation-number, URL, deadline, and geography comparison",
-      "26DPP01238 / T1708 and 26DPP01212 / T1932 are distinct from prior NJ DPP records by solicitation number, title, deadline, and service domain",
-      "Bid Amendments 7 and 5 were attached to their respective newly verified original records; no separate amendment records were created",
-      "Current OGS, ITS, RIOC, NYC SCA, NJ DPP, NJ TRANSIT, NJEDA, and Newark official indexes were checked for new priority-lane signals",
-      "The two PANYNJ records retain their August 12 evidence hashes and facts at the robots boundary; only deadline passage was recomputed",
-      "NJ DPP courier, towing, mailroom, and incident-response-truck notices; NJEDA marketing and real-estate development; RIOC real-estate advisory; and general facility-maintenance items were excluded because canonical public scope did not establish a priority-lane opportunity"
+      "All 31 prior records remain distinct after issuer, normalized-title, solicitation-number, URL, deadline, and geography comparison",
+      "NYS ITS C000992 is distinct by solicitation number, title, October 7 deadline, hosted-platform scope, and sector-specific qualification requirements",
+      "The canonical C000992 landing page and 35-page IFB were attached to one original record; no document-only duplicate was created",
+      "C000988 Figma licensing and same-day NJ DPP printing, courier, and towing notices were excluded because canonical public scope did not establish a priority-lane opportunity",
+      "Current OGS, ITS, RIOC, NYC SCA, NJ DPP, NJ OIT, NJ TRANSIT, NJEDA, Hunterdon, Newark, and regional-authority evidence was checked without crossing access or contact boundaries"
     ]
   },
   "sources": [
@@ -133,7 +132,7 @@
       "lane": "NY state",
       "name": "NYS OGS D&C consultant opportunities",
       "url": "https://online2.ogs.ny.gov/dnc/contractorConsultant/esb/esbConsultantOpsIndex.asp",
-      "observedAt": "2026-08-26T14:50:38Z"
+      "observedAt": "2026-08-27T00:41:05Z"
     },
     {
       "lane": "NY state",
@@ -163,19 +162,19 @@
       "lane": "NY local",
       "name": "NYC School Construction Authority reports",
       "url": "https://www.nycsca.org/Doing-Business/Contracting-with-Us/Reports",
-      "observedAt": "2026-08-26T14:50:38Z"
+      "observedAt": "2026-08-27T00:41:05Z"
     },
     {
       "lane": "NY local",
       "name": "RIOC RFPs and bids",
       "url": "https://www.rioc.ny.gov/info/rfps-and-bids",
-      "observedAt": "2026-08-26T14:50:38Z"
+      "observedAt": "2026-08-27T00:41:05Z"
     },
     {
       "lane": "NJ state",
       "name": "NJ DPP legal and special notices",
       "url": "https://www.nj.gov/treasury/purchase/",
-      "observedAt": "2026-08-26T14:50:38Z"
+      "observedAt": "2026-08-27T00:41:05Z"
     },
     {
       "lane": "NJ state",
@@ -193,7 +192,7 @@
       "lane": "NJ state",
       "name": "NJ TRANSIT procurement calendar",
       "url": "https://www.njtransit.com/procurement/calendar/",
-      "observedAt": "2026-08-26T14:50:38Z"
+      "observedAt": "2026-08-27T00:41:05Z"
     },
     {
       "lane": "NJ state",
@@ -235,7 +234,7 @@
       "lane": "NY state",
       "name": "NYS OGS Business Consulting Services RFP 23420",
       "url": "https://ogs.ny.gov/procurement/biddocuments/23420bid",
-      "observedAt": "2026-08-26T14:50:38Z"
+      "observedAt": "2026-08-27T00:41:05Z"
     },
     {
       "lane": "NJ state",
@@ -307,7 +306,7 @@
       "lane": "NY state",
       "name": "NYS ITS current open procurement opportunities",
       "url": "https://its.ny.gov/current-open-procurement-opportunities",
-      "observedAt": "2026-08-26T14:50:38Z"
+      "observedAt": "2026-08-27T00:41:05Z"
     },
     {
       "lane": "NY state",
@@ -379,13 +378,13 @@
       "lane": "NY local",
       "name": "NYC SCA current RFP 26-00107R official reports row",
       "url": "https://www.nycsca.org/Doing-Business/Contracting-with-Us/Reports",
-      "observedAt": "2026-08-26T14:50:38Z"
+      "observedAt": "2026-08-27T00:41:05Z"
     },
     {
       "lane": "NY local",
       "name": "RIOC RFP 26-1379 Addendum 2 public listing",
       "url": "https://www.rioc.ny.gov/info/rfps-and-bids",
-      "observedAt": "2026-08-26T14:50:38Z"
+      "observedAt": "2026-08-27T00:41:05Z"
     },
     {
       "lane": "NJ local / NY local regional authority",
@@ -487,7 +486,7 @@
       "lane": "NY local",
       "name": "RIOC Real Estate Advisory and Consulting Panel — excluded non-priority consulting signal",
       "url": "https://www.rioc.ny.gov/info/rfps-and-bids",
-      "observedAt": "2026-08-24T12:08:51Z"
+      "observedAt": "2026-08-27T00:41:05Z"
     },
     {
       "lane": "NY local",
@@ -517,7 +516,7 @@
       "lane": "NJ state",
       "name": "New Jersey Office of Information Technology current bidding opportunities — no current actionable in-scope item",
       "url": "https://nj.gov/it/business/vendors/current-bidding-opportunities.shtml",
-      "observedAt": "2026-08-24T12:08:51Z"
+      "observedAt": "2026-08-27T00:41:05Z"
     },
     {
       "lane": "NJ local",
@@ -536,6 +535,18 @@
       "name": "NJ DPP T1932 Bid Amendment 5",
       "url": "https://www.nj.gov/treasury/purchase/specialnotices/NJDPP-26DPP01212-20260917-20260824_181145.pdf",
       "observedAt": "2026-08-26T14:50:38Z"
+    },
+    {
+      "lane": "NY state",
+      "name": "NYS ITS C000992 Alcohol Price Posting and Delinquency Management",
+      "url": "https://its.ny.gov/c000992-alcohol-price-posting-and-delinquency-management",
+      "observedAt": "2026-08-27T00:41:05Z"
+    },
+    {
+      "lane": "NY state",
+      "name": "NYS ITS C000992 official IFB PDF",
+      "url": "https://its.ny.gov/system/files/documents/2026/08/ifb-c000992-alcohol-price-posting-and-delinquency-management.pdf",
+      "observedAt": "2026-08-27T00:41:05Z"
     }
   ],
   "opportunities": [
@@ -698,105 +709,85 @@
       "idempotencyKey": "agt009:2026-08-26:CORR-AGT009-NYNJ-20260826-WEEKDAY-PROD:dc4872ccbe52ace8ab6f0441d23aa4a9197175fb6de96cb5425112fd609993ed"
     },
     {
-      "id": "OPP-2026-NYSOGS-23420",
+      "id": "OPP-2026-NYSITS-C000992",
       "lane": "NY state",
-      "issuer": "New York State Office of General Services",
-      "issuerWebsite": "https://ogs.ny.gov/",
-      "title": "Business Consulting Services",
-      "normalizedTitle": "business consulting services",
-      "solicitationNumber": "23420",
-      "canonicalUrl": "https://ogs.ny.gov/procurement/biddocuments/23420bid",
-      "publicationDate": "2026-04-16",
-      "deadline": "2026-08-26T13:30:00-04:00",
+      "issuer": "New York State Office of Information Technology Services",
+      "issuerWebsite": "https://its.ny.gov/",
+      "title": "Alcohol Price Posting and Delinquency Management",
+      "normalizedTitle": "alcohol price posting and delinquency management",
+      "solicitationNumber": "C000992",
+      "canonicalUrl": "https://its.ny.gov/c000992-alcohol-price-posting-and-delinquency-management",
+      "publicationDate": "2026-08-26",
+      "deadline": "2026-10-07T14:30:00-04:00",
       "deadlineTimezone": "America/New_York",
-      "location": "New York statewide; participating public entities may extend beyond New York",
-      "geographyKey": "ny-state-ogs",
-      "procurementType": "RFP / multi-award master agreement",
+      "location": "New York statewide; hosted SLA/ABC e-Wholesale Platform",
+      "geographyKey": "ny-state-its",
+      "procurementType": "IFB",
       "statedValue": null,
       "currency": "USD",
-      "evidenceHash": "3396590d2266b32d7b4e79ef108470a4e3b4b1d7e31b2c0391320b23a0195815",
-      "hashBasis": "SHA-256 of official OGS Solicitation Update #7 DOCX downloaded from the canonical OGS endpoint on 2026-08-21",
-      "sourceKind": "Official state procurement page, scope attachment, and Solicitation Update #7",
-      "sourceObservedAt": "2026-08-26T14:50:38Z",
-      "scope": "A five-year multi-award master agreement, with up to five additional renewal years, for Business Consulting Services including Digital Operations, general IT consulting, technical application assessments, requirements development, digital transformation, readiness assessments, IT policy, infrastructure and architecture planning, independent verification and validation, data and analytics, project management, and related consulting. Implementation, managed services, networking services, software, and hardware are expressly excluded from the Digital Operations category.",
-      "accessRequirements": "The landing page, solicitation, scope, updates, and response files are public. The restricted period applies. Bid delivery, vendor-responsibility, certifications, pricing, insurance, USB-media, and building-access requirements require an authorized owner; AGT-009 did not register, contact OGS, deliver materials, or accept terms.",
+      "evidenceHash": "19b9b6df01b3db6a3e9436776628d2a4e7080366b213596bbe6c80a99805cdc0",
+      "hashBasis": "SHA-256 of the official 35-page NYS ITS IFB PDF downloaded from the canonical issuer endpoint",
+      "sourceKind": "Official state procurement landing page and full IFB",
+      "sourceObservedAt": "2026-08-27T00:41:05Z",
+      "scope": "Five-year hosted-platform implementation, with up to two one-year extensions, for the SLA/ABC alcohol wholesale price-posting and delinquent-credit system. Scope includes project management, system architecture and software design, migration and go-live, high availability, API services, security testing, training, Level 1 support, monitoring, maintenance, and operational reporting for more than 50,000 licensed users and the public.",
+      "publicBusinessContact": "Roel Pena and Dolly Bernard, Contract Management Specialists — designated restricted-period contacts; AGT-009 made no contact",
+      "accessRequirements": "The landing page and full IFB are public. Restricted-period communications and email-only submission apply. Mandatory qualifications require five years providing and three years managing alcohol-pricing and distribution platforms, which may be met through combined bidder and proposed-subcontractor experience.",
       "scores": {
-        "serviceFit": 90,
+        "serviceFit": 65,
         "buyerFit": 100,
-        "timing": 25,
-        "value": 75,
-        "evidence": 98,
-        "access": 80,
+        "timing": 100,
+        "value": 80,
+        "evidence": 100,
+        "access": 60,
         "recurrence": 100
       },
-      "expectedScore": 81,
-      "confidence": 96,
+      "confidence": 99,
       "capabilityMatches": [
-        "IT consulting",
-        "infrastructure assessment and architecture planning",
-        "technical requirements",
-        "digital operations",
+        "hosted platform implementation",
         "project management",
-        "data and analytics"
+        "system architecture and software design",
+        "API and data integration",
+        "cybersecurity testing",
+        "operations, monitoring, and support"
       ],
       "knowledgeAssetIds": [
-        "SYM-ARC-RES-106",
-        "SYM-RES-RES-202"
+        "SYM-ARC-RES-106"
       ],
-      "historicalLabel": "Historical continuity — sanitized IT-consulting/program-support evidence density only; no project or past-performance proof",
-      "newPrerogativeLabels": [
-        "New company prerogative — building data and AI operations direction"
-      ],
+      "historicalLabel": "Historical continuity — sanitized IT-consulting, implementation, and program-support evidence density only; no alcohol-platform, hosting-scale, qualification, or past-performance proof",
+      "newPrerogativeLabels": [],
       "verifiedFacts": [
-        "OGS lists Solicitation 23420 bids due August 26, 2026 at 1:30 PM ET",
-        "Solicitation Update #7 is dated August 17, 2026 and leaves the deadline unchanged",
-        "Update #7 removes the EEO 100 Equal Employment Opportunity Staffing Plan from the required submission",
-        "Update #7 clarifies that one Attachment 5 is submitted per bid, covering all proposed categories, and Section III.A.1 may be duplicated per category",
-        "Update #7 states that bidder responses have no word, character, or page limit",
-        "Update #6 still requires contractor-employed sample-team resumes and bidder-as-prime project evidence",
-        "Digital Operations includes IT consulting, technical assessments, requirements, infrastructure/architecture planning, IV&V, and data/analytics; implementation, managed services, networking services, software, and hardware are excluded",
-        "The procurement restricted period applies"
+        "ITS issued IFB C000992 on August 26, 2026; bids are due October 7, 2026 at 2:30 PM ET",
+        "The base contract runs February 1, 2027 through January 31, 2032, with up to two additional one-year extensions",
+        "The scope requires a fully hosted e-Wholesale platform, project management, architecture, APIs, security testing, migration, training, support, monitoring, and maintenance",
+        "The platform must support more than 50,000 licensed wholesalers, manufacturers, retailers, SLA staff, and public users, including approximately 500,000 monthly price schedules",
+        "Mandatory qualifications require five years providing and three years managing alcohol-pricing and distribution platforms; bidder and proposed-subcontractor experience may be combined",
+        "ITS anticipates one lowest-price award after pass/fail qualification review"
       ],
       "inferences": [
-        "Symbiont may fit selected Digital Operations and project-management categories, but the final category response, qualifications, staffing, and commercial path require AGT-002 review"
+        "The technical scope is a strong IT-services adjacency, but a credible prime path is unlikely without an approved subcontractor that satisfies the specialized alcohol-platform experience gates"
       ],
       "risks": [
-        "Restricted-period communications",
-        "Mandatory bidder and vendor-responsibility submissions",
-        "Prime-contractor project evidence and contractor-staff sample-team resumes are required for the selected categories",
-        "Pricing, insurance, certifications, and category-specific response mechanics require human approval",
-        "Broad master-agreement competition",
-        "No implementation or networking services under the Digital Operations category",
-        "Only two business days remain before the August 26 deadline"
+        "Restricted-period communications and email-only submission",
+        "Specialized alcohol-pricing and distribution-platform experience is mandatory",
+        "Single-award lowest-price evaluation",
+        "High-volume public platform, privacy, availability, security, and support obligations",
+        "No approved alcohol-platform, hosting-scale, staffing, rates, or past-performance evidence",
+        "Pricing and contractual commitments require human approval"
       ],
       "missingInformation": [
-        "Current bidder qualification fit",
-        "AGT-005-qualified prime-contractor project evidence for each selected category",
-        "Approved contractor-staff sample team, resumes, and rate structure",
-        "Prime versus teaming path and the exact categories Symbiont could support"
+        "AGT-002 verification of bidder and proposed-subcontractor qualification fit",
+        "Qualified alcohol-platform delivery partner and approved references",
+        "Hosting architecture, staffing capacity, insurance, certifications, and rate approval",
+        "Incumbent, current platform ownership, transition constraints, and approved prime-versus-teaming path"
       ],
-      "nextAction": "AGT-002 and an authorized human owner record pursue, team, or no-bid before 1:30 PM ET today; no restricted-period contact, pricing, physical delivery, or submission is authorized to AGT-009.",
-      "projectBrief": "High-fit statewide consulting vehicle with explicit IT strategy, infrastructure/architecture assessment, requirements, project management, and data/analytics scope. The response is due today at 1:30 PM ET; prime-project evidence, contractor-staff resumes, physical delivery, and authorized commercial review are decisive gates.",
-      "starterNarrative": "Internal draft: Symbiont may align to selected Digital Operations work involving infrastructure assessment, requirements, architecture planning, project governance, and data-informed operations. Update #6 requires governed qualification of prime-contractor examples and contractor-staff resumes. Historical archive counts remain evidence density only; building-data and AI operations remain a new company prerogative until AGT-005 and AGT-002 approve support.",
-      "score": 81,
+      "nextAction": "AGT-002 tests the mandatory five-year/three-year sector-experience gates and records prime, governed teaming, or no-bid; no restricted-period contact, pricing, or submission is authorized.",
+      "projectBrief": "New same-day Review candidate: a long-term, public hosted-platform implementation and support contract with strong IT delivery adjacency but decisive alcohol-pricing/distribution-platform qualifications.",
+      "starterNarrative": "Internal draft: Symbiont may align to project governance, architecture, integration, security coordination, and operational support only within a qualified team. Archive links are evidence density only; no alcohol-industry, hosting-scale, security-certification, or past-performance claim may be made until AGT-005 and AGT-002 qualify it.",
+      "expectedScore": 85,
+      "score": 85,
       "route": "Review — awaiting AGT-002 acceptance",
       "handoffStatus": "Review — awaiting AGT-002 acceptance",
-      "idempotencyKey": "agt009:2026-08-26:CORR-AGT009-NYNJ-20260826-WEEKDAY-PROD:3396590d2266b32d7b4e79ef108470a4e3b4b1d7e31b2c0391320b23a0195815",
-      "amendments": [
-        {
-          "number": "7",
-          "observedAt": "2026-08-21T12:15:00Z",
-          "canonicalUrl": "https://ogs.ny.gov/bid-23420-solicitation-update-7",
-          "evidenceHash": "3396590d2266b32d7b4e79ef108470a4e3b4b1d7e31b2c0391320b23a0195815",
-          "changedFields": [
-            "EEO 100 submission removed",
-            "one Attachment 5 per bid clarified",
-            "no response word, character, or page limit",
-            "deadline unchanged at 2026-08-26 13:30 ET"
-          ]
-        }
-      ],
-      "publicBusinessContact": null
+      "idempotencyKey": "agt009:2026-08-26:CORR-AGT009-NYNJ-20260826-WEEKDAY-PROD:19b9b6df01b3db6a3e9436776628d2a4e7080366b213596bbe6c80a99805cdc0"
     },
     {
       "id": "SIG-2026-NYCSCA-IT-STAFFING-Q3",
@@ -943,6 +934,108 @@
       "route": "Review — awaiting AGT-002 acceptance",
       "handoffStatus": "Review — awaiting AGT-002 acceptance",
       "idempotencyKey": "agt009:2026-08-26:CORR-AGT009-NYNJ-20260826-WEEKDAY-PROD:c0e4eb387cc6b53e77df596ef4cfae141ce50dbcb51f109dc95790e15ff4d380",
+      "publicBusinessContact": null
+    },
+    {
+      "id": "OPP-2026-NYSOGS-23420",
+      "lane": "NY state",
+      "issuer": "New York State Office of General Services",
+      "issuerWebsite": "https://ogs.ny.gov/",
+      "title": "Business Consulting Services",
+      "normalizedTitle": "business consulting services",
+      "solicitationNumber": "23420",
+      "canonicalUrl": "https://ogs.ny.gov/procurement/biddocuments/23420bid",
+      "publicationDate": "2026-04-16",
+      "deadline": "2026-08-26T13:30:00-04:00",
+      "deadlineTimezone": "America/New_York",
+      "location": "New York statewide; participating public entities may extend beyond New York",
+      "geographyKey": "ny-state-ogs",
+      "procurementType": "RFP / multi-award master agreement",
+      "statedValue": null,
+      "currency": "USD",
+      "evidenceHash": "3396590d2266b32d7b4e79ef108470a4e3b4b1d7e31b2c0391320b23a0195815",
+      "hashBasis": "SHA-256 of official OGS Solicitation Update #7 DOCX downloaded from the canonical OGS endpoint on 2026-08-21",
+      "sourceKind": "Official state procurement page, scope attachment, and Solicitation Update #7",
+      "sourceObservedAt": "2026-08-27T00:41:05Z",
+      "scope": "A five-year multi-award master agreement, with up to five additional renewal years, for Business Consulting Services including Digital Operations, general IT consulting, technical application assessments, requirements development, digital transformation, readiness assessments, IT policy, infrastructure and architecture planning, independent verification and validation, data and analytics, project management, and related consulting. Implementation, managed services, networking services, software, and hardware are expressly excluded from the Digital Operations category.",
+      "accessRequirements": "The landing page, solicitation, scope, updates, and response files are public. The restricted period applies. Bid delivery, vendor-responsibility, certifications, pricing, insurance, USB-media, and building-access requirements require an authorized owner; AGT-009 did not register, contact OGS, deliver materials, or accept terms.",
+      "scores": {
+        "serviceFit": 90,
+        "buyerFit": 100,
+        "timing": 0,
+        "value": 75,
+        "evidence": 98,
+        "access": 80,
+        "recurrence": 100
+      },
+      "expectedScore": 78,
+      "confidence": 96,
+      "capabilityMatches": [
+        "IT consulting",
+        "infrastructure assessment and architecture planning",
+        "technical requirements",
+        "digital operations",
+        "project management",
+        "data and analytics"
+      ],
+      "knowledgeAssetIds": [
+        "SYM-ARC-RES-106",
+        "SYM-RES-RES-202"
+      ],
+      "historicalLabel": "Historical continuity — sanitized IT-consulting/program-support evidence density only; no project or past-performance proof",
+      "newPrerogativeLabels": [
+        "New company prerogative — building data and AI operations direction"
+      ],
+      "verifiedFacts": [
+        "OGS lists Solicitation 23420 bids due August 26, 2026 at 1:30 PM ET",
+        "Solicitation Update #7 is dated August 17, 2026 and leaves the deadline unchanged",
+        "Update #7 removes the EEO 100 Equal Employment Opportunity Staffing Plan from the required submission",
+        "Update #7 clarifies that one Attachment 5 is submitted per bid, covering all proposed categories, and Section III.A.1 may be duplicated per category",
+        "Update #7 states that bidder responses have no word, character, or page limit",
+        "Update #6 still requires contractor-employed sample-team resumes and bidder-as-prime project evidence",
+        "Digital Operations includes IT consulting, technical assessments, requirements, infrastructure/architecture planning, IV&V, and data/analytics; implementation, managed services, networking services, software, and hardware are excluded",
+        "The procurement restricted period applies",
+        "The August 26 at 1:30 PM ET response deadline had elapsed at the current observation; the public page did not state an award, cancellation, or extension"
+      ],
+      "inferences": [
+        "Symbiont may fit selected Digital Operations and project-management categories, but the final category response, qualifications, staffing, and commercial path require AGT-002 review"
+      ],
+      "risks": [
+        "Restricted-period communications",
+        "Mandatory bidder and vendor-responsibility submissions",
+        "Prime-contractor project evidence and contractor-staff sample-team resumes are required for the selected categories",
+        "Pricing, insurance, certifications, and category-specific response mechanics require human approval",
+        "Broad master-agreement competition",
+        "No implementation or networking services under the Digital Operations category",
+        "The response window elapsed before the current observation; no response action is authorized"
+      ],
+      "missingInformation": [
+        "Current bidder qualification fit",
+        "AGT-005-qualified prime-contractor project evidence for each selected category",
+        "Approved contractor-staff sample team, resumes, and rate structure",
+        "Prime versus teaming path and the exact categories Symbiont could support"
+      ],
+      "nextAction": "AGT-002 records a late-cycle no-bid, award-monitoring, or future-vehicle disposition; no restricted-period contact, pricing, physical delivery, or submission is authorized after the stated deadline.",
+      "projectBrief": "High-fit statewide consulting vehicle with explicit IT strategy, infrastructure/architecture assessment, requirements, project management, and data/analytics scope. The August 26 response window has elapsed; prime-project evidence, staffing, physical delivery, and any award status remain governed monitoring items.",
+      "starterNarrative": "Internal draft: Symbiont may align to selected Digital Operations work involving infrastructure assessment, requirements, architecture planning, project governance, and data-informed operations. Update #6 requires governed qualification of prime-contractor examples and contractor-staff resumes. Historical archive counts remain evidence density only; building-data and AI operations remain a new company prerogative until AGT-005 and AGT-002 approve support.",
+      "score": 78,
+      "route": "Review — awaiting AGT-002 acceptance",
+      "handoffStatus": "Review — awaiting AGT-002 acceptance",
+      "idempotencyKey": "agt009:2026-08-26:CORR-AGT009-NYNJ-20260826-WEEKDAY-PROD:3396590d2266b32d7b4e79ef108470a4e3b4b1d7e31b2c0391320b23a0195815",
+      "amendments": [
+        {
+          "number": "7",
+          "observedAt": "2026-08-21T12:15:00Z",
+          "canonicalUrl": "https://ogs.ny.gov/bid-23420-solicitation-update-7",
+          "evidenceHash": "3396590d2266b32d7b4e79ef108470a4e3b4b1d7e31b2c0391320b23a0195815",
+          "changedFields": [
+            "EEO 100 submission removed",
+            "one Attachment 5 per bid clarified",
+            "no response word, character, or page limit",
+            "deadline unchanged at 2026-08-26 13:30 ET"
+          ]
+        }
+      ],
       "publicBusinessContact": null
     },
     {
